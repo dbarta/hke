@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.email       = ["david@odeca.net"]
   spec.homepage    = "https://hke.com"
   spec.summary     = "Engine for Hakhel"
-  spec.description = "Enginr for Hakhel"
+  spec.description = "Engine for Hakhel"
   spec.license     = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the "allowed_push_host"
