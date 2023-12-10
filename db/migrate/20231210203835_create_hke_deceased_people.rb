@@ -14,7 +14,7 @@ class CreateHkeDeceasedPeople < ActiveRecord::Migration[7.1]
       t.string :date_of_death
       t.string :time_of_death
       t.string :location_of_death
-      t.references :cemetery, null: false, foreign_key: true
+      t.references :cemetery, null: false, foreign_key: { to_table: :hke_cemeteries }
       t.string :cemetery_region
       t.string :cemetery_parcel
 

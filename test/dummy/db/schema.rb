@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_12_09_122753) do
+ActiveRecord::Schema[7.1].define(version: 2023_12_10_203835) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -169,6 +169,28 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_09_122753) do
     t.string "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "hke_deceased_people", force: :cascade do |t|
+    t.string "first_name"
+    t.string "last_name"
+    t.string "gender"
+    t.string "occupation"
+    t.string "organization"
+    t.string "religion"
+    t.string "father_first_name"
+    t.string "hebrew_year_of_death"
+    t.string "hebrew_month_of_death"
+    t.string "hebrew_day_of_death"
+    t.string "date_of_death"
+    t.string "time_of_death"
+    t.string "location_of_death"
+    t.bigint "cemetery_id", null: false
+    t.string "cemetery_region"
+    t.string "cemetery_parcel"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cemetery_id"], name: "index_hke_deceased_people_on_cemetery_id"
   end
 
   create_table "inbound_webhooks", force: :cascade do |t|
@@ -362,6 +384,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_09_122753) do
   add_foreign_key "accounts", "users", column: "owner_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "api_tokens", "users"
+  add_foreign_key "hke_deceased_people", "hke_cemeteries", column: "cemetery_id"
   add_foreign_key "pay_charges", "pay_customers", column: "customer_id"
   add_foreign_key "pay_payment_methods", "pay_customers", column: "customer_id"
   add_foreign_key "pay_subscriptions", "pay_customers", column: "customer_id"
