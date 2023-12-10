@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_12_06_065806) do
+ActiveRecord::Schema[7.1].define(version: 2023_12_09_122753) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -20,7 +20,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_06_065806) do
     t.string "token", null: false
     t.string "name", null: false
     t.string "email", null: false
-    t.jsonb "roles", default: {}, null: false
+    t.jsonb "roles"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_account_invitations_on_account_id"
@@ -124,7 +124,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_06_065806) do
     t.bigint "user_id", null: false
     t.string "token"
     t.string "name"
-    t.jsonb "metadata", default: {}
+    t.jsonb "metadata"
     t.boolean "transient", default: false
     t.datetime "last_used_at", precision: nil
     t.datetime "expires_at", precision: nil
@@ -147,6 +147,28 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_06_065806) do
     t.string "access_token_secret"
     t.string "owner_type"
     t.index ["owner_id", "owner_type"], name: "index_connected_accounts_on_owner_id_and_owner_type"
+  end
+
+  create_table "hke_addresses", force: :cascade do |t|
+    t.string "name"
+    t.string "description"
+    t.string "street"
+    t.string "city"
+    t.string "region"
+    t.string "country"
+    t.string "zipcode"
+    t.string "addressable_type", null: false
+    t.bigint "addressable_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["addressable_type", "addressable_id"], name: "index_hke_addresses_on_addressable"
+  end
+
+  create_table "hke_cemeteries", force: :cascade do |t|
+    t.string "name"
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "inbound_webhooks", force: :cascade do |t|
@@ -273,7 +295,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_06_065806) do
     t.string "name", null: false
     t.integer "amount", default: 0, null: false
     t.string "interval", null: false
-    t.jsonb "details", default: {}, null: false
+    t.jsonb "details"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.integer "trial_period_days", default: 0
@@ -289,7 +311,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_06_065806) do
     t.string "paddle_classic_id"
     t.string "lemon_squeezy_id"
     t.string "fake_processor_id"
-    t.string "jumpstart_id"
   end
 
   create_table "users", force: :cascade do |t|

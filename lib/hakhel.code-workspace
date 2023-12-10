@@ -1,10 +1,13 @@
 {
 	"folders": [
 		{
-			"path": "../../hakhel"
+			"path": ".."
 		},
 		{
-			"path": ".."
+			"path": "../../hakhel_original"
+		},
+		{
+			"path": "../../hakhel"
 		}
 	],
 	"settings": {}
