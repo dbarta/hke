@@ -1,2 +1,14 @@
-<h1>ContactPeople#index</h1>
-<p>Find me in app/views/hke/contact_people/index.html.erb</p>
+<p style="color: green"><%= notice %></p>
+
+<h1>Contact people</h1>
+
+<div id="contact_people">
+  <% @contact_people.each do |contact_person| %>
+    <%= render contact_person %>
+    <p>
+      <%= link_to "Show this contact person", contact_person %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New contact person", new_contact_person_path %>

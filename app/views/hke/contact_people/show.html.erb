@@ -1,2 +1,10 @@
-<h1>ContactPeople#show</h1>
-<p>Find me in app/views/hke/contact_people/show.html.erb</p>
+<p style="color: green"><%= notice %></p>
+
+<%= render @contact_person %>
+
+<div>
+  <%= link_to "Edit this contact person", edit_contact_person_path(@contact_person) %> |
+  <%= link_to "Back to contact people", contact_people_path %>
+
+  <%= button_to "Destroy this contact person", @contact_person, method: :delete %>
+</div>
