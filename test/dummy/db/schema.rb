@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_12_11_193244) do
+ActiveRecord::Schema[7.1].define(version: 2023_12_16_095132) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -201,6 +201,42 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_11_193244) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["cemetery_id"], name: "index_hke_deceased_people_on_cemetery_id"
+  end
+
+  create_table "hke_landing_pages", force: :cascade do |t|
+    t.string "name"
+    t.text "body"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_hke_landing_pages_on_user_id"
+  end
+
+  create_table "hke_relations", force: :cascade do |t|
+    t.string "relation_of_deceased_to_contact"
+    t.string "token"
+    t.bigint "deceased_person_id", null: false
+    t.bigint "contact_person_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contact_person_id"], name: "index_hke_relations_on_contact_person_id"
+    t.index ["deceased_person_id"], name: "index_hke_relations_on_deceased_person_id"
+  end
+
+  create_table "hke_relations_selections", force: :cascade do |t|
+    t.bigint "relation_id", null: false
+    t.bigint "selection_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["relation_id"], name: "index_hke_relations_selections_on_relation_id"
+    t.index ["selection_id"], name: "index_hke_relations_selections_on_selection_id"
+  end
+
+  create_table "hke_selections", force: :cascade do |t|
+    t.string "name"
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "inbound_webhooks", force: :cascade do |t|
@@ -395,6 +431,11 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_11_193244) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "api_tokens", "users"
   add_foreign_key "hke_deceased_people", "hke_cemeteries", column: "cemetery_id"
+  add_foreign_key "hke_landing_pages", "users"
+  add_foreign_key "hke_relations", "hke_contact_people", column: "contact_person_id"
+  add_foreign_key "hke_relations", "hke_deceased_people", column: "deceased_person_id"
+  add_foreign_key "hke_relations_selections", "hke_relations", column: "relation_id"
+  add_foreign_key "hke_relations_selections", "hke_selections", column: "selection_id"
   add_foreign_key "pay_charges", "pay_customers", column: "customer_id"
   add_foreign_key "pay_payment_methods", "pay_customers", column: "customer_id"
   add_foreign_key "pay_subscriptions", "pay_customers", column: "customer_id"

@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  relation_of_deceased_to_contact: MyString
+  token: MyString
+  deceased_person: one
+  contact_person: one
+
+two:
+  relation_of_deceased_to_contact: MyString
+  token: MyString
+  deceased_person: two
+  contact_person: two
