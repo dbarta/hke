@@ -2,6 +2,7 @@ module Hke
   class ApplicationController < ActionController::Base
 
     include Sortable
+    include SetLocale
 
     def remove_empty_relations_from(model_name, nested_model_name)
       x = params[model_name]

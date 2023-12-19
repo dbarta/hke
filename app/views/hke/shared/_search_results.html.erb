@@ -1,0 +1,39 @@
+<% if people.count > 0 %>
+    <div class="bg-white rounded shadow table-responsive text-sm text-right text-gray-700">
+      <table class="table border border-grey-500">
+        <thead>
+          <tr>
+            <% fields.each do |field| %>
+              <th class="p-2"><%= sortable people, field, t(field.to_s), method: :post %></th>
+            <% end %>
+            <% other_fields.each do |field| %>
+              <th class="p-2"><%= field[:header] %></th>
+            <% end %>
+
+            <th class="w-20 p-3 uppercase"><%= t("shared.scaffold.actions") %></th>
+          </tr>
+        </thead>
+        <tbody class="text-base">
+          <% people.each do |person| %>
+            <% edit_person_path = (person.class == Hke::DeceasedPerson ? (edit_deceased_person_path(person)) : (edit_contact_person_path(person)))%>
+            <tr class="border-t  border-gray-400 group hover:bg-gray-100" onclick="window.location='<%= edit_person_path %>';">
+              <% fields.each do |field| %>
+                <% puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ #{field}:#{person.send field}" %>
+                <td class="p-2 "><%#= (field != :gender) ? (person.send field) : t((person.send field)) %> <%= person.send field %></td>
+                </td>
+                
+                
+              <% end %>
+              <% other_fields.each do |field| %>
+                <td class="p-2 "><%= person.send field[:data] %></td>
+              <% end %>
+              <td class="flex">                
+                <%= link_to t("action_edit"), edit_person_path, class: "btn btn-link no-underline " %>
+                <%= link_to t("action_delete"), person, class: "btn btn_link text-red-500 ", method: :delete, data: { confirm: t("are_you_sure") } %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+  </div>
+<% end %>
