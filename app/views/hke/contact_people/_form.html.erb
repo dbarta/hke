@@ -10,8 +10,8 @@
     </div>
 
       <template data-nested-forms-target="template">
-        <%= form.fields_for :relations, Relation.new(contact_person: contact_person, deceased_person: DeceasedPerson.new), child_index: "NEW_RECORD" do |rel_form| %>
-          <%= render "relations/relation_fields", rel_form: rel_form, rel_class: DeceasedPerson %>
+        <%= form.fields_for :relations, Hke::Relation.new(contact_person: contact_person, deceased_person: Hke::DeceasedPerson.new), child_index: "NEW_RECORD" do |rel_form| %>
+          <%= render "relations/relation_fields", rel_form: rel_form, rel_class: Hke::DeceasedPerson %>
         <% end %>
       </template>
 

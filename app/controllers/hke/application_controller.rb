@@ -1,8 +1,15 @@
 module Hke
   class ApplicationController < ActionController::Base
 
+    #include JumpstartApp::Application.routes.url_helpers
+    #helper Devise::Controllers::Helpers
+    impersonates :user
     include Sortable
     include SetLocale
+    include CurrentHelper
+    include SetCurrentRequestDetails
+    layout 'application'
+
 
     def remove_empty_relations_from(model_name, nested_model_name)
       x = params[model_name]
