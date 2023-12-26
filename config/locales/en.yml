@@ -32,6 +32,8 @@
 # https://mikerogers.io/2016/01/10/i18n-rails-internationalisation-i18n-cheatsheet.html
 
 en:
+  male: "male"
+  female: "female"
   are_you_sure: "Are you sure?"
   back: "Back"
   cancel: "Cancel"

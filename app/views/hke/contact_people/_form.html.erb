@@ -11,12 +11,12 @@
 
       <template data-nested-forms-target="template">
         <%= form.fields_for :relations, Hke::Relation.new(contact_person: contact_person, deceased_person: Hke::DeceasedPerson.new), child_index: "NEW_RECORD" do |rel_form| %>
-          <%= render "relations/relation_fields", rel_form: rel_form, rel_class: Hke::DeceasedPerson %>
+          <%= render "hke/relations/relation_fields", rel_form: rel_form, rel_class: Hke::DeceasedPerson %>
         <% end %>
       </template>
 
       <%= form.fields_for :relations do |rel_form| %>
-        <%= render "relations/relation_fields", rel_form: rel_form, rel_class: DeceasedPerson %>
+        <%= render "hke/relations/relation_fields", rel_form: rel_form, rel_class: Hke::DeceasedPerson %>
       <% end %>
       <div class="mb-3" data-nested-forms-target="links"></div>
   </div>

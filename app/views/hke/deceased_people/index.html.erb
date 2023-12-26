@@ -1,0 +1,15 @@
+<div class="container mx-auto my-8">
+  <div class="flex items-center mb-8 ">
+    <h4 class="h4 ml-10" >
+      <span id="people_count"><%= "#{@deceased_people.count}" %></span>
+      <%= " #{t('deceased_people')}" %>
+    </h4>
+    <div class="mr-auto flex items-center">
+      <%= render partial: "shared/search_box", locals: {url: deceased_people_path} %>
+      <%= link_to t("shared.scaffold.new.title", model: t("deceased_person")), new_deceased_person_path, class: "btn btn-small btn-primary mr-10" %>
+    </div>
+  </div>
+  <div id="search_results">
+      <%= render partial: "search_results", locals: {people: @deceased_people} %>
+  </div>
+</div>

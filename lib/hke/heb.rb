@@ -69,7 +69,7 @@ module Hke
         [y, m, d]
     end
 
-    def h2g(name, y, m, d)
+    def self.h2g(name, y, m, d)
         if !y || !m || !d
             puts "ERROR: an element is missing from the Hebrew date for #{name}."
             return nil

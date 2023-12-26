@@ -8,6 +8,7 @@ class CreateHkeDeceasedPeople < ActiveRecord::Migration[7.1]
       t.string :organization
       t.string :religion
       t.string :father_first_name
+      t.string :mother_first_name
       t.string :hebrew_year_of_death
       t.string :hebrew_month_of_death
       t.string :hebrew_day_of_death
