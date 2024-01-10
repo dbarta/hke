@@ -191,7 +191,9 @@ csv.each_with_index do |row, index|
   dp.first_name = row['שם פרטי של נפטר']
   dp.last_name = row['שם משפחה של נפטר']
 
-  puts "Processing row #{@line_no}: '#{dp.name}'"
+  rlo = "\u202E"
+  pdf = "\u202C"
+  puts "Processing row #{@line_no}: #{dp.name}"
 
 
   dp.hebrew_year_of_death = row['שנת פטירה']
