@@ -81,6 +81,13 @@ Hke::Relation.delete_all
 Hke::DeceasedPerson.delete_all
 Hke::ContactPerson.delete_all
 Hke::Cemetery.delete_all
+AccountUser.delete_all
+Account.delete_all
+User.delete_all
+u=User.create(name: 'David', email: 'david@odeca.net', password: 'odeca111', terms_of_service: true, admin: true)
+u=User.create(name: 'Admin', email: 'admin@hakhel.com', password: 'password', terms_of_service: true, admin: true)
+
+
 
 
 he_to_en_relations = []
@@ -182,6 +189,8 @@ csv.each_with_index do |row, index|
   # puts "xxx", row, index
   # break if index > 2
   @line_no = index + 2 # For the logs
+
+  break if @line_no > 20
 
   #next if !validate_names_and_gender(row)
   #next if !validate_and_normalize_hebrew_dates!(row)
