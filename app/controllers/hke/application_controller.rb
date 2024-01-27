@@ -10,7 +10,6 @@ module Hke
     include SetCurrentRequestDetails
     layout 'application'
 
-
     def remove_empty_relations_from(model_name, nested_model_name)
       x = params[model_name]
       relations = x["relations_attributes"]

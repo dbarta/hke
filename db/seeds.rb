@@ -2,7 +2,7 @@ require 'csv'
 require_relative '../lib/hke/heb'
 require 'logger'
 
-include Hke::DeceasedPeopleHelper
+include Hke::ApplicationHelper
 
 def log filename
   log_path=Rails.root.join('db',filename)

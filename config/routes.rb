@@ -1,8 +1,24 @@
 Hke::Engine.routes.draw do
-  resources :contact_people
+  
   resources :addresses
+
+  resources :selections
+  #get 'hke/landing/:id1', to: "hke/landing_pages#show", as: "landing"
+  resources :cemeteries
+  resources :sms_messages
   resources :landing_pages
-  resources :deceased_people
+  resources :contact_people do
+    collection do
+      post :index
+    end
+  end
+  resources :deceased_people do
+    collection do
+      post :index
+    end
+  end
+
+
   
   root to: "contact_people#index"
   get 'contact_people/index'
