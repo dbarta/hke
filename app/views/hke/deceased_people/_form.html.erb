@@ -26,14 +26,14 @@
 
       <template data-nested-forms-target="template">
         <%= form.fields_for :relations,
-              Relation.new(deceased_person: deceased_person, contact_person: ContactPerson.new),
+              Hke::Relation.new(deceased_person: deceased_person, contact_person: Hke::ContactPerson.new),
               child_index: "NEW_RECORD" do |rel_form| %>
-          <%= render "relations/relation_fields", rel_form: rel_form, rel_class: ContactPerson %>
+          <%= render "hke/relations/relation_fields", rel_form: rel_form, rel_class: Hke::ContactPerson %>
         <% end %>
       </template>
 
       <%= form.fields_for :relations do |rel_form| %>
-        <%= render "relations/relation_fields", rel_form: rel_form, rel_class: ContactPerson %>
+        <%= render "relations/relation_fields", rel_form: rel_form, rel_class: Hke::ContactPerson %>
       <% end %>
       <div class="mb-3" data-nested-forms-target="links"></div>
   </div>

@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     hke (0.1.0)
+      httparty
       rails (>= 7.1.2)
 
 GEM

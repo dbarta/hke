@@ -3,7 +3,8 @@ Hke::Engine.routes.draw do
   resources :addresses
 
   resources :selections
-  #get 'hke/landing/:id1', to: "hke/landing_pages#show", as: "landing"
+  #get 'hke/landing_pages/:id1/:token1', to: 'hke/landing_pages#show'  
+  #get 'hke/landing_pages/:id1', to: "hke/landing_pages#show", as: "landing"
   resources :cemeteries
   resources :sms_messages
   resources :landing_pages

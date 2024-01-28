@@ -1,6 +1,6 @@
 module Hke
   class LandingPagesController < ApplicationController
-    layout "landing", only: :show
+    layout "hke/landing", only: :show
     include Hke::ApplicationHelper
 
     # Uncomment to enforce Pundit authorization
@@ -14,19 +14,20 @@ module Hke
 
     # GET /landing_pages/1 or /landing_pages/1.json
     def show
-      @id = params['id1']
-      @token = params['token1']
+      @token = params['token']
       if @token
         @relation = Relation.find_by_token(@token)
-        @contact_person = @relation.contact_person
-        @deceased_person = @relation.deceased_person
-        @contact_name = @contact_person.name
-        @deceased_name = @deceased_person.name
-        @salutation = generate_salutation(@contact_person.gender)
-        @conjugated_relationship = conjugated_relationship @deceased_person.gender, @contact_person.gender, @relation.relation_of_deceased_to_contact
-        @deceased_salutation =  generate_salutation(@deceased_person.gender)
-        @welcome = generate_welcome @contact_person.gender
-        @alav_hashalom = generate_alav_hashalom @deceased_person.gender
+        if @relation
+          @contact_person = @relation.contact_person
+          @deceased_person = @relation.deceased_person
+          @contact_name = @contact_person.name
+          @deceased_name = @deceased_person.name
+          @salutation = generate_salutation(@contact_person.gender)
+          @conjugated_relationship = conjugated_relationship @deceased_person.gender, @contact_person.gender, @relation.relation_of_deceased_to_contact
+          @deceased_salutation =  generate_salutation(@deceased_person.gender)
+          @welcome = generate_welcome @contact_person.gender
+          @alav_hashalom = generate_alav_hashalom @deceased_person.gender
+        end
       else
       end
 
