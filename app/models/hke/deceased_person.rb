@@ -1,4 +1,4 @@
-require '/Users/dbarta/Dropbox/Apps/web_apps/rails_apps/apps/hke/lib/hke/heb.rb'
+require_relative '../../../lib/hke/heb'
 module Hke
   class DeceasedPerson < ApplicationRecord
     has_many :relations, dependent: :destroy
