@@ -11,6 +11,10 @@
     </div>
   </div>
   <div id="search_results">
-      <%= render partial: "hke/shared/search_results", locals: {people: @contact_people} %>
+      <%= render partial: "hke/shared/search_results", 
+        locals: {       people: @contact_people,
+                        fields: [ :first_name, :last_name, :email, :phone, :gender],
+                  other_fields: [] 
+                } %>
   </div>
 </div>

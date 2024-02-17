@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "../../hakhel"
+		},
+		{
+			"path": "../../../../../../../scripts"
 		}
 	],
 	"settings": {}
