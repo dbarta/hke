@@ -3,7 +3,7 @@
   #require_relative '../lib/hke/heb'
   #require_relative '../app/helpers/hke/application_helper'
   require 'logger'
-  puts "@@@@@@@@ in seeds file"
+  puts "@@@@@@@@@ in seeds file"
   include Hke::ApplicationHelper
 
   def self.log filename
