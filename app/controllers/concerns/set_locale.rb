@@ -9,10 +9,22 @@ module Hke
     end
 
     def set_locale(&action)
-      puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Hke"
       @pagy_locale = I18n.locale.to_s
       I18n.with_locale(find_locale, &action)
     end
+
+    # def set_locale(&action)
+    #   @pagy_locale = I18n.locale.to_s
+    #   I18n.with_locale(find_locale, &action)
+    #   rescue => e
+    #     Rails.logger.error "Error: #{e.message}"
+    #     Rails.logger.error e.backtrace.join("\n")
+    #     raise e
+    # end
+    
+
+
+
 
     # Uncomment this if you'd like the locale included in URLs by default
     # def default_url_options

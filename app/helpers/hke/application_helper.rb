@@ -83,6 +83,7 @@ module Hke
 
     def gender_select
       [ "male", "female" ].map{ |x| [I18n.t(x), x] }
+      #[ [ "זכר" , "male" ],  [ "נקבה" , "female" ] ]
     end
 
 
