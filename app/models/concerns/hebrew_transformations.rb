@@ -1,5 +1,5 @@
 module Hke
-    Module HebrewTransformations
+    module HebrewTransformations
     extend ActiveSupport::Concern
     include Hke::ApplicationHelper
   
