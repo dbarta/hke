@@ -1,9 +1,20 @@
 require_relative '../../../lib/hke/heb'
 module Hke
   class DeceasedPerson < ApplicationRecord
+
+    # Associations
     has_many :relations, dependent: :destroy
     has_many :contact_people, through: :relations
     belongs_to :cemetery
+
+    # Validations
+    validates :first_name, :last_name, :gender, presence: true
+
+    # Transformations
+    include HebrewTransformations
+    after_validation :transform_gender
+
+
     before_save :calculate_gregorian_date
     before_update :calculate_gregorian_date
    

@@ -198,7 +198,7 @@ csv.each_with_index do |row, index|
   break if @line_no > max_num_people
 
   #next if !validate_names_and_gender(row)
-  #next if !validate_and_normalize_hebrew_dates!(row)
+  next if !validate_and_normalize_hebrew_dates!(row)
 
   dp = Hke::DeceasedPerson.new
   #puts @line_no, row

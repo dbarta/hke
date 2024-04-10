@@ -20,6 +20,7 @@
 		"ruby.useLanguageServer": true,
 		"ruby.debugger": "rdbg",
 		"ruby.useBundler": true, // Set to true if you want to use `bundle exec`
-		"ruby.commandPath": "rdbg" // Use rdbg for debugging
+		"ruby.commandPath": "rdbg",
+		"workbench.tree.renderIndentGuides": "none" // Use rdbg for debugging
 	}
 }

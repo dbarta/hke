@@ -96,6 +96,14 @@ he:
   selections: "בחירות"
   new_selection: "בחירה חדשה"
 
+  # Error messages for model validations
+  deceased_first_name_is_missing: "לנפטר חסר שם פרטי"
+  deceased_last_name_is_missing: "לנפטר חסר שם משפחה"
+  deceased_gender_is_missing: "לנפטר חסר מין"
+  contact_first_name_is_missing: "לאיש הקשר חסר שם פרטי"
+  contact_last_name_is_missing: "לאיש הקשר חסר שם משפחה"
+  contact_gender_is_missing: "לאיש הקשר חסר מין"
+
 
 
   hello: "Hello world"
@@ -472,7 +480,26 @@ he:
         name_on_card: "Name on Card"
 
     errors:
+      messages:
+        presence: "חובה למלא את השדה"  
+        gender_invalid: "מין לא תקין. צריך להיות זכר או נקבה."  
       models:
+        deceased_person:
+          attributes:
+            first_name:
+              presence: "לנפטר חסר שם פרטי"
+            last_name:
+              presence: "לנפטר חסר שם משפחה"
+            gender:
+              presence: "לנפטר חסר מין"
+        contact_person:
+          attributes:
+            first_name:
+              presence: "לאיש הקשר חסר שם פרטי"
+            last_name:
+              presence: "לאיש הקשר חסר שם משפחה"
+            gender:
+              presence: "לאיש הקשר חסר מין"
         landing_page:
           attributes:
             user:
