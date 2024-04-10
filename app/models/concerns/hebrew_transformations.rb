@@ -1,4 +1,4 @@
-module HebrewTransformations
+module Hke::HebrewTransformations
     extend ActiveSupport::Concern
     include Hke::ApplicationHelper
   
