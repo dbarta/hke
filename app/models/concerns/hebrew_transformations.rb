@@ -1,4 +1,5 @@
-module Hke::HebrewTransformations
+module Hke
+    Module HebrewTransformations
     extend ActiveSupport::Concern
     include Hke::ApplicationHelper
   
@@ -21,3 +22,4 @@ module Hke::HebrewTransformations
         he_en_pair ? he_en_pair[1] : nil
     end
   end
+end
