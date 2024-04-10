@@ -1,6 +1,6 @@
 module HebrewTransformations
     extend ActiveSupport::Concern
-    include ApplicationHelper
+    include Hke::ApplicationHelper
   
     # included do
     #   after_validation :shared_custom_method

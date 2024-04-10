@@ -11,7 +11,7 @@ module Hke
     validates :first_name, :last_name, :gender, presence: true
 
     # Transformations
-    include HebrewTransformations
+    include Hke::HebrewTransformations
     after_validation :transform_gender
 
 
