@@ -4,7 +4,9 @@
     <div class="grid grid-cols-7 gap-2">
       <%= text_fld    form, :first_name %>
       <%= text_fld    form, :last_name %>
-      <%= select_fld  form, :gender, gender_select %>
+      <%#= select_fld  form, :gender, gender_select %>
+      <%= select_fld form, :gender, [ [ "זכר" , "זכר" ],  [ "נקבה" , "נקבה" ] ] %>
+     
       <%= text_fld    form, :hebrew_year_of_death %>
       <%= select_fld  form, :hebrew_month_of_death, hebrew_month_select %>
       <%= select_fld  form, :hebrew_day_of_death, hebrew_day_select %>
