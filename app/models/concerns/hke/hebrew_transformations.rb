@@ -23,16 +23,16 @@ module Hke
     end
 
     def check_and_transform_hebrew_month
-        english_month = hebrew_month_to_english(hebrew_month_of_death)
+        english_month = Hke.hebrew_month_to_english(hebrew_month_of_death)
         if english_month
-          hebrew_month_of_death = english_month_to_hebrew(english_month)
+          hebrew_month_of_death = Hke.english_month_to_hebrew(english_month)
         else
           errors.add(:hebrew_month_of_death, :value_invalid)
         end
     end
 
     def check_and_transform_hebrew_day
-        num = hebrew_date_numeric_value(hebrew_day_of_death)
+        num = Hke.hebrew_date_numeric_value(hebrew_day_of_death)
         if (1..31).include? num
             hebrew_day_of_death = hebrew_day_select[num-1] # Array begins with 0
         else
@@ -41,7 +41,7 @@ module Hke
     end
 
     def calculate_gregorian_date_of_death
-        date_of_death = Hke::h2g name, hebrew_year_of_death, hebrew_month_of_death, hebrew_day_of_death
+        date_of_death = Hke.h2g name, hebrew_year_of_death, hebrew_month_of_death, hebrew_day_of_death
     end
   
     def english_gender hebrew_gender
