@@ -487,26 +487,20 @@ he:
 
     errors:
       messages:
-        #presence: "חובה למלא את השדה"  
+        presence: "חסר ערך לשדה"
         gender_invalid: "מין לא תקין. צריך להיות זכר או נקבה." 
-        value_invalid: "ערך לא תקין עבור %{attribute}"
+        value_invalid: "ערך לא תקין"
       models:
         hke/deceased_person:
             attributes:
-              first_name:
-                presence: "לנפטר חסר שם פרטי"
-              last_name:
-                presence: "לנפטר חסר שם משפחה"
-              gender:
-                presence: "לנפטר חסר מין"
         hke/contact_person:
             attributes:
-              first_name:
-                presence: "לאיש הקשר חסר שם פרטי"
-              last_name:
-                presence: "לאיש הקשר חסר שם משפחה"
-              gender:
-                presence: "לאיש הקשר חסר מין"
+              # first_name:
+              #   presence: "לאיש הקשר חסר שם פרטי"
+              # last_name:
+              #   presence: "לאיש הקשר חסר שם משפחה"
+              # gender:
+              #   presence: "לאיש הקשר חסר מין"
         account:
           attributes:
             domain:
