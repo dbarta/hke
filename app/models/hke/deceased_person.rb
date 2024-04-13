@@ -9,7 +9,7 @@ module Hke
 
     # Validations
     validates :first_name, :last_name, :gender, presence: true
-    validates :hebrew_year_of_death, :hebrew_month_of_death, hebrew_day_of_death, , presence: true
+    validates :hebrew_year_of_death, :hebrew_month_of_death, hebrew_day_of_death, presence: true
 
     # Transformations
     include Hke::HebrewTransformations
