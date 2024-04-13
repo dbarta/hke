@@ -233,8 +233,6 @@ csv.each_with_index do |row, index|
 
     dp.errors.full_messages.each { |message| puts message }
     next
-  else
-    puts "No errors, record is valid!"
   end
 
 

@@ -17,13 +17,10 @@ module Hke
     end
 
     def transform_hebrew_dates
-        if errors.any?
-            puts "Errors in #{name}" 
-        else
-            check_and_transform_hebrew_month
-            check_and_transform_hebrew_day
-            calculate_gregorian_date_of_death
-        end
+        return if errors.any? # Can't do transormations if any field is blank, etc.
+        check_and_transform_hebrew_month
+        check_and_transform_hebrew_day
+        calculate_gregorian_date_of_death
     end
 
     def check_and_transform_hebrew_month
