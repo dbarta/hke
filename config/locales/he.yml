@@ -482,9 +482,10 @@ he:
     errors:
       messages:
         presence: "חובה למלא את השדה"  
-        gender_invalid: "מין לא תקין. צריך להיות זכר או נקבה."  
+        gender_invalid: "מין לא תקין. צריך להיות זכר או נקבה." 
+        value_invalid: "ערך לא תקין עבור %{attribute}"
       models:
-        deceased_person:
+        hke_deceased_person:
           attributes:
             first_name:
               presence: "לנפטר חסר שם פרטי"
@@ -492,7 +493,7 @@ he:
               presence: "לנפטר חסר שם משפחה"
             gender:
               presence: "לנפטר חסר מין"
-        contact_person:
+        hke_contact_person:
           attributes:
             first_name:
               presence: "לאיש הקשר חסר שם פרטי"
@@ -500,7 +501,7 @@ he:
               presence: "לאיש הקשר חסר שם משפחה"
             gender:
               presence: "לאיש הקשר חסר מין"
-        landing_page:
+        hke_landing_page:
           attributes:
             user:
               required: "רררר"

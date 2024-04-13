@@ -198,7 +198,7 @@ csv.each_with_index do |row, index|
   break if @line_no > max_num_people
 
   #next if !validate_names_and_gender(row)
-  next if !validate_and_normalize_hebrew_dates!(row)
+  #next if !validate_and_normalize_hebrew_dates!(row)
 
   dp = Hke::DeceasedPerson.new
   #puts @line_no, row
@@ -209,7 +209,8 @@ csv.each_with_index do |row, index|
   dp.hebrew_month_of_death = row['חודש פטירה']
   dp.hebrew_day_of_death = row['יום פטירה']
 
-  dp.gender = english_gender row['מין של נפטר']
+  #dp.gender = english_gender row['מין של נפטר']
+  dp.gender = row['מין של נפטר']
 
   puts "Processing row #{@line_no}: #{dp.name} hebrew gender: #{row['מין של נפטר']} english gender: #{dp.gender}"
   dp.occupation = row['']
@@ -218,7 +219,7 @@ csv.each_with_index do |row, index|
   dp.father_first_name = row['אבא של נפטר']
   dp.mother_first_name = row['אמא של נפטר']
 
-  dp.date_of_death = Hke::h2g dp.name, dp.hebrew_year_of_death, dp.hebrew_month_of_death, dp.hebrew_day_of_death
+  #dp.date_of_death = Hke::h2g dp.name, dp.hebrew_year_of_death, dp.hebrew_month_of_death, dp.hebrew_day_of_death
   dp.time_of_death = row['שעת פטירה']
   dp.location_of_death = 'ישראל'
   dp.cemetery_region = row['גוש']
@@ -226,6 +227,17 @@ csv.each_with_index do |row, index|
   dp.cemetery = create_or_find_cemetery row['מיקום בית קברות']
 
   dp = create_or_find_deceased_person(dp)
+
+  if dp.errors.any?
+    puts "Errors in row #{@line_no}: #{dp.name}"
+
+    dp.errors.full_messages.each { |message| puts message }
+    next
+  else
+    puts "No errors, record is valid!"
+  end
+
+
   sleep(0.1) # The hebcal date API limit 90 calls for every 10 seconds
 
   if row['שם פרטי איש קשר'] || row['שם משפחה איש קשר']
