@@ -17,9 +17,13 @@ module Hke
     end
 
     def transform_hebrew_dates
-        check_and_transform_hebrew_month
-        check_and_transform_hebrew_day
-        calculate_gregorian_date_of_death
+        if dp.errors.any?
+            puts "Errors in row #{@line_no}: #{dp.name}" 
+        else
+            check_and_transform_hebrew_month
+            check_and_transform_hebrew_day
+            calculate_gregorian_date_of_death
+        end
     end
 
     def check_and_transform_hebrew_month
