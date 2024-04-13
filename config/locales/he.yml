@@ -491,8 +491,7 @@ he:
         gender_invalid: "מין לא תקין. צריך להיות זכר או נקבה." 
         value_invalid: "ערך לא תקין עבור %{attribute}"
       models:
-        hke:
-          deceased_person:
+        hke/deceased_person:
             attributes:
               first_name:
                 presence: "לנפטר חסר שם פרטי"
@@ -500,7 +499,7 @@ he:
                 presence: "לנפטר חסר שם משפחה"
               gender:
                 presence: "לנפטר חסר מין"
-          contact_person:
+        hke/contact_person:
             attributes:
               first_name:
                 presence: "לאיש הקשר חסר שם פרטי"
