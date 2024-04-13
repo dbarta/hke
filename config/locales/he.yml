@@ -473,7 +473,7 @@ he:
 
   errors:
     messages:
-      presence: "%{attribute} חובה למלא את השדה"
+      #presence: "%{attribute} חובה למלא את השדה"
       gender_invalid: "מין לא תקין. צריך להיות זכר או נקבה."
 
 
@@ -487,7 +487,7 @@ he:
 
     errors:
       messages:
-        presence: "חובה למלא את השדה"  
+        #presence: "חובה למלא את השדה"  
         gender_invalid: "מין לא תקין. צריך להיות זכר או נקבה." 
         value_invalid: "ערך לא תקין עבור %{attribute}"
       models:
