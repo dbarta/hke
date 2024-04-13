@@ -8,7 +8,9 @@ module Hke
     # end
 
     def transform_gender
+        puts "@@@@@ 1 #{self.gender}"
         gender = english_gender(self.gender)
+        puts "@@@@@ 2 #{self.gender}"
         if gender == nil 
             errors.add(:gender, :gender_invalid)
         else
