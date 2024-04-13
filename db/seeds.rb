@@ -230,7 +230,6 @@ csv.each_with_index do |row, index|
 
   if dp.errors.any?
     puts "Errors in row #{@line_no}: #{dp.name}"
-
     dp.errors.full_messages.each { |message| puts message }
     next
   end

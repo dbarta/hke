@@ -471,6 +471,12 @@ he:
     empty: "Nothing to see here — yet."
     empty_description: "We'll let you know when you have new notifications."
 
+  errors:
+    messages:
+      presence: "%{attribute} חובה למלא את השדה"
+      gender_invalid: "מין לא תקין. צריך להיות זכר או נקבה."
+
+
   activerecord:
     attributes:
       api_token:
