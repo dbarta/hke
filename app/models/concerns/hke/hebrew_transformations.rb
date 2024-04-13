@@ -18,7 +18,7 @@ module Hke
 
     def transform_hebrew_dates
         if errors.any?
-            puts "Errors in row #{@line_no}: #{name}" 
+            puts "Errors in #{name}" 
         else
             check_and_transform_hebrew_month
             check_and_transform_hebrew_day
