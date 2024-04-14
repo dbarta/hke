@@ -19,7 +19,12 @@ Hke::Engine.routes.draw do
     end
   end
 
-
+  namespace :api, defaults: {format: :json} do
+    namespace :v1 do
+      resources :cemeteries
+      resources :deceased_people 
+    end
+  end
   
   root to: "contact_people#index"
   get 'contact_people/index'
