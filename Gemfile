@@ -7,6 +7,7 @@ gemspec
 gem "puma"
 
 gem "pg"
+gem 'rack-cors'
 
 gem "sprockets-rails"
 gem "name_of_person", "~> 1.0"

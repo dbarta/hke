@@ -141,6 +141,8 @@ GEM
       nio4r (~> 2.0)
     racc (1.7.3)
     rack (3.0.8)
+    rack-cors (2.0.2)
+      rack (>= 2.0.0)
     rack-session (2.0.0)
       rack (>= 3.0.0)
     rack-test (2.1.0)
@@ -212,6 +214,7 @@ DEPENDENCIES
   name_of_person (~> 1.0)
   pg
   puma
+  rack-cors
   sprockets-rails
 
 BUNDLED WITH
