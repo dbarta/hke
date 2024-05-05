@@ -5,15 +5,16 @@ module Hke
     # Associations
     has_many :relations, dependent: :destroy
     has_many :contact_people, through: :relations
-    belongs_to :cemetery
+    belongs_to :cemetery, optional: true
 
     # Validations
     validates :first_name, :last_name, :gender, presence: {message: :presence}
     validates :hebrew_year_of_death, :hebrew_month_of_death, :hebrew_day_of_death, presence: {message: :presence}
+    validates :gender, inclusion: { in: ['male', 'female'], message: :gender_invalid }
 
     # Transformations
     include Hke::HebrewTransformations
-    after_validation :transform_gender, :transform_hebrew_dates
+    after_validation :transform_hebrew_dates
    
     has_person_name
     accepts_nested_attributes_for :relations, allow_destroy: true, reject_if: :all_blank

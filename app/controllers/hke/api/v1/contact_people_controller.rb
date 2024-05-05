@@ -56,7 +56,19 @@ class Hke::Api::V1::ContactPeopleController < Api::BaseController
       def contact_person_params
         params.require(:contact_person).permit(
             :first_name, :last_name, :email, :phone, :gender, 
-            address_attributes: [:addressable_type, :address_type, :line1, :line2, :city, :state, :country, :postal_code]
+            relations_attributes: [
+              :id, :relation_of_deceased_to_contact, :_destroy,
+              deceased_person_attributes: [
+                :id, :first_name, :last_name, 
+                :gender, :father_first_name, :mother_first_name, 
+                :hebrew_year_of_death, :hebrew_month_of_death, :hebrew_day_of_death, 
+                :time_of_death, :location_of_death, :cemetery_id, :cemetery_region, :cemetery_parcel, :_destroy
+              ]
+            ],
+            address_attributes: [
+              :id, :addressable_type, :address_type, :line1, :line2, :city, 
+              :state, :country, :postal_code, :_destroy
+            ]
         )
       end
       

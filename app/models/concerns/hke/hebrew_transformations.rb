@@ -18,6 +18,7 @@ module Hke
 
     def transform_hebrew_dates
         return if errors.any? # Can't do transormations if any field is blank, etc.
+        puts "@@@@@ in transform_hebrew_dates"
         check_and_transform_hebrew_month
         check_and_transform_hebrew_day
         calculate_gregorian_date_of_death
@@ -42,7 +43,9 @@ module Hke
     end
 
     def calculate_gregorian_date_of_death
-        date_of_death = Hke.h2g name, hebrew_year_of_death, hebrew_month_of_death, hebrew_day_of_death
+        #puts "@@@@@@@@ in calculate_gregorian_date_of_death: #{name}, #{hebrew_year_of_death}, #{hebrew_month_of_death}, #{hebrew_day_of_death}"
+        self.date_of_death = Hke.h2g name, hebrew_year_of_death, hebrew_month_of_death, hebrew_day_of_death
+        puts "@@@@@@@@ after calculate_gregorian_date_of_death: #{date_of_death}"
     end
   
     def english_gender hebrew_gender

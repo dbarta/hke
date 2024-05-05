@@ -7,5 +7,26 @@ module Hke
     has_secure_token length: 24
     accepts_nested_attributes_for :contact_person, reject_if: :all_blank
     accepts_nested_attributes_for :deceased_person, reject_if: :all_blank
+
+    # Setter method for contact_person nested attributes
+    def contact_person_attributes=(attributes)
+      if attributes['phone'].present?
+        self.contact_person = ContactPerson.find_or_initialize_by(phone: attributes['phone'])
+        self.contact_person.assign_attributes(attributes)
+      end
+    end
+
+    # Setter method for deceased_person nested attributes
+    def deceased_person_attributes=(attributes)
+      if attributes['first_name'].present? && attributes['last_name'].present? && attributes['date_of_death'].present?
+        self.deceased_person = DeceasedPerson.find_or_initialize_by(
+          first_name: attributes['first_name'],
+          last_name: attributes['last_name'],
+          date_of_death: attributes['date_of_death']
+        )
+        self.deceased_person.assign_attributes(attributes)
+      end
+    end
+
   end
 end

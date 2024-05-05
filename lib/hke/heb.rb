@@ -65,7 +65,10 @@ module Hke
         m = self.hebrew_month_to_english(month)
         d = self.hebrew_date_numeric_value(day)
         y = year.split('').map{|a| self.hebrew_letter_to_number(a)}.sum
-        y = y + 5000 - 5 if year[0] == "ה"
+        y += 5000
+        y -= 5 if year[0] == "ה"
+        
+        # y = y + 5000 - 5 if year[0] == "ה"
         [y, m, d]
     end
 
@@ -77,11 +80,11 @@ module Hke
 
         v = self.prepare_hebrew_date_for_hebcal(y, m, d)
 
-        #puts "y: #{y.reverse};#{v[0]}  hm=|#{m.reverse}|;#{v[1]}  hd=|#{d.reverse}|;#{v[2]}"
+        puts "y: #{y.reverse};#{v[0]}  hm=|#{m.reverse}|;#{v[1]}  hd=|#{d.reverse}|;#{v[2]}"
 
         uri="https://www.hebcal.com/converter?cfg=json&hy=#{v[0]}&hm=#{v[1].to_s}&hd=#{v[2]}&h2g=1"
         response = HTTParty.get(uri)
-        #puts response.body, response.code #, response.message, response.headers.inspect
+        # puts response.body, response.code, response.message, response.headers.inspect
         # {"gy":2005,"gm":10,"gd":20,"afterSunset":false,"hy":5766,"hm":"Tishrei","hd":17,
         # "hebrew":"י״ז בְּתִשְׁרֵי תשס״ו","events":["Sukkot III (CH''M)"]}
 
@@ -93,10 +96,4 @@ module Hke
             puts "y: #{y.reverse};#{v[0]}  hm=|#{m.reverse}|;#{v[1]}  hd=|#{d.reverse}|;#{v[2]}"
         end
     end
-
-    # csv_text = File.read('נפטרים עם קרובים 1.csv')
-    # csv = CSV.parse(csv_text, :headers => true, :encoding => 'UTF-8')
-    # csv[0..5].each do |row|
-    #   puts h2g(row['שנת פטירה'], row['חודש פטירה'], row['יום פטירה'])
-    # end
 end

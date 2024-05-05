@@ -488,7 +488,7 @@ he:
     errors:
       messages:
         presence: "חסר ערך לשדה"
-        gender_invalid: "מין לא תקין. צריך להיות זכר או נקבה." 
+        gender_invalid: "gender should be: male or female."
         value_invalid: "ערך לא תקין"
       models:
         hke/deceased_person:

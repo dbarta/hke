@@ -4,19 +4,17 @@ class Hke::Api::V1::DeceasedPeopleController < Api::BaseController
   # GET /hke/deceased_people
   def index
     @hke_deceased_people = Hke::DeceasedPerson.all
-
-    render json: @hke_deceased_people
+    render json: @hke_deceased_people, include: { relations: { include: { contact_person:  {include: :address }}}}
   end
 
   # GET /hke/deceased_people/1
   def show
-    render json: @hke_deceased_person
+    render json: @hke_deceased_person, include: { relations: { include: { contact_person:  {include: :address }}}}
   end
 
   # POST /hke/deceased_people
   def create
     @hke_deceased_person = Hke::DeceasedPerson.new(deceased_person_params)
-
     if @hke_deceased_person.save
       render json: @hke_deceased_person, status: :created, location: @hke_deceased_person
     else
@@ -26,8 +24,8 @@ class Hke::Api::V1::DeceasedPeopleController < Api::BaseController
 
   # PATCH/PUT /hke/deceased_people/1
   def update
-    if @hke_deceased_person.update(hke_deceased_person_params)
-      render json: @hke_deceased_person
+    if @hke_deceased_person.update(deceased_person_params)
+      render json: @hke_deceased_person, include: { relations: { include: { contact_person:  {include: :address }}}}
     else
       render json: @hke_deceased_person.errors, status: :unprocessable_entity
     end
@@ -46,8 +44,20 @@ class Hke::Api::V1::DeceasedPeopleController < Api::BaseController
 
     # Only allow a list of trusted parameters through.
     def deceased_person_params
-      params.require(:deceased_person).permit(:first_name, :last_name, :gender, :father_first_name, 
-        :mother_first_name, :hebrew_year_of_death, :hebrew_month_of_death, :hebrew_day_of_death, :time_of_death, 
-        :location_of_death, :cemetery_id, :cemetery_region, :cemetery_parcel)
+      params.require(:deceased_person).permit(
+        :first_name, :last_name, 
+        :gender, :father_first_name, :mother_first_name, 
+        :hebrew_year_of_death, :hebrew_month_of_death, :hebrew_day_of_death, 
+        :time_of_death, :location_of_death, :cemetery_id, :cemetery_region, :cemetery_parcel,
+        relations_attributes: [
+            :id, :relation_of_deceased_to_contact, :_destroy, 
+            contact_person_attributes: [
+                :id, :first_name, :last_name, :phone, :email, :gender, :_destroy,  
+                address_attributes: [
+                  :id, :addressable_type, :address_type, :line1, :line2, :city, 
+                  :state, :country, :postal_code, :_destroy
+                ]
+            ]
+        ])
     end
 end
