@@ -23,6 +23,8 @@ Hke::Engine.routes.draw do
     namespace :v1 do
       resources :cemeteries
       resources :deceased_people 
+      resources :contact_people
+      resources :relations
     end
   end
   

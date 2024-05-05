@@ -10,26 +10,8 @@ class Hke::Api::V1::CemeteriesController < Api::BaseController
 
   # GET /cemeteries/1
   def show
-    render json: @cemetery
+    render json: { cemetery: @cemetery, address: @cemetery.address }
   end
-
-  # POST /cemeteries
-  # def create
-  #   @cemetery = Hke::Cemetery.new(cemetery_params)
-  #   # Merge address attributes from cemetery_params with additional attributes
-
-  #   address_attributes = cemetery_params[:address_attributes]
-  #   if address_attributes
-  #     address_attributes = address_attributes.merge(address_type: 'billing', addressable_type: 'Hke::Cemetery')
-  #     @cemetery.build_address(address_attributes)
-  #   end
-
-  #   if @cemetery.save
-  #     render json: { cemetery: @cemetery, address: @cemetery.address }, status: :created, location: @cemetery
-  #   else
-  #     render json: @cemetery.errors, status: :unprocessable_entity
-  #   end
-  # end
 
   def create
     @cemetery = Hke::Cemetery.new(cemetery_params.except(:address_attributes))
