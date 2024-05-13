@@ -17,3 +17,4 @@ gem 'i18n-debug', group: :development
 # gem "debug", ">= 1.0.0"
 
 gem "httparty"
+gem "standard"
