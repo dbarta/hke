@@ -1,0 +1,59 @@
+[
+    {
+        "id": 24,
+        "first_name": "אחאב",
+        "last_name": "אלמוג",
+        "gender": "male",
+        "occupation": null,
+        "organization": null,
+        "religion": null,
+        "father_first_name": null,
+        "mother_first_name": null,
+        "hebrew_year_of_death": "תשכ״ד",
+        "hebrew_month_of_death": "אייר",
+        "hebrew_day_of_death": "ג",
+        "date_of_death": "1964-04-15",
+        "time_of_death": null,
+        "location_of_death": null,
+        "cemetery_id": null,
+        "cemetery_region": null,
+        "cemetery_parcel": null,
+        "created_at": "2024-05-04T10:19:13.113Z",
+        "updated_at": "2024-05-05T08:32:39.757Z",
+        "relations": [
+            {
+                "id": 14,
+                "relation_of_deceased_to_contact": "בת",
+                "token": "q6zHoQfhVTPGqLD6qb2ZgbqA",
+                "deceased_person_id": 24,
+                "contact_person_id": 6,
+                "created_at": "2024-05-04T10:19:13.118Z",
+                "updated_at": "2024-05-04T10:25:24.845Z",
+                "contact_person": {
+                    "id": 6,
+                    "first_name": "שוש",
+                    "last_name": "זולו",
+                    "email": null,
+                    "phone": "034556275",
+                    "gender": "female",
+                    "created_at": "2024-05-03T12:36:43.917Z",
+                    "updated_at": "2024-05-04T10:25:24.843Z",
+                    "address": {
+                        "id": 1,
+                        "addressable_type": "Hke::ContactPerson",
+                        "addressable_id": 6,
+                        "address_type": "billing",
+                        "line1": "28 Hanna st.",
+                        "line2": null,
+                        "city": "Haifa",
+                        "state": null,
+                        "country": "Israel",
+                        "postal_code": "23415",
+                        "created_at": "2024-05-04T10:29:35.394Z",
+                        "updated_at": "2024-05-04T10:29:35.394Z"
+                    }
+                }
+            }
+        ]
+    }
+]

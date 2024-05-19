@@ -210,7 +210,11 @@ csv.each_with_index do |row, index|
   dp.hebrew_day_of_death = row['יום פטירה']
 
   #dp.gender = english_gender row['מין של נפטר']
-  dp.gender = row['מין של נפטר']
+  #dp.gender = row['מין של נפטר']
+  dp.gender = "female"
+  if row['מין של נפטר']="זכר"
+    dp.gender="male"
+  end
 
   puts "Processing row #{@line_no}: #{dp.name} hebrew gender: #{row['מין של נפטר']} english gender: #{dp.gender}"
   dp.occupation = row['']
@@ -244,7 +248,13 @@ csv.each_with_index do |row, index|
     cp.last_name = row['שם משפחה איש קשר']
     cp.email = row['אימייל איש קשר']
     cp.phone = row['טלפון איש קשר']
-    cp.gender = english_gender row['מין של איש קשר']
+    
+    cp.gender = "female"
+    if row['מין של איש קשר']="זכר"
+      cp.gender="male"
+    end
+
+    #cp.gender = english_gender row['מין של איש קשר']
     cp = create_or_find_contact_person(cp, dp)
 
     heb_rel = row[0] #row['יחס קירבה'] for some reason can't access the key of the first element
