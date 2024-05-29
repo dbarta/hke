@@ -1,6 +1,5 @@
 module Hke
   class DeceasedPeopleController < ApplicationController
-
     # before_action :authenticate_user!
     before_action :authenticate_admin
     before_action :set_deceased_person, only: [:show, :edit, :update, :destroy]
@@ -11,18 +10,18 @@ module Hke
       @deceased_people = DeceasedPerson.includes(relations: [:contact_person])
       if params[:name_search]
         key = "%#{params[:name_search]}%"
-        @deceased_people =  @deceased_people.where('first_name ILIKE ?', key )
-                                            .or(@deceased_people.where('last_name ILIKE ?', key ))
+        @deceased_people = @deceased_people.where("first_name ILIKE ?", key)
+          .or(@deceased_people.where("last_name ILIKE ?", key))
       end
       @deceased_people = @deceased_people.sort_by_params(params[:sort], sort_direction)
       @deceased_people.load
 
       respond_to do |format|
         format.html # Response for normal get - show full index
-        format.turbo_stream do #Response from post, which is result of input from the search box
+        format.turbo_stream do # Response from post, which is result of input from the search box
           render turbo_stream: [
-            turbo_stream.update( "search_results", partial: "search_results", locals: {people: @deceased_people}),
-            turbo_stream.update( "people_count", @deceased_people.count)
+            turbo_stream.update("search_results", partial: "search_results", locals: {people: @deceased_people}),
+            turbo_stream.update("people_count", @deceased_people.count)
           ]
         end
       end
@@ -43,10 +42,8 @@ module Hke
     def edit
     end
 
-
     # POST /deceased_people or /deceased_people.json
     def create
-
       @deceased_person = DeceasedPerson.new(deceased_person_params)
 
       respond_to do |format|
@@ -92,16 +89,13 @@ module Hke
 
     # Only allow a list of trusted parameters through.
     def deceased_person_params
-      params.require(:deceased_person).permit(  :first_name, :last_name, :gender, :occupation,
-                                                :organization, :religion, :father_first_name, :mother_first_name,
-                                                :hebrew_year_of_death, :hebrew_month_of_death, :hebrew_day_of_death,
-                                                :date_of_death, :time_of_death, :location_of_death,
-                                                  relations_attributes: [:id, :relation_of_deceased_to_contact, :_destroy,
-                                                  contact_person_attributes: [:id, :first_name, :last_name, :email, :phone, :_destroy]]
-      )
-      #params.require(:person).permit(:name, :birth_date, relationships_attributes: [:id, :relationship_type, :_destroy, contact_attributes: [:id, :name, :location, :_destroy]] )
-
+      params.require(:deceased_person).permit(:first_name, :last_name, :gender, :occupation,
+        :organization, :religion, :father_first_name, :mother_first_name,
+        :hebrew_year_of_death, :hebrew_month_of_death, :hebrew_day_of_death,
+        :date_of_death, :time_of_death, :location_of_death,
+        relations_attributes: [:id, :relation_of_deceased_to_contact, :_destroy,
+          contact_person_attributes: [:id, :first_name, :last_name, :email, :phone, :_destroy]])
+      # params.require(:person).permit(:name, :birth_date, relationships_attributes: [:id, :relationship_type, :_destroy, contact_attributes: [:id, :name, :location, :_destroy]] )
     end
-
   end
 end

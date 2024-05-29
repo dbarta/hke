@@ -1,27 +1,21 @@
 class Hke::Api::V1::CemeteriesController < Api::BaseController
-  include Hke::Addressable
-  before_action :set_cemetery, only: %i[ show update destroy ]
+  before_action :set_cemetery, only: %i[show update destroy]
 
   # GET /cemeteries
   def index
     @cemeteries = Hke::Cemetery.all
-    render json: @cemeteries
+    render json: @cemeteries, include: include_all?
   end
 
   # GET /cemeteries/1
   def show
-    render json: { cemetery: @cemetery, address: @cemetery.address }
+    render json: @cemetery, include: include_all?
   end
 
   def create
-    @cemetery = Hke::Cemetery.new(cemetery_params.except(:address_attributes))
-    address_attributes = cemetery_params[:address_attributes]
-
-    # Use the new method from the concern to handle address initialization
-    initialize_address(@cemetery, address_attributes) if address_attributes
-
+    @cemetery = Hke::Cemetery.new(cemetery_params)
     if @cemetery.save
-      render json: { cemetery: @cemetery, address: @cemetery.address }, status: :created, location: @cemetery
+      render json: @cemetery, include: :address, status: :created, location: @cemetery
     else
       render json: @cemetery.errors, status: :unprocessable_entity
     end
@@ -29,11 +23,8 @@ class Hke::Api::V1::CemeteriesController < Api::BaseController
 
   def update
     params = cemetery_params
-    input_address = params.delete("address_attributes")
-
     if @cemetery.update(params)
-      update_or_create_address(@cemetery, input_address) if input_address
-      render json: { cemetery: @cemetery, address: @cemetery.address }, status: :ok
+      render json: @cemetery, include: :address, status: :ok
     else
       render json: @cemetery.errors, status: :unprocessable_entity
     end
@@ -45,22 +36,28 @@ class Hke::Api::V1::CemeteriesController < Api::BaseController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_cemetery
-      @cemetery = Hke::Cemetery.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def cemetery_params
-      params.require(:cemetery).permit(:name, :description, address_attributes: [:addressable_type, :address_type, :line1, :line2, :city, :state, :country, :postal_code])
-    end
+  def include_all?
+    params.include?(:include_all) ? :address : nil
+  end
 
-    def update_or_create_address(addressable, input_address)
-      if addressable.address.present?
-        addressable.address.update(input_address)
-      else
-        addressable.create_address(input_address.merge(address_type: 'billing', addressable_type: 'Hke::Cemetery'))
-      end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_cemetery
+    @cemetery = Hke::Cemetery.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def cemetery_params
+    params.require(:cemetery).permit(:name, :description,
+      address_attributes: [:id, :addressable_type, :address_type,
+        :line1, :line2, :city, :state, :country, :postal_code, :_destroy])
+  end
+
+  def update_or_create_address(addressable, input_address)
+    if addressable.address.present?
+      addressable.address.update(input_address)
+    else
+      addressable.create_address(input_address.merge(address_type: "billing", addressable_type: "Hke::Cemetery"))
     end
-    
+  end
 end

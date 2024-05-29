@@ -80,7 +80,7 @@ module Hke
 
         v = self.prepare_hebrew_date_for_hebcal(y, m, d)
 
-        puts "y: #{y.reverse};#{v[0]}  hm=|#{m.reverse}|;#{v[1]}  hd=|#{d.reverse}|;#{v[2]}"
+        #puts "y: #{y.reverse};#{v[0]}  hm=|#{m.reverse}|;#{v[1]}  hd=|#{d.reverse}|;#{v[2]}"
 
         uri="https://www.hebcal.com/converter?cfg=json&hy=#{v[0]}&hm=#{v[1].to_s}&hd=#{v[2]}&h2g=1"
         response = HTTParty.get(uri)
