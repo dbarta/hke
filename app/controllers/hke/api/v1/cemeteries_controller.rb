@@ -38,7 +38,7 @@ class Hke::Api::V1::CemeteriesController < Api::BaseController
   private
 
   def include_all?
-    params.include?(:include_all) ? :address : nil
+    params.include?(:include_all) ? {address: nil} : nil
   end
 
   # Use callbacks to share common setup or constraints between actions.
