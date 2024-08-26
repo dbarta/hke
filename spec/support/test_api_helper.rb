@@ -39,7 +39,7 @@ module TestApiHelper
   def ensure_user_and_get_token
     # Attempt to login
     post auth_url, params: login_json
-    if response.status == :ok
+    if response.status == :ok || reponse.status == 200
       # If login is successful, return the token
       JSON.parse(response.body)["token"]
     elsif response.status == 401
