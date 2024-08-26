@@ -1,9 +1,6 @@
 require "rails_helper"
 require "json"
 require "rack/utils"
-require "support/api_logger"
-require "support/request_json"
-require "support/test_api_helper"
 
 RSpec.describe "DeceasedPersons API", type: :request do
   include TestApiHelper
