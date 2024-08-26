@@ -23,4 +23,7 @@ RSpec.configure do |config|
   config.use_transactional_fixtures = true
   config.infer_spec_type_from_file_location!
   config.filter_rails_from_backtrace!
+  # Ensure FactoryBot loads factories from the Hke engine
+  FactoryBot.definition_file_paths = [Hke::Engine.root.join("spec/factories")]
+  FactoryBot.find_definitions
 end
