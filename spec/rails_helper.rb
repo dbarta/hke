@@ -7,6 +7,12 @@ require File.expand_path("../../config/environment", __FILE__)
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require "rspec/rails"
+
+# Dir[File.expand_path("support/**/*.rb", __dir__)].each { |f| require f }
+Dir[File.expand_path("support/**/*.rb", __dir__)].each do |f|
+  puts "Requiring: #{f}"  # Add this line for debugging
+  require f
+end
 Dir[Rails.root.join("spec", "support", "**", "*.rb")].sort.each { |f| require f }
 
 # Checks for pending migrations and applies them before tests are run.
