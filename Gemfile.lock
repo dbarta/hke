@@ -107,6 +107,7 @@ GEM
       i18n (>= 1.8.11, < 2)
     globalid (1.2.1)
       activesupport (>= 6.1)
+    has_token (0.6.2)
     httparty (0.22.0)
       csv
       mini_mime (>= 1.0.0)
@@ -298,6 +299,7 @@ DEPENDENCIES
   database_cleaner-active_record (~> 2.0)
   factory_bot_rails (~> 6.0)
   faker (~> 2.18)
+  has_token
   hke!
   httparty
   i18n-debug
