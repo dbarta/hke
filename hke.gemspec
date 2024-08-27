@@ -1,14 +1,14 @@
 require_relative "lib/hke/version"
 
 Gem::Specification.new do |spec|
-  spec.name        = "hke"
-  spec.version     = Hke::VERSION
-  spec.authors     = ["David Barta"]
-  spec.email       = ["david@odeca.net"]
-  spec.homepage    = "https://hke.com"
-  spec.summary     = "Engine for Hakhel"
+  spec.name = "hke"
+  spec.version = Hke::VERSION
+  spec.authors = ["David Barta"]
+  spec.email = ["david@odeca.net"]
+  spec.homepage = "https://hke.com"
+  spec.summary = "Engine for Hakhel"
   spec.description = "Engine for Hakhel"
-  spec.license     = "MIT"
+  spec.license = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the "allowed_push_host"
   # to allow pushing to a single host or delete this section to allow pushing to any host.
@@ -24,12 +24,12 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "rails", ">= 7.1.2"
   spec.add_dependency "httparty"
+  spec.add_dependency "has_token"
 
-  spec.add_development_dependency 'rspec-rails', '~> 6.1'
-  spec.add_development_dependency 'factory_bot_rails', '~> 6.0'
-  spec.add_development_dependency 'database_cleaner-active_record', '~> 2.0'
-  spec.add_development_dependency 'shoulda-matchers', '~> 5.0'
-  spec.add_development_dependency 'faker', '~> 2.18'
-  spec.add_development_dependency 'rack-test'
-
+  spec.add_development_dependency "rspec-rails", "~> 6.1"
+  spec.add_development_dependency "factory_bot_rails", "~> 6.0"
+  spec.add_development_dependency "database_cleaner-active_record", "~> 2.0"
+  spec.add_development_dependency "shoulda-matchers", "~> 5.0"
+  spec.add_development_dependency "faker", "~> 2.18"
+  spec.add_development_dependency "rack-test"
 end

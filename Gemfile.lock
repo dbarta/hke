@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     hke (0.2.0)
+      has_token
       httparty
       rails (>= 7.1.2)
 
