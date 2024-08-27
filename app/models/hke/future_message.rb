@@ -3,7 +3,7 @@ module Hke
     belongs_to :messageable, polymorphic: true
 
     # Generate a unique token using the has_token gem
-    has_token :token
+    # has_token :token
 
     # Enum for delivery method
     # enum delivery_method: {email: 0, phone: 1, both: 2}
