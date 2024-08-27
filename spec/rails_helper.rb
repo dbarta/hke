@@ -1,4 +1,6 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
+puts "Loading engine's rails_helper.rb"
+
 require "spec_helper"
 require "hke"
 ENV["RAILS_ENV"] ||= "test"
