@@ -11,6 +11,7 @@ gem "rack-cors"
 
 gem "sprockets-rails"
 gem "name_of_person", "~> 1.0"
+gem "has_token"
 
 # Start debugger with binding.b [https://github.com/ruby/debug]
 # gem "debug", ">= 1.0.0"
