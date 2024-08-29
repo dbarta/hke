@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     hke (0.2.0)
-      has_token
+      has_secure_token (~> 1.0)
       httparty
       rails (>= 7.1.2)
 
@@ -108,7 +108,8 @@ GEM
       i18n (>= 1.8.11, < 2)
     globalid (1.2.1)
       activesupport (>= 6.1)
-    has_token (0.6.2)
+    has_secure_token (1.0.0)
+      activerecord (>= 3.0)
     httparty (0.22.0)
       csv
       mini_mime (>= 1.0.0)
@@ -300,7 +301,7 @@ DEPENDENCIES
   database_cleaner-active_record (~> 2.0)
   factory_bot_rails (~> 6.0)
   faker (~> 2.18)
-  has_token
+  has_secure_token (~> 1.0)
   hke!
   httparty
   i18n-debug

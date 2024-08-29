@@ -2,6 +2,7 @@ module Hke
   class Relation < ApplicationRecord
     belongs_to :deceased_person
     belongs_to :contact_person
+    has_many :future_messages, as: :messageable, dependent: :destroy
     has_many :relations_selections
     has_many :selections, through: :relations_selections
     has_secure_token length: 24
