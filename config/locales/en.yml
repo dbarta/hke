@@ -36,6 +36,7 @@ en:
     messages:
       image_format_not_supported: "image format not supported"
       presence: "can't be blank"
+      gender_invalid: "Invalid gender"
 
   male: "male"
   female: "female"
