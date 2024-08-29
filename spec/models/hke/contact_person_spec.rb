@@ -13,6 +13,7 @@ RSpec.describe Hke::ContactPerson, type: :model do
   it do
     should validate_inclusion_of(:gender)
       .in_array(["male", "female"])
+      .with_message("Invalid gender")
   end
 
   it { should accept_nested_attributes_for(:relations).allow_destroy(true).reject_if(:all_blank) }
