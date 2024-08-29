@@ -496,6 +496,8 @@ en:
         name_on_card: "Name on Card"
 
     errors:
+      messages:
+        gender_invalid: "Invalid gender"
       models:
         account:
           attributes:
