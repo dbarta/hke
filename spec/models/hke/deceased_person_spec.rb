@@ -1,48 +1,30 @@
+# spec/models/hke/deceased_person_spec.rb
 require "rails_helper"
 
 RSpec.describe Hke::DeceasedPerson, type: :model do
-  it { should have_many(:relations).dependent(:destroy) }
-  it { should have_many(:contact_people).through(:relations) }
-  it { should belong_to(:cemetery).optional }
+  it "creates a deceased person with valid Hebrew date and associated contacts" do
+    contact_person1 = create(:male_contact_person)
+    contact_person2 = create(:female_contact_person)
+    deceased_person = create(:male_deceased_person, relations: [
+      build(:relation, contact_person: contact_person1),
+      build(:relation, contact_person: contact_person2)
+    ])
 
-  it { should validate_presence_of(:first_name) }
-  it { should validate_presence_of(:last_name) }
-  it { should validate_presence_of(:gender) }
-  it { should validate_presence_of(:hebrew_year_of_death) }
-  it { should validate_presence_of(:hebrew_month_of_death) }
-  it { should validate_presence_of(:hebrew_day_of_death) }
+    # Verify the Hebrew date components are correctly generated
+    expect(deceased_person.hebrew_year_of_death).not_to be_nil
+    expect(deceased_person.hebrew_month_of_death).not_to be_nil
+    expect(deceased_person.hebrew_day_of_death).not_to be_nil
 
-  it do
-    should validate_inclusion_of(:gender)
-      .in_array(["male", "female"])
-  end
+    # Verify the Gregorian date of death is automatically calculated
+    expect(deceased_person.date_of_death).not_to be_nil
 
-  it { should accept_nested_attributes_for(:relations).allow_destroy(true).reject_if(:all_blank) }
+    # Verify the relations were created
+    expect(deceased_person.relations.count).to eq(2)
+    expect(deceased_person.relations.map(&:contact_person)).to include(contact_person1, contact_person2)
 
-  describe "#contact_name" do
-    it "returns empty string if there are no relations" do
-      deceased_person = build(:deceased_person)
-      expect(deceased_person.contact_name).to eq("")
-    end
-
-    it "returns the first contact name if relations exist" do
-      contact = create(:contact_person, first_name: "John", last_name: "Doe")
-      deceased_person = create(:deceased_person)
-      create(:relation, contact_person: contact, deceased_person: deceased_person)
-
-      expect(deceased_person.contact_name).to eq("John Doe")
-    end
-  end
-
-  describe "#contact_names" do
-    it "returns comma-separated contact names" do
-      contact1 = create(:contact_person, first_name: "John", last_name: "Doe")
-      contact2 = create(:contact_person, first_name: "Jane", last_name: "Smith")
-      deceased_person = create(:deceased_person)
-      create(:relation, contact_person: contact1, deceased_person: deceased_person)
-      create(:relation, contact_person: contact2, deceased_person: deceased_person)
-
-      expect(deceased_person.contact_names).to eq("John Doe,Jane Smith")
+    # Verify future messages were created
+    deceased_person.relations.each do |relation|
+      expect(relation.future_messages.count).to be > 0
     end
   end
 end

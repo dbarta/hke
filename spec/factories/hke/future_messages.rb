@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :future_message do
+  factory :future_message, class: "Hke::futureMesssage" do
     messageable { nil }
     send_date { "2024-08-27 10:51:46" }
     full_message { "MyText" }
