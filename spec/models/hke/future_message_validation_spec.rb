@@ -66,8 +66,5 @@ module Hke
         end
       end
     end
-
-    RSpec.describe Hke::FutureMessage, type: :model do
-    end
   end
 end
