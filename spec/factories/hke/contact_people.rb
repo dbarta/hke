@@ -4,6 +4,7 @@ FactoryBot.define do
     first_name { Faker::Name.first_name }
     last_name { Faker::Name.last_name }
     gender { ["male", "female"].sample }
+    phone { Faker::PhoneNumber.unique.cell_phone_in_e164 }
 
     trait :male do
       first_name { ["יוסף", "אברהם", "משה", "דוד", "אהרון"].sample }
