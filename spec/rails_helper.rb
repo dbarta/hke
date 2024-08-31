@@ -26,6 +26,7 @@ rescue ActiveRecord::PendingMigrationError => e
   exit 1
 end
 RSpec.configure do |config|
+  config.backtrace_exclusion_patterns << /gems/
   config.include FactoryBot::Syntax::Methods
   config.fixture_paths = ["#{::Rails.root}/spec/fixtures"]
   config.use_transactional_fixtures = true
