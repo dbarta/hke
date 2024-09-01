@@ -18,6 +18,8 @@ module Hke
     has_person_name
     accepts_nested_attributes_for :relations, allow_destroy: true, reject_if: :all_blank
 
+    after_commit :process_future_messages
+
     def contact_name
       if relations.empty?
         ""
@@ -28,6 +30,12 @@ module Hke
 
     def contact_names
       relations.map { |relation| relation.contact_person.name }.join(",")
+    end
+
+    private
+
+    def process_future_messages
+      relations.each(&:process_future_messages)
     end
   end
 end
