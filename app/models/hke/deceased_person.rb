@@ -5,6 +5,7 @@ module Hke
     has_many :relations, dependent: :destroy
     has_many :contact_people, through: :relations
     belongs_to :cemetery, optional: true
+    has_one :preference, as: :preferring, dependent: :destroy
 
     # Validations
     validates :first_name, :last_name, :gender, presence: {message: :presence}

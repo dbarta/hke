@@ -5,6 +5,7 @@ module Hke
     has_many :future_messages, as: :messageable, dependent: :destroy
     has_many :relations_selections
     has_many :selections, through: :relations_selections
+    has_one :preference, as: :preferring, dependent: :destroy
     has_secure_token length: 24
     accepts_nested_attributes_for :contact_person, reject_if: :all_blank
     accepts_nested_attributes_for :deceased_person, reject_if: :all_blank
