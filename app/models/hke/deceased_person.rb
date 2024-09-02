@@ -1,11 +1,14 @@
 require_relative "../../../lib/hke/heb"
 module Hke
   class DeceasedPerson < ApplicationRecord
+    has_person_name
+
     # Associations
     has_many :relations, dependent: :destroy
     has_many :contact_people, through: :relations
     belongs_to :cemetery, optional: true
     has_one :preference, as: :preferring, dependent: :destroy
+    accepts_nested_attributes_for :relations, allow_destroy: true, reject_if: :all_blank
 
     # Validations
     validates :first_name, :last_name, :gender, presence: {message: :presence}
@@ -15,10 +18,6 @@ module Hke
     # Transformations
     include Hke::HebrewTransformations
     after_validation :transform_hebrew_dates
-
-    has_person_name
-    accepts_nested_attributes_for :relations, allow_destroy: true, reject_if: :all_blank
-
     after_commit :process_future_messages
 
     def contact_name
