@@ -5,7 +5,7 @@ RSpec.describe Hke::System, type: :model do
 
   before(:each) do
     # Clear the cache before each test to ensure no residual data affects the tests
-    System.clear_system_info_cache
+    Hke::System.clear_system_info_cache
   end
 
   describe "SystemInfoConcern" do
