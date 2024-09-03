@@ -8,9 +8,9 @@ module Hke
       def system_info
         Rails.cache.fetch(SYSTEM_INFO_CACHE_KEY, expires_in: 12.days) do
           {
-            product_name: System.instance.product_name,
-            version: System.instance.version,
-            preferences: System.instance.preference&.attributes&.except("id", "preferring_id", "preferring_type", "created_at", "updated_at")
+            product_name: Hke::System.instance.product_name,
+            version: Hke::System.instance.version,
+            preferences: Hke::System.instance.preference&.attributes&.except("id", "preferring_id", "preferring_type", "created_at", "updated_at")
           }
         end
       end
