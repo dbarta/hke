@@ -12,7 +12,7 @@ RSpec.describe Hke::System, type: :model do
     context "when accessing the system_info global structure" do
       it "returns correct values for product name and version, and no preferences" do
         # Create a System record with specific product name and version
-        system = System.instance
+        system = Hke::System.instance
         system.update(product_name: "Test Product", version: "1.0.0")
 
         # Fetch system info using the concern method
@@ -28,7 +28,7 @@ RSpec.describe Hke::System, type: :model do
     context "when associating a new preference with the system" do
       it "returns the correct preferences" do
         # Create a System record
-        system = System.instance
+        system = Hke::System.instance
         system.update(product_name: "Test Product", version: "1.0.0")
 
         # Create and associate a new Preference record with the System
