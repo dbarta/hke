@@ -39,7 +39,7 @@ RSpec.describe Hke::System, type: :model do
         )
 
         # Clear the cache and fetch updated system info
-        System.clear_system_info_cache
+        Hke::System.clear_system_info_cache
         info = system_info
 
         # Assertions for system info
