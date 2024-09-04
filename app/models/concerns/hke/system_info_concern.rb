@@ -10,7 +10,9 @@ module Hke
           {
             product_name: Hke::System.instance.product_name,
             version: Hke::System.instance.version,
-            preferences: Hke::System.instance.preference&.attributes&.except("id", "preferring_id", "preferring_type", "created_at", "updated_at")
+            preferences: Hke::System.instance.preference&.persisted? ? Hke::System.instance.preference.attributes.except("id", "preferring_id", "preferring_type", "created_at", "updated_at") : nil
+
+            # preferences: Hke::System.instance.preference&.attributes&.except("id", "preferring_id", "preferring_type", "created_at", "updated_at")
           }
         end
       end
