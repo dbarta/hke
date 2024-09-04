@@ -13,6 +13,7 @@ RSpec.describe Hke::System, type: :model do
       it "returns correct values for product name and version, and no preferences" do
         # Create a System record with specific product name and version
         system = Hke::System.instance
+        puts "Preference before update: #{system.preference.inspect}"
         system.update(product_name: "Test Product", version: "1.0.0")
 
         # Add a debug line here
