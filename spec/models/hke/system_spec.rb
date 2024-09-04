@@ -6,13 +6,14 @@ RSpec.describe Hke::System, type: :model do
   before(:each) do
     # Clear the cache before each test to ensure no residual data affects the tests
     Hke::System.clear_system_info_cache
+    Hke::System.destroy_all
   end
 
   describe "SystemInfoConcern" do
     context "when accessing the system_info global structure" do
       it "returns correct values for product name and version, and no preferences" do
         # Create a System record with specific product name and version
-        # Hke::System.destroy_all
+
         system = Hke::System.instance
         puts "Preference before update: #{system.preference.inspect}"
         system.update(product_name: "Test Product", version: "1.0.0")
@@ -56,6 +57,12 @@ RSpec.describe Hke::System, type: :model do
         expect(preferences["enable_send_email"]).to be_falsey
         expect(preferences["enable_send_sms"]).to be_falsey
         expect(preferences["how_many_days_before_yahrzeit_to_send_message"]).to eq([2, 4, 6])
+      end
+    end
+    context "ensuring the database is clean" do
+      it "check the system table, it should be empty"
+      it "creates a system record" do
+        expect(Hke::System.count).to eq(0)
       end
     end
   end
