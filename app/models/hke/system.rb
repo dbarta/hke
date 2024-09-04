@@ -7,7 +7,7 @@ module Hke
     def self.instance
       i = first_or_create
       p = i.preference
-      puts "@@@@ after first_or_create, preference: #{p} attributes:#{p.attributes}"
+      puts "@@@@ after first_or_create, preference: #{p.inspect}"
       i
     end
 
