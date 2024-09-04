@@ -12,6 +12,7 @@ RSpec.describe Hke::System, type: :model do
     context "when accessing the system_info global structure" do
       it "returns correct values for product name and version, and no preferences" do
         # Create a System record with specific product name and version
+        Hke::System.destroy_all
         system = Hke::System.instance
         puts "Preference before update: #{system.preference.inspect}"
         system.update(product_name: "Test Product", version: "1.0.0")
