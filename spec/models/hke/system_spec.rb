@@ -61,7 +61,6 @@ RSpec.describe Hke::System, type: :model do
     end
     context "ensuring the database is clean" do
       it "check the system table, it should be empty"
-      it "creates a system record" do
         expect(Hke::System.count).to eq(0)
       end
     end
