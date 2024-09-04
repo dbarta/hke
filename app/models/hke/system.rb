@@ -5,7 +5,14 @@ module Hke
 
     # Singleton pattern to ensure only one instance of System
     def self.instance
-      first_or_create
+      i = first_or_create
+      puts "@@@@ after first_or_create, preference: #{i.preference}"
+      i
+    end
+
+    def preference
+      puts "@@@@ Preference accessed"
+      super
     end
   end
 end
