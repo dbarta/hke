@@ -15,6 +15,9 @@ RSpec.describe Hke::System, type: :model do
         system = Hke::System.instance
         system.update(product_name: "Test Product", version: "1.0.0")
 
+        # Add a debug line here
+        puts "Preference before test: #{system.preference.inspect}"
+
         # Fetch system info using the concern method
         info = system_info
 
