@@ -1,5 +1,5 @@
 module Hke
-  class ContactPerson < ApplicationRecord
+  class ContactPerson < CommunityRecord
     include Hke::Addressable
     has_person_name
     has_many :relations, dependent: :destroy

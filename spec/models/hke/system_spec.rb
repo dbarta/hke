@@ -63,7 +63,14 @@ RSpec.describe Hke::System, type: :model do
         system.update(product_name: "Test Product 2", version: "2.0.0")
 
         # Create and associate a new Preference record with the System
-        system.update_preference(
+        system.create_preference(
+          enable_send_email: false,
+          enable_send_sms: false,
+          how_many_days_before_yahrzeit_to_send_message: [2, 4, 6]
+        )
+
+        # Create and associate a new Preference record with the System
+        system.preference.update(
           enable_send_email: true,
           enable_send_sms: true,
           how_many_days_before_yahrzeit_to_send_message: [3, 4, 5]
@@ -79,8 +86,8 @@ RSpec.describe Hke::System, type: :model do
 
         # Assertions for preferences
         preferences = info[:preferences]
-        expect(preferences["enable_send_email"]).to be_true
-        expect(preferences["enable_send_sms"]).to be_true
+        expect(preferences["enable_send_email"]).to be_truthy
+        expect(preferences["enable_send_sms"]).to be_truthy
         expect(preferences["how_many_days_before_yahrzeit_to_send_message"]).to eq([3, 4, 5])
       end
     end

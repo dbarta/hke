@@ -1,5 +1,5 @@
 module Hke
-  class Relation < ApplicationRecord
+  class Relation < CommunityRecord
     belongs_to :deceased_person
     belongs_to :contact_person
     has_many :future_messages, as: :messageable, dependent: :destroy
@@ -30,29 +30,35 @@ module Hke
       end
     end
 
-    private
-
     def process_future_messages
       future_messages.destroy_all
       create_future_messages
     end
 
     def create_future_messages
-      yahrzeit_date = calculate_yahrzeit_date(deceased_person.date_of_passing)
+      yahrzeit_date = calculate_yahrzeit_date(deceased_person.date_of_death)
       reminder_date = yahrzeit_date - 1.week
 
       FutureMessage.create!(
-        relation: self,
-        send_at: reminder_date,
-        message: "Reminder: Yahrzeit for #{deceased_person.name}",
-        delivery_method: contact_person.preferred_delivery_method,
+        messageable: self, # Changed relation to messageable since it is polymorphic
+        send_date: reminder_date, # Changed send_at to send_date, assuming it matches the column name
+        full_message: "Reminder: Yahrzeit for #{deceased_person.first_name} #{deceased_person.last_name}",
+        delivery_method: calculate_delivery_method, # This will set the delivery_method enum
         email: contact_person.email,
         phone: contact_person.phone
       )
     end
 
-    def calculate_yahrzeit_date(date_of_passing)
-      # Logic to calculate the yahrzeit date from the date of passing
+    private
+
+    def calculate_yahrzeit_date(date_of_death)
+      # Here, you can implement the actual logic for calculating the Yahrzeit date
+      date_of_death
+    end
+
+    def calculate_delivery_method
+      # You can adjust this logic to return the correct delivery method based on preferences
+      :email # This should return one of the enum symbols, e.g., :email, :sms, :whatsapp
     end
   end
 end

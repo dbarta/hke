@@ -1,5 +1,5 @@
 module Hke
-  class LandingPage < ApplicationRecord
+  class LandingPage < CommunityRecord
     belongs_to :user
   end
 end

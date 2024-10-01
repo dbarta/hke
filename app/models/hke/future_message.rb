@@ -1,5 +1,5 @@
 module Hke
-  class FutureMessage < ApplicationRecord
+  class FutureMessage < CommunityRecord
     # TODO:
     # 1. delivery_method - implement as bit field, with accessor functions
     # 2. instead of send_date, use two fields: scheduled_send_date_and_time and actual_sent_date_and_time
@@ -9,7 +9,7 @@ module Hke
     has_secure_token :token
 
     # Enum for delivery method
-    enum delivery_method: {none: 0,
+    enum delivery_method: {no_delivery: 0,
                            email: 1,
                            sms: 2,
                            whatsapp: 4}

@@ -1,7 +1,7 @@
 module Hke
   class System < ApplicationRecord
     include Hke::SystemInfoConcern
-    has_one :preference, as: :preferring, class_name: "Hke::Preference", dependent: :destroy
+    include Hke::Preferring
 
     # Singleton pattern to ensure only one instance of System
     def self.instance

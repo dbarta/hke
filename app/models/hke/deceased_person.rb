@@ -1,6 +1,6 @@
 require_relative "../../../lib/hke/heb"
 module Hke
-  class DeceasedPerson < ApplicationRecord
+  class DeceasedPerson < CommunityRecord
     has_person_name
 
     # Associations

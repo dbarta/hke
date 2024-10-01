@@ -1,5 +1,5 @@
 module Hke
-  class RelationsSelection < ApplicationRecord
+  class RelationsSelection < CommunityRecord
     belongs_to :relation
     belongs_to :selection
   end
