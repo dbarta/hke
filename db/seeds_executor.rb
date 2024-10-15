@@ -13,6 +13,7 @@ class SeedsExecutor
   end
 
   def clear_database
+    Hke::FutureMessage.delete_all
     Hke::Relation.delete_all
     Hke::DeceasedPerson.delete_all
     Hke::ContactPerson.delete_all
