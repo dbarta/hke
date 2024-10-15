@@ -8,5 +8,5 @@ puts "@@@ Running hke/db/seeds.rb file. Setting locale to :he. Importing no more
 
 executor.clear_database
 executor.create_users_and_accounts
-executor.process_csv(Hke::Engine.root.join("db", "deceased_2022_02_28_no_blanks.csv"))
+# executor.process_csv(Hke::Engine.root.join("db", "deceased_2022_02_28_no_blanks.csv"))
 executor.summarize
