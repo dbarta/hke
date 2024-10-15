@@ -13,6 +13,8 @@ class SeedsExecutor
   end
 
   def clear_database
+    Hke::System.delete_all
+    Hke::Community.delete_all
     Hke::FutureMessage.delete_all
     Hke::Relation.delete_all
     Hke::DeceasedPerson.delete_all
@@ -25,13 +27,13 @@ class SeedsExecutor
   end
 
   def create_users_and_accounts
-    u1 = User.create(name: "David", email: "david@odeca.net", password: "odeca111", terms_of_service: true, admin: true)
-    u2 = User.create(name: "Admin", email: "admin@hakhel.com", password: "password", terms_of_service: true, admin: true)
-    u3 = User.create(name: "Rabi", email: "rabi@hakhel.com", password: "password", terms_of_service: true, admin: true)
-    a1 = Account.create(name: "Synagogue", owner_id: u3.id, personal: false)
-    a1.users << u3
-    a1.users << u2
-    a1.users << u1
+    Hke::System.create!(product_name: "Hakhel", version: "0.1")
+    admin_user = User.create!(name: "admin", email: "david@odeca.net", password: "password1", terms_of_service: true, admin: true)
+    account = Account.create!(name: "Kfar Vradim", owner: admin_user, personal: false, billing_email: "david@odeca.net")
+    community = create!(name: "Kfar Vradim Main Sybagogue", community_type: "synagogue", account: account)
+
+    # Set the current tenant for multi-tenancy
+    ActsAsTenant.current_tenant = community
   end
 
   def process_csv(file_path)
