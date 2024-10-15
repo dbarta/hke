@@ -36,8 +36,13 @@ module Hke
     end
 
     def create_future_messages
-      yahrzeit_date = calculate_yahrzeit_date(deceased_person.date_of_death)
+      dp = deceased_person
+      yahrzeit_date = calculate_yahrzeit_date(dp.name,
+        dp.hebrew_month_of_death, dp.hebrew_day_of_death)
       reminder_date = yahrzeit_date - 1.week
+      if reminder_date < Date.today
+        reminder_date = Date.today
+      end
 
       FutureMessage.create!(
         messageable: self, # Changed relation to messageable since it is polymorphic
@@ -51,14 +56,21 @@ module Hke
 
     private
 
-    def calculate_yahrzeit_date(date_of_death)
-      # Here, you can implement the actual logic for calculating the Yahrzeit date
-      date_of_death
+    def calculate_yahrzeit_date(name, hm, hd)
+      puts "@@@ before calling Hke.yahrzeit_date"
+      result = Hke.yahrzeit_date(name, hm, hd)
+      puts "@@@ after calling Hke.yahrzeit_date: #{result}"
+      result
+    end
+
+    def calculate_reminder_date(yahrzeit_date)
+      # Take preferences to determine how many days before yahrzeit a reminder should be sent
+      # there is some logic to prepare send_dates
     end
 
     def calculate_delivery_method
       # You can adjust this logic to return the correct delivery method based on preferences
-      :email # This should return one of the enum symbols, e.g., :email, :sms, :whatsapp
+      :sms # This should return one of the enum symbols, e.g., :email, :sms, :whatsapp
     end
   end
 end

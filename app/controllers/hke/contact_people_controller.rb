@@ -1,8 +1,10 @@
 module Hke
   class ContactPeopleController < ApplicationController
     # before_action :authenticate_user!
+    before_action :set_community_as_current_tenant
     before_action :authenticate_admin
     before_action :set_contact_person, only: [:show, :edit, :update, :destroy]
+    
   
   
     # GET /contact_people index

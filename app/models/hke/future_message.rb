@@ -28,7 +28,7 @@ module Hke
     private
 
     def send_date_must_be_in_the_future
-      if send_date.present? && send_date < Time.current
+      if send_date.present? && send_date < Date.today # Time.current
         errors.add(:send_date, "must be in the future")
       end
     end

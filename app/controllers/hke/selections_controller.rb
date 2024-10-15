@@ -1,6 +1,6 @@
 module Hke
   class SelectionsController < ApplicationController
-
+    before_action :set_community_as_current_tenant
     before_action :set_selection, only: [:show, :edit, :update, :destroy]
 
     # Uncomment to enforce Pundit authorization

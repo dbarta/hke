@@ -1,6 +1,7 @@
 module Hke
   class DeceasedPeopleController < ApplicationController
     # before_action :authenticate_user!
+    before_action :set_community_as_current_tenant
     before_action :authenticate_admin
     before_action :set_deceased_person, only: [:show, :edit, :update, :destroy]
 

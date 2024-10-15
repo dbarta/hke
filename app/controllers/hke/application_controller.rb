@@ -1,6 +1,7 @@
 module Hke
   class ApplicationController < ActionController::Base
-
+    
+    
     #include JumpstartApp::Application.routes.url_helpers
     #helper Devise::Controllers::Helpers
     impersonates :user
@@ -42,6 +43,17 @@ module Hke
     end
 
     private
+    
+    def set_community_as_current_tenant
+      # Temporarily setting the tenant to the "Kfar Vradim Synagogue" community
+      community = Community.find_by(name: "Kfar Vradim Synagogue")
+      if community
+        ActsAsTenant.current_tenant = community
+      else
+        # Handle if the community is not found
+        raise "Community 'Kfar Vradim Synagogue' not found"
+      end
+    end
 
     def authenticate_admin
       puts "in  authenticate_admin, #{true_user}"

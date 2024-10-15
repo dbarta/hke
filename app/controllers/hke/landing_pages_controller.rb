@@ -1,5 +1,6 @@
 module Hke
   class LandingPagesController < ApplicationController
+    before_action :set_community_as_current_tenant
     layout "hke/landing", only: :show
     include Hke::ApplicationHelper
 
