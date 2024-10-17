@@ -4,51 +4,49 @@ module Hke
     before_action :set_community_as_current_tenant
     before_action :authenticate_admin
     before_action :set_contact_person, only: [:show, :edit, :update, :destroy]
-    
-  
-  
+
     # GET /contact_people index
     # POST /contact_people search
     def index
       @contact_people = ContactPerson.includes(relations: [:deceased_person])
       if params[:name_search]
         key = "%#{params[:name_search]}%"
-        @contact_people =  @contact_people.where('first_name ILIKE ?', key )
-                                            .or(@contact_people.where('last_name ILIKE ?', key ))
+        @contact_people = @contact_people.where("first_name ILIKE ?", key)
+          .or(@contact_people.where("last_name ILIKE ?", key))
       end
       @contact_people = @contact_people.sort_by_params(params[:sort], sort_direction)
       @contact_people.load
-  
+
       respond_to do |format|
         format.html # Response for normal get - show full index
-        format.turbo_stream do #Response from post, which is result of input from the search box
+        format.turbo_stream do # Response from post, which is result of input from the search box
           render turbo_stream: [
-            turbo_stream.update( "search_results", partial: "hke/search_results", locals: {people: @contact_people}),
-            turbo_stream.update( "people_count", @contact_people.count)
+            turbo_stream.update("search_results", partial: "hke/shared/search_results", locals: {people: @contact_people}),
+            turbo_stream.update("people_count", @contact_people.count)
           ]
         end
       end
     end
-  
+
     # GET /contact_people/1 or /contact_people/1.json
     def show
       @contact_people = @contact_person.deceased_people
     end
-  
+
     # GET /contact_people/new
     def new
       @contact_person = ContactPerson.new
       @contact_person.relations.build.build_deceased_person
     end
-  
+
     # GET /contact_people/1/edit
     def edit
     end
-  
+
     # POST /contact_people or /contact_people.json
     def create
       @contact_person = ContactPerson.new(contact_person_params)
-  
+
       respond_to do |format|
         if @contact_person.save
           format.html { redirect_to @contact_person, notice: "Contact person was successfully created." }
@@ -59,7 +57,7 @@ module Hke
         end
       end
     end
-  
+
     # PATCH/PUT /contact_people/1 or /contact_people/1.json
     def update
       remove_empty_relations_from "contact_person", "deceased_person"
@@ -73,7 +71,7 @@ module Hke
         end
       end
     end
-  
+
     # DELETE /contact_people/1 or /contact_people/1.json
     def destroy
       @contact_person.destroy
@@ -82,24 +80,22 @@ module Hke
         format.json { head :no_content }
       end
     end
-  
+
     private
-  
+
     # Use callbacks to share common setup or constraints between actions.
     def set_contact_person
       @contact_person = ContactPerson.find(params[:id])
     end
-  
+
     # Only allow a list of trusted parameters through.
     def contact_person_params
       params.require(:contact_person).permit(:first_name, :last_name, :email, :phone, :gender,
         relations_attributes: [:id, :relation_of_deceased_to_contact, :_destroy,
-        deceased_person_attributes: [:id, :first_name, :last_name, :gender, :occupation,
-        :organization, :religion, :father_first_name, :mother_first_name,
-        :hebrew_year_of_death, :hebrew_month_of_death, :hebrew_day_of_death,
-        :date_of_death, :time_of_death, :location_of_death]]
-      )
+          deceased_person_attributes: [:id, :first_name, :last_name, :gender, :occupation,
+            :organization, :religion, :father_first_name, :mother_first_name,
+            :hebrew_year_of_death, :hebrew_month_of_death, :hebrew_day_of_death,
+            :date_of_death, :time_of_death, :location_of_death]])
     end
   end
-  
 end

@@ -1,4 +1,6 @@
 # seeds_helper.rb
+require "csv"
+require "logger"
 
 module SeedsHelper
   include Hke::ApplicationHelper

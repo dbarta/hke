@@ -37,35 +37,35 @@ module Hke
 
     def create_future_messages
       dp = deceased_person
-      yahrzeit_date = calculate_yahrzeit_date(dp.name,
-        dp.hebrew_month_of_death, dp.hebrew_day_of_death)
-      reminder_date = yahrzeit_date - 1.week
-      if reminder_date < Date.today
-        reminder_date = Date.today
-      end
 
-      FutureMessage.create!(
+      fm = FutureMessage.create!(
         messageable: self, # Changed relation to messageable since it is polymorphic
-        send_date: reminder_date, # Changed send_at to send_date, assuming it matches the column name
+        send_date: calculate_reminder_date(dp.name, dp.hebrew_month_of_death, dp.hebrew_day_of_death), # Changed send_at to send_date, assuming it matches the column name
         full_message: "Reminder: Yahrzeit for #{deceased_person.first_name} #{deceased_person.last_name}",
         delivery_method: calculate_delivery_method, # This will set the delivery_method enum
         email: contact_person.email,
         phone: contact_person.phone
       )
+      puts "Reminder for contact: #{contact_person.name}  deceased: #{dp.name} date: #{fm.send_date}"
     end
 
     private
 
-    def calculate_yahrzeit_date(name, hm, hd)
-      puts "@@@ before calling Hke.yahrzeit_date"
-      result = Hke.yahrzeit_date(name, hm, hd)
-      puts "@@@ after calling Hke.yahrzeit_date: #{result}"
-      result
+    def calculate_reminder_date(name, hm, hd)
+      yahrzeit_date = calculate_yahrzeit_date(name, hm, hd)
+      # preferrence = calculate_merged_preferences
+      reminder_date = yahrzeit_date - 1.week
+      if reminder_date >= Date.today
+        reminder_date
+      else
+        Date.today
+      end
     end
 
-    def calculate_reminder_date(yahrzeit_date)
-      # Take preferences to determine how many days before yahrzeit a reminder should be sent
-      # there is some logic to prepare send_dates
+    def calculate_yahrzeit_date(name, hm, hd)
+      # puts "@@@ before calling Hke.yahrzeit_date"
+      Hke.yahrzeit_date(name, hm, hd)
+      # puts "@@@ after calling Hke.yahrzeit_date: #{result}"
     end
 
     def calculate_delivery_method

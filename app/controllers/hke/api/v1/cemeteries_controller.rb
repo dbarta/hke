@@ -1,4 +1,5 @@
 class Hke::Api::V1::CemeteriesController < Api::BaseController
+  include Hke::SetCommunityAsTenant
   before_action :set_cemetery, only: %i[show update destroy]
 
   # GET /cemeteries

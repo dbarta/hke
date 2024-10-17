@@ -13,30 +13,37 @@ class SeedsExecutor
   end
 
   def clear_database
-    Hke::System.delete_all
-    Hke::Community.delete_all
     Hke::FutureMessage.delete_all
     Hke::Relation.delete_all
     Hke::DeceasedPerson.delete_all
     Hke::ContactPerson.delete_all
     Hke::Cemetery.delete_all
-    ApiToken.delete_all
+
     AccountUser.delete_all
+    Hke::System.delete_all
+    Hke::Community.delete_all
+
+    ApiToken.delete_all
+
     Account.delete_all
     User.delete_all
   end
 
   def create_users_and_accounts
     Hke::System.create!(product_name: "Hakhel", version: "0.1")
-    admin_user = User.create!(name: "admin", email: "david@odeca.net", password: "password1", terms_of_service: true, admin: true)
+    admin_user = User.create!(name: "admin", email: "david@odeca.net", password: "password", terms_of_service: true, admin: true)
     account = Account.create!(name: "Kfar Vradim", owner: admin_user, personal: false, billing_email: "david@odeca.net")
-    community = create!(name: "Kfar Vradim Main Sybagogue", community_type: "synagogue", account: account)
+    community = Hke::Community.create!(name: "Kfar Vradim Synagogue", community_type: "synagogue", account: account)
 
     # Set the current tenant for multi-tenancy
     ActsAsTenant.current_tenant = community
   end
 
   def process_csv(file_path)
+    @logger.info "Start processing #{file_path}"
+    he_to_en_relations = []
+    he_to_en_relations = relations_select
+
     csv_text = File.read(file_path)
     csv = CSV.parse(csv_text, headers: true, encoding: "UTF-8")
     csv.each_with_index do |row, index|

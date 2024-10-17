@@ -1,4 +1,5 @@
 class Hke::Api::V1::DeceasedPeopleController < Api::BaseController
+  include Hke::SetCommunityAsTenant
   before_action :set_hke_deceased_person, only: %i[show update destroy]
 
   # GET /hke/deceased_people

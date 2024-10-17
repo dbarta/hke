@@ -1,4 +1,5 @@
 class Hke::Api::V1::ContactPeopleController < Api::BaseController
+  include Hke::SetCommunityAsTenant
   before_action :set_contact_person, only: %i[show update destroy]
 
   # GET /hke/contact_people
