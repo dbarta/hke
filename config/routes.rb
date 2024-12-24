@@ -5,6 +5,7 @@ Hke::Engine.routes.draw do
   # get 'hke/landing_pages/:id1/:token1', to: 'hke/landing_pages#show'
   # get 'hke/landing_pages/:id1', to: "hke/landing_pages#show", as: "landing"
   resources :cemeteries
+  resources :communities
   resources :future_messages
   resources :sms_messages
   resources :landing_pages
@@ -22,6 +23,7 @@ Hke::Engine.routes.draw do
   namespace :api, defaults: {format: :json} do
     namespace :v1 do
       resources :cemeteries
+      resources :communities
       resources :future_messages
       resources :deceased_people
       resources :contact_people
