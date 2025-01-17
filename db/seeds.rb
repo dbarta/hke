@@ -1,8 +1,8 @@
 # db/seeds.rb
-require_relative "seeds_executor"
+require_relative "api_seeds_executor"
 
 max_num_people = (ARGV.length > 0) ? ARGV[0].to_i : 1000
-executor = SeedsExecutor.new(max_num_people)
+executor = ApiSeedsExecutor.new(max_num_people)
 
 puts "@@@ Running hke/db/seeds.rb file. Setting locale to :he. Importing no more than #{max_num_people} deceased people."
 
