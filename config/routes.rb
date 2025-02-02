@@ -1,5 +1,4 @@
 Hke::Engine.routes.draw do
-  resources :addresses
 
   resources :selections
   # get 'hke/landing_pages/:id1/:token1', to: 'hke/landing_pages#show'
@@ -22,6 +21,7 @@ Hke::Engine.routes.draw do
 
   namespace :api, defaults: {format: :json} do
     namespace :v1 do
+      resource :system, only: [:show, :edit, :update, :create]
       resources :cemeteries
       resources :communities
       resources :future_messages
@@ -30,6 +30,7 @@ Hke::Engine.routes.draw do
       resources :relations
     end
   end
+
 
   root to: "contact_people#index"
   get "contact_people/index"

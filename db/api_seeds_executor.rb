@@ -1,8 +1,8 @@
 require 'httparty'
-require_relative "seeds_helper"
+require_relative "api_seeds_helper"
 
 class ApiSeedsExecutor
-  include SeedsHelper
+  include ApiSeedsHelper
 
   def initialize(max_num_people)
     @max_num_people = max_num_people
@@ -10,135 +10,78 @@ class ApiSeedsExecutor
     @error = log("api_import_csv_errors.log")
     @num_errors = 0
     I18n.locale = :he
-
-    # Initialize API client with separate URLs
-    @auth_base_url = "http://localhost:3000/api/v1"
-    @api_base_url = "http://localhost:3000/hke/api/v1"
-    @api_token = create_api_token
-    @headers = {
-      "Content-Type" => "application/json",
-      "Accept" => "application/json",
-      "Authorization" => "Bearer #{@api_token}"
-    }
-  end
-
-  def create_api_token
-    # Create admin user and get API token
-    admin_data = {
-      name: "admin",
-      email: "david@odeca.net",
-      password: "password",
-      terms_of_service: true,
-      admin: true
-    }
-
-    response = HTTParty.post(
-      "#{@auth_base_url}/auth",
-      body: admin_data.to_json,
-      headers: {
-        "Content-Type" => "application/json",
-        "Accept" => "application/json"
-      }
-    )
-
-    if response.success?
-      response.parsed_response["token"]
-    else
-      raise "Failed to create API token: #{response.body}"
-    end
-  end
-
-  def create_initial_data
-    # Create admin user
-    admin_data = {
-      name: "admin",
-      email: "david@odeca.net",
-      password: "password",
-      terms_of_service: true,
-      admin: true
-    }
-
-    user_response = HTTParty.post(
-      "#{@auth_base_url}/users",
-      body: admin_data.to_json,
-      headers: @headers
-    )
-    check_response(user_response, "user")
-
-    # Create account
-    account_data = {
-      name: "Hakhel Account",
-      owner_id: user_response.parsed_response["id"]
-    }
-    account_response = HTTParty.post(
-      "#{@auth_base_url}/accounts",
-      body: account_data.to_json,
-      headers: @headers
-    )
-    check_response(account_response, "account")
-
-    # Create community
-    community_data = {
-      name: "Kfar Vradim Synagogue",
-      community_type: "synagogue",
-      account_id: account_response.parsed_response["id"]
-    }
-    community_response = HTTParty.post(
-      "#{@api_base_url}/communities",
-      body: community_data.to_json,
-      headers: @headers
-    )
-    check_response(community_response, "community")
   end
 
   def clear_database
-
-    Hke::FutureMessage.delete_all
-    Hke::Relation.delete_all
-    Hke::DeceasedPerson.delete_all
-    Hke::ContactPerson.delete_all
-    Hke::Cemetery.delete_all
-
-    AccountUser.delete_all
-    Hke::System.delete_all
-    Hke::Community.delete_all
-
-    ApiToken.delete_all
-
-    Account.delete_all
-    User.delete_all
-    puts "@@@ Database cleared"
-
-    # Create initial data after clearing
-    create_initial_data
-    puts "@@@ Usr, account and community created"
+    [
+        Hke::FutureMessage,
+        Hke::Relation,
+        Hke::DeceasedPerson,
+        Hke::ContactPerson,
+        Hke::Cemetery,
+        AccountUser,
+        Hke::System,
+        Hke::Community,
+        ApiToken,
+        Account,
+        User,
+    ].each do |model|
+      model.delete_all
+      puts "@@@ #{model.to_s} cleared"
+    end
+     puts "@@@ Database cleared"
   end
 
-  def create_users_and_accounts
-    # Create system record
-    system_data = { product_name: "Hakhel", version: "0.1" }
-    response = HTTParty.post(
-      "#{@api_base_url}/systems",
-      body: system_data.to_json,
-      headers: @headers
-    )
-    check_response(response, "system")
+  def post(url, body)
+    response = HTTParty.post(url, body: body.to_json, headers: @headers)
+    check_response(body, response)
+    return response
+  end
 
-    # Create community
-    community_data = {
-      name: "Kfar Vradim Synagogue",
-      community_type: "synagogue"
-    }
-    response = HTTParty.post(
-      "#{@api_base_url}/communities",
-      body: community_data.to_json,
-      headers: @headers
-    )
-    check_response(response, "community")
+  def register_admin_user
+    response = post("#{@hakhel_url}/users",
+      {user: {name: "admin", email: "david@odeca.net", password: "password", terms_of_service: true, admin: true }})
+    response["id"]
+  end
+
+  def login_as_admin
+    response = post("#{@hakhel_url}/auth", {email: "david@odeca.net", password: "password"})
+    @headers["Authorization"] = "Bearer #{response["token"]}"
+  end
+
+
+  # Initialize API client with URLs, login or create admin user
+  def init_api_client
+    @hakhel_url = "http://localhost:3000/api/v1"
+    @hke_url = "http://localhost:3000/hke/api/v1"
+    @headers = {"Content-Type" => "application/json", "Accept" => "application/json"}
+    begin
+      login_as_admin
+      puts "@@@ Admin logged in"
+    rescue => e
+      puts "@@@ Rescued: #{e.message}"
+      @user_id = register_admin_user
+      puts "@@@ Admin user registered"
+      login_as_admin
+      puts "@@@ Admin user logged in, token received"
+
+      # Create account
+      response = post("#{@hakhel_url}/accounts", { account: {name: "Kfar Vradim", owner_id: @user_id, personal: false, billing_email: "david@odeca.net" }})
+      @account_id = response["id"]
+      puts "@@@ Account created"
+
+      # Create community
+      post("#{@hke_url}/communities", { community: {name: "Kfar Vradim Synagogue", community_type: "synagogue", account_id: @account_id }})
+       puts "@@@ Community created"
+      # Create system record
+      post("#{@hke_url}/system", {system: {product_name: "Hakhel", version: "0.1" }})
+       puts "@@@ System created"
+    end
   end
 
   def process_csv(file_path)
     @logger.info "Start processing #{file_path}"
+    init_api_client
     he_to_en_relations = relations_select
 
     csv_text = File.read(file_path)
@@ -161,7 +104,7 @@ class ApiSeedsExecutor
       }
 
       dp_response = HTTParty.post(
-        "#{@api_base_url}/deceased_people",
+        "#{@hke_url}/deceased_people",
         body: dp_data.to_json,
         headers: @headers
       )
@@ -183,7 +126,7 @@ class ApiSeedsExecutor
       }
 
       cp_response = HTTParty.post(
-        "#{@api_base_url}/contact_people",
+        "#{@hke_url}/contact_people",
         body: cp_data.to_json,
         headers: @headers
       )
@@ -206,7 +149,7 @@ class ApiSeedsExecutor
       }
 
       relation_response = HTTParty.post(
-        "#{@api_base_url}/relations",
+        "#{@hke_url}/relations",
         body: relation_data.to_json,
         headers: @headers
       )
@@ -228,15 +171,8 @@ class ApiSeedsExecutor
   private
 
   def get_count(resource)
-    response = HTTParty.get("#{@api_base_url}/#{resource}/count", headers: @headers)
+    response = HTTParty.get("#{@hke_url}/#{resource}/count", headers: @headers)
     response.success? ? response.parsed_response["count"] : 0
-  end
-
-  def check_response(response, resource)
-    unless response.success?
-      @error.error "Failed to create #{resource}: #{response.body}"
-      @num_errors += 1
-    end
   end
 
   def log_errors(response, resource)

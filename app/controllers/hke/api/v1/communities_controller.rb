@@ -49,7 +49,7 @@ class Hke::Api::V1::CommunitiesController < Api::BaseController
 
   # Only allow a list of trusted parameters through.
   def community_params
-    params.require(:community).permit(:name, :description,
+    params.require(:community).permit(:name, :description, :community_type, :account_id,
       address_attributes: [:id, :addressable_type, :address_type,
         :line1, :line2, :city, :state, :country, :postal_code, :_destroy])
   end

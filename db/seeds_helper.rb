@@ -1,6 +1,7 @@
 # seeds_helper.rb
 require "csv"
 require "logger"
+require "json"
 
 module SeedsHelper
   include Hke::ApplicationHelper
@@ -16,6 +17,28 @@ module SeedsHelper
   def log_error(msg)
     @error.error msg
     @num_errors += 1
+  end
+
+  def check_response(request_body, response)
+    if response.success?
+      puts "@@@ Succefull call with #{request_body}"
+      if response["id"]
+        puts "@@@ returned id: #{response['id']}"
+        return response["id"]
+      else
+        return nil
+      end
+    else
+      puts "@@@ ERROR: Failed call, code: #{response.code} with: #{request_body}"
+      if response.body['errors']
+        response.body['errors'].each do |field, messages|
+          messages.each do |message|
+            puts "@@@ ERROR: #{field.capitalize}: #{message}"
+          end
+        end
+      end
+      raise "@@@ RAISED: API call failed."
+    end
   end
 
   def create_or_find_cemetery(cemetery_name)
