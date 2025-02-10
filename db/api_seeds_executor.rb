@@ -1,14 +1,16 @@
 require 'httparty'
-require_relative "api_seeds_helper"
+require 'CSV'
+require_relative '../lib/hke/log_helper.rb'
+require_relative '../lib/hke/api_helper.rb'
 
 class ApiSeedsExecutor
-  include ApiSeedsHelper
+  include Hke::ApiHelper
+  include Hke::LogHelper
+  include Hke::ApplicationHelper
 
   def initialize(max_num_people)
     @max_num_people = max_num_people
-    @logger = log("api_import_csv.log")
-    @error = log("api_import_csv_errors.log")
-    @num_errors = 0
+    init_logging "api_import_csv"
     I18n.locale = :he
   end
 
@@ -27,68 +29,24 @@ class ApiSeedsExecutor
         User,
     ].each do |model|
       model.delete_all
-      puts "@@@ #{model.to_s} cleared"
+      log_info "#{model.to_s} cleared"
     end
-     puts "@@@ Database cleared"
-  end
-
-  def post(url, body)
-    response = HTTParty.post(url, body: body.to_json, headers: @headers)
-    check_response(body, response)
-    return response
-  end
-
-  def register_admin_user
-    response = post("#{@hakhel_url}/users",
-      {user: {name: "admin", email: "david@odeca.net", password: "password", terms_of_service: true, admin: true }})
-    response["id"]
-  end
-
-  def login_as_admin
-    response = post("#{@hakhel_url}/auth", {email: "david@odeca.net", password: "password"})
-    @headers["Authorization"] = "Bearer #{response["token"]}"
-  end
-
-
-  # Initialize API client with URLs, login or create admin user
-  def init_api_client
-    @hakhel_url = "http://localhost:3000/api/v1"
-    @hke_url = "http://localhost:3000/hke/api/v1"
-    @headers = {"Content-Type" => "application/json", "Accept" => "application/json"}
-    begin
-      login_as_admin
-      puts "@@@ Admin logged in"
-    rescue => e
-      puts "@@@ Rescued: #{e.message}"
-      @user_id = register_admin_user
-      puts "@@@ Admin user registered"
-      login_as_admin
-      puts "@@@ Admin user logged in, token received"
-
-      # Create account
-      response = post("#{@hakhel_url}/accounts", { account: {name: "Kfar Vradim", owner_id: @user_id, personal: false, billing_email: "david@odeca.net" }})
-      @account_id = response["id"]
-      puts "@@@ Account created"
-
-      # Create community
-      post("#{@hke_url}/communities", { community: {name: "Kfar Vradim Synagogue", community_type: "synagogue", account_id: @account_id }})
-       puts "@@@ Community created"
-      # Create system record
-      post("#{@hke_url}/system", {system: {product_name: "Hakhel", version: "0.1" }})
-       puts "@@@ System created"
-    end
+    log_info "Database cleared"
   end
 
   def process_csv(file_path)
-    @logger.info "Start processing #{file_path}"
-    init_api_client
+    log_info "Start processing #{file_path}"
+    init_api
     he_to_en_relations = relations_select
 
     csv_text = File.read(file_path)
     csv = CSV.parse(csv_text, headers: true, encoding: "UTF-8")
     csv.each_with_index do |row, index|
-      @line_no = index + 2
+      @line_no = index + 1
       break if @line_no > @max_num_people
+      log_info("@@@ Processing deceased: #{row['שם פרטי של נפטר']}")
+      @cemetery_id =  create_or_find_cemetery(row["מיקום בית קברות"])
+      log_info "@@@ cemetery_id: #{@cemetery_id}"
 
       # Process deceased person
       dp_data = {
@@ -100,19 +58,13 @@ class ApiSeedsExecutor
         gender: ((row["מין של נפטר"] == "זכר") ? "male" : "female"),
         father_first_name: row["אבא של נפטר"],
         mother_first_name: row["אמא של נפטר"],
-        cemetery_id: create_or_find_cemetery(row["מיקום בית קברות"])
+        cemetery_id: @cemetery_id
       }
 
-      dp_response = HTTParty.post(
-        "#{@hke_url}/deceased_people",
-        body: dp_data.to_json,
-        headers: @headers
-      )
-
-      unless dp_response.success?
-        log_errors(dp_response, "deceased person")
-        next
-      end
+      dp_response = post("#{@hke_url}/deceased_people", dp_data, raise: false )
+      next unless dp_response.success?
+      dp_id = dp_response["id"]
+      log_info "@@@ Deceased id: #{dp_id}"
 
       # Process contact person if exists
       next unless row["שם פרטי איש קשר"] || row["שם משפחה איש קשר"]
@@ -125,16 +77,10 @@ class ApiSeedsExecutor
         gender: ((row["מין של איש קשר"] == "זכר") ? "male" : "female")
       }
 
-      cp_response = HTTParty.post(
-        "#{@hke_url}/contact_people",
-        body: cp_data.to_json,
-        headers: @headers
-      )
-
-      unless cp_response.success?
-        log_errors(cp_response, "contact person")
-        next
-      end
+      cp_response = post("#{@hke_url}/contact_people", cp_data, raise: false)
+      next unless cp_response.success?
+      cp_id = cp_response["id"]
+      log_info "@@@ Contact id: #{cp_id}"
 
       # Process relation if exists
       next unless row[0]
@@ -148,24 +94,16 @@ class ApiSeedsExecutor
         relation_of_deceased_to_contact: pair[1]
       }
 
-      relation_response = HTTParty.post(
-        "#{@hke_url}/relations",
-        body: relation_data.to_json,
-        headers: @headers
-      )
-
-      unless relation_response.success?
-        log_errors(relation_response, "relation")
-        next
-      end
+      relation_response = post("#{@hke_url}/relations",relation_data, raise: false)
+      next unless relation_response.success?
 
       sleep(0.1) # Maintain rate limiting
     end
   end
 
   def summarize
-    @logger.info "There are #{get_count('deceased_people')} deceased people, and #{get_count('contact_people')} contacts"
-    @error.info "There were #{@num_errors} errors in input csv file."
+    log_info "There are #{get_count('deceased_people')} deceased people, and #{get_count('contact_people')} contacts"
+    log_error "There were #{@num_errors} errors in input csv file."
   end
 
   private

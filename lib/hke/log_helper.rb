@@ -5,7 +5,8 @@ module Hke
 
     def log(filename)
       timestamp = Time.now.strftime("%H%M%S") # 143000
-      log_path = Rails.root.join("log", "#{filename}_#{timestamp}.log")
+      # log_path = Rails.root.join("log", "#{filename}_#{timestamp}.log")
+      log_path = Rails.root.join("log", "#{filename}.log")
       logger = Logger.new(log_path)
       logger.datetime_format = "%Y-%m-%d %H:%M"
       logger

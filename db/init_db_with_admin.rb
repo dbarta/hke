@@ -7,4 +7,4 @@ executor = ApiSeedsExecutor.new(max_num_people)
 puts "@@@ Running hke/db/init_db_with_admin.rb file. "
 
 executor.clear_database
-executor.init_api_client
+executor.create_admin_account_community_system
