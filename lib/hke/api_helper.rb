@@ -1,9 +1,9 @@
 require 'httparty'
-require "logger"
+require_relative 'loggable.rb'
 
 module Hke
   module ApiHelper
-    include Hke::LogHelper
+    include Hke::Loggable
 
     def check_response(request_body, response, raise: true)
       if !response.success?

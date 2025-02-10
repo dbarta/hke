@@ -1,10 +1,8 @@
+require '/Users/dbarta/Dropbox/Apps/web_apps/rails_apps/apps/hke/lib/hke/loggable.rb'
 module Hke
   module Deduplicatable
     extend ActiveSupport::Concern
-
-    included do
-      # You can add additional hooks if needed
-    end
+    include Hke::Loggable
 
     class_methods do
       def deduplication_fields(*fields)
@@ -17,14 +15,16 @@ module Hke
     end
 
     def save(*args, **options)
+      return super unless new_record?  # Allow normal updates
+
       existing_record = find_existing_record
       if existing_record
-        Rails.logger.info("Deduplication: Found existing record for #{self.class.name} with #{deduplication_query(existing_record)}. Returning the existing record.")
+        log_info("Deduplication: Found existing record for #{self.class.name} with #{deduplication_query(existing_record)}. Returning the existing record.")
         self.id = existing_record.id
         return true  # Mimics a successful save without creating a new record
       end
 
-      Rails.logger.info("Creating new #{self.class.name} record with #{deduplication_query}.")
+      log_info("Creating new #{self.class.name} record with #{deduplication_query}.")
       super  # Proceed with the normal save process if no duplicate is found
     end
 

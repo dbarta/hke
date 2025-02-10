@@ -1,5 +1,8 @@
 module Hke
   class Relation < CommunityRecord
+    include Hke::Deduplicatable
+    deduplication_fields :deceased_person_id, :contact_person_id
+
     belongs_to :deceased_person
     belongs_to :contact_person
     has_many :future_messages, as: :messageable, dependent: :destroy

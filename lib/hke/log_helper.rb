@@ -1,33 +1,38 @@
+# hke/lib/hke/log_helper.rb
 require "logger"
 
 module Hke
-  module LogHelper
+  class LogHelper
+    def self.instance
+      @instance ||= new
+    end
 
-    def log(filename)
-      timestamp = Time.now.strftime("%H%M%S") # 143000
-      # log_path = Rails.root.join("log", "#{filename}_#{timestamp}.log")
-      log_path = Rails.root.join("log", "#{filename}.log")
-      logger = Logger.new(log_path)
-      logger.datetime_format = "%Y-%m-%d %H:%M"
-      logger
+    def initialize
+      @debug = Rails.env.development?
+      @num_errors = 0
+      init_logging "api_import_csv"
     end
 
     def init_logging(filename)
-      @debug = Rails.env.development?
-      @info = log("info_" + filename)
-      @error = log("error_" + filename)
-      @num_errors = 0
+      log_path_info = Rails.root.join("log", "info_#{filename}.log")
+      log_path_error = Rails.root.join("log", "error_#{filename}.log")
+
+      @info_logger = Logger.new(log_path_info)
+      @error_logger = Logger.new(log_path_error)
+
+      [@info_logger, @error_logger].each { |logger| logger.datetime_format = "%Y-%m-%d %H:%M" }
     end
 
     def log_info(msg)
       puts "@@@ INFO: #{msg}" if @debug
-      @info.info(msg)  # Corrected method call
+      @info_logger&.info(msg)
     end
 
     def log_error(msg)
       puts "@@@ ERROR: #{msg}" if @debug
-      @error.error(msg)  # Corrected method call
+      @error_logger&.error(msg)
       @num_errors += 1
     end
   end
 end
+

@@ -14,6 +14,8 @@ module Hke
     end
 
     config.autoload_paths << File.expand_path("../lib", __dir__)
+    config.eager_load_paths << File.expand_path("../lib", __dir__)
+
     initializer "hke.assets.precompile" do |app|
       app.config.assets.precompile += %w[hke/application.css]
     end

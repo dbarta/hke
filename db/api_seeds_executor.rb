@@ -1,16 +1,16 @@
-require 'httparty'
+# require 'httparty'
 require 'CSV'
-require_relative '../lib/hke/log_helper.rb'
 require_relative '../lib/hke/api_helper.rb'
+require_relative '../lib/hke/log_helper.rb'
+require_relative '../lib/hke/loggable.rb'
 
 class ApiSeedsExecutor
   include Hke::ApiHelper
-  include Hke::LogHelper
+  include Hke::Loggable
   include Hke::ApplicationHelper
 
   def initialize(max_num_people)
     @max_num_people = max_num_people
-    init_logging "api_import_csv"
     I18n.locale = :he
   end
 

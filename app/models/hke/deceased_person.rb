@@ -1,6 +1,8 @@
 require_relative "../../../lib/hke/heb"
 module Hke
   class DeceasedPerson < CommunityRecord
+    include Hke::Deduplicatable
+    deduplication_fields :first_name, :last_name, :hebrew_year_of_death, :hebrew_month_of_death, :hebrew_day_of_death
     has_person_name
 
     # Associations

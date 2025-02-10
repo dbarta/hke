@@ -1,6 +1,9 @@
 module Hke
   class ContactPerson < CommunityRecord
     include Hke::Addressable
+    include Hke::Deduplicatable
+    deduplication_fields :first_name, :last_name, :phone
+
     has_person_name
     has_many :relations, dependent: :destroy
     has_many :deceased_people, through: :relations
