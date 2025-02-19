@@ -15,16 +15,19 @@ module Hke
     end
 
     def save(*args, **options)
-      return super unless new_record?  # Allow normal updates
+      if !new_record?
+        log_info "Deduplicatable: Updating record for #{self.class.name}"
+        return super
+      end
 
       existing_record = find_existing_record
       if existing_record
-        log_info("Deduplication: Found existing record for #{self.class.name} with #{deduplication_query(existing_record)}. Returning the existing record.")
+        log_info "Deduplicatable: Found existing record for #{self.class.name} with #{deduplication_query(existing_record)}. Returning the existing record."
         self.id = existing_record.id
         return true  # Mimics a successful save without creating a new record
       end
 
-      log_info("Creating new #{self.class.name} record with #{deduplication_query}.")
+      log_info "Deduplicatable: Creating new #{self.class.name} record with #{deduplication_query}."
       super  # Proceed with the normal save process if no duplicate is found
     end
 

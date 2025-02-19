@@ -25,6 +25,7 @@ module Hke
 
     def log_info(msg)
       puts "@@@ INFO: #{msg}" if @debug
+      # @info_logger.info(msg)
       @info_logger&.info(msg)
     end
 

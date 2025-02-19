@@ -5,6 +5,27 @@ module Hke
   module ApiHelper
     include Hke::Loggable
 
+
+    def clear_database
+      [
+          Hke::FutureMessage,
+          Hke::Relation,
+          Hke::DeceasedPerson,
+          Hke::ContactPerson,
+          Hke::Cemetery,
+          AccountUser,
+          Hke::System,
+          Hke::Community,
+          ApiToken,
+          Account,
+          User,
+      ].each do |model|
+        model.delete_all
+        log_info "@@@ Database table for: #{model.to_s} successfully cleared."
+      end
+      log_info "@@@ All Hakhel database tables successfully cleared."
+    end
+
     def check_response(request_body, response, raise: true)
       if !response.success?
         log_error "Failed call, code: #{response.code} with: #{request_body}"
@@ -16,7 +37,6 @@ module Hke
         raise "@@@ RAISED: API call failed." if raise
       end
       # log_info "Successful Api call with #{request_body}. response: #{response.inspect}"
-      log_info "Returned id: #{response['id']}" if response["id"]
       return response
     end
 
@@ -49,22 +69,32 @@ module Hke
     def create_admin_account_community_system
       init_urls
       # Register new admin user
+      admin_name = "admin"
       response = post("#{@hakhel_url}/users",
-          {user: {name: "admin", email: "david@odeca.net", password: "password",
+          {user: {name: admin_name, email: "david@odeca.net", password: "password",
                   terms_of_service: true, admin: true }})
       @user_id = response["id"]
+      log_info "@@@ user: '#{admin_name}' successfully registered."
 
       login_as_admin
+      log_info "@@@ user: '#{admin_name}' successfully logged in. Got an API token."
 
       # Create account
-      response = post("#{@hakhel_url}/accounts", { account: {name: "Kfar Vradim", owner_id: @user_id, personal: false, billing_email: "david@odeca.net" }})
+      account_name = "Kfar Vradim"
+      response = post("#{@hakhel_url}/accounts", { account: {name: account_name, owner_id: @user_id, personal: false, billing_email: "david@odeca.net" }})
       @account_id = response["id"]
+      log_info "@@@ Account: '#{account_name}' successfully created."
 
       # Create community
-      post("#{@hke_url}/communities", { community: {name: "Kfar Vradim Synagogue", community_type: "synagogue", account_id: @account_id }})
+      community_name = "Kfar Vradim Synagogue"
+      post("#{@hke_url}/communities", { community: {name: community_name, community_type: "synagogue", account_id: @account_id }})
+      log_info "@@@ Community: '#{community_name}' successfully created."
 
       # Create system record
+      product_name = "Hakhel"
+      product_version = "0.1"
       post("#{@hke_url}/system", {system: {product_name: "Hakhel", version: "0.1" }})
+      log_info "@@@ System record with product: '#{product_name}', version: #{product_version} successfully created."
     end
 
     def create_or_find_cemetery(cemetery_name)
@@ -74,7 +104,6 @@ module Hke
       response = post("#{@hke_url}/cemeteries", { cemetery: { name: cemetery_name } })
       # log_info "Response from create cemetery: #{response}"
       if response && response["id"]
-        log_info "Created cemetery: #{response['name']}"
         response["id"]
       else
         log_error "Failed to create cemetery: #{cemetery_name}"
