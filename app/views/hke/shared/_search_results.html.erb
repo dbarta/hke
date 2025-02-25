@@ -3,7 +3,7 @@
       <table class="table border border-grey-500">
         <thead>
           <tr>
-            <% table_fields.each do |field| %>
+            <% fields.each do |field| %>
               xxx
               <% field_translation = t(field.to_s).presence || "ERROR" %>
               <% if field_translation == "ERROR" %>
@@ -23,7 +23,7 @@
           <% people.each do |person| %>
             <% edit_person_path = (person.class == Hke::DeceasedPerson ? (edit_deceased_person_path(person)) : (edit_contact_person_path(person)))%>
             <tr class="border-t  border-gray-400 group hover:bg-gray-100" onclick="window.location='<%= edit_person_path %>';">
-              <% table_fields.each do |field| %>
+              <% fields.each do |field| %>
                 <td class="p-2 "><%#= (field != :gender) ? (person.send field) : t((person.send field)) %> <%= person.send field %></td>
                 </td>
               <% end %>
