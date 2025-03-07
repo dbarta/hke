@@ -31,4 +31,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "shoulda-matchers", "~> 5.0"
   spec.add_development_dependency "faker", "~> 2.18"
   spec.add_development_dependency "rack-test"
+  spec.add_dependency "liquid"
 end

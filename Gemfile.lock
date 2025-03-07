@@ -4,6 +4,7 @@ PATH
     hke (0.2.0)
       has_secure_token (~> 1.0)
       httparty
+      liquid
       rails (>= 7.1.2)
 
 GEM
@@ -125,6 +126,9 @@ GEM
     json (2.7.2)
     language_server-protocol (3.17.0.3)
     lint_roller (1.1.0)
+    liquid (5.6.0)
+      bigdecimal
+      strscan
     loofah (2.22.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -305,6 +309,7 @@ DEPENDENCIES
   hke!
   httparty
   i18n-debug
+  liquid
   name_of_person (~> 1.0)
   pg
   puma
