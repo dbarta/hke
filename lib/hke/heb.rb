@@ -4,6 +4,8 @@ require "json"
 module Hke
   # Control debug output
   @heb_debug = false
+  @h2g_cache = {}
+  @g2h_cache = {}
 
   def self.heb_debug=(value)
     @heb_debug = value
@@ -99,6 +101,13 @@ module Hke
   end
 
   def self.h2g(name, y, m, d)
+     debug_puts "@@@ in h2g, name: #{name}, year: #{y}, month: #{m}, day: #{d}"
+     key = "#{y}-#{m}-#{d}"
+    if @h2g_cache[key]
+      debug_puts "@@@ in h2g, cache used for: #{key}"
+      return @h2g_cache[key]
+    end
+
     debug_puts "@@@ in h2g, name: #{name}, year: #{y}, month: #{m}, day: #{d}"
     if !y || !m || !d
       puts "ERROR: an element is missing from the Hebrew date for #{name}."
@@ -119,11 +128,19 @@ module Hke
       puts "y: #{y.reverse};#{v[0]}  hm=|#{m.reverse}|;#{v[1]}  hd=|#{d.reverse}|;#{v[2]}"
     end
     debug_puts "@@@ Out of h2g, return: #{result}"
+    @h2g_cache[key] = result
     result
   end
 
   def self.g2h(name, date)
+
     debug_puts "@@@ in g2h, name: #{name}, date: #{date}"
+
+    if @g2h_cache[date]
+      debug_puts "@@@ in g2h, cache used for: #{date}"
+      return @g2h_cache[date]
+    end
+
     if !date.is_a?(Date)
       puts "Error in Date: #{date} for #{name}"
       return nil
@@ -140,6 +157,7 @@ module Hke
       puts "Error in Date: #{date} for #{name}"
     end
     debug_puts "@@@ Out of g2h, return: #{result}"
+    @g2h_cache[date] = result
     result
   end
 
@@ -160,6 +178,7 @@ module Hke
     result
   end
 
+  # Returns the nearest future gregorian yahrzeit date
   def self.yahrzeit_date(name, hebrew_month, hebrew_day)
     debug_puts "@@@ in yahrzeit_date, name: #{name}, hebrew_month: #{hebrew_month}, hebrew_day: #{hebrew_day}"
     hyd = next_hebrew_date(name, hebrew_month, hebrew_day)

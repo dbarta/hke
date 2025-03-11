@@ -1,6 +1,44 @@
 module Hke
   module ApplicationHelper
 
+    def num_days_till_yahrzeit(deceased)
+      gregorian_yahrzeit_date = Hke.yahrzeit_date(deceased.name, deceased.hebrew_month_of_death, deceased.hebrew_day_of_death)
+      return (gregorian_yahrzeit_date - Date.today).to_i
+    end
+
+    def day_of_week_of_yahrzeit(deceased)
+      hebrew_days = {
+        0 => "ראשון",  # Sunday
+        1 => "שני",    # Monday
+        2 => "שלישי",  # Tuesday
+        3 => "רביעי",  # Wednesday
+        4 => "חמישי",  # Thursday
+        5 => "שישי",   # Friday
+        6 => "שבת"     # Saturday
+      }
+      gregorian_yahrzeit_date = Hke.yahrzeit_date(deceased.name, deceased.hebrew_month_of_death, deceased.hebrew_day_of_death)
+      return hebrew_days[gregorian_yahrzeit_date.wday]
+    end
+
+    def hebrew_date_of_yahrzeit(deceased)
+      "#{deceased.hebrew_day_of_death} #{deceased.hebrew_month_of_death}"
+    end
+
+    def num_of_years_gone(deceased)
+      gregorian_yahrzeit_date = Hke.yahrzeit_date(deceased.name, deceased.hebrew_month_of_death, deceased.hebrew_day_of_death)
+      years = gregorian_yahrzeit_date.year - deceased.date_of_death.year
+      return years
+    end
+
+    def petirata(gender)
+      gender == "male" ? "פטירתו" : "פטירתה"
+    end
+
+
+
+
+
+
     # selects records that match first_name or last_name to given key, returns array of ids.
     def select_by_name model, key
       sql_key = "%#{key}%"

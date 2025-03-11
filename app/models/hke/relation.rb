@@ -1,6 +1,7 @@
 module Hke
   class Relation < CommunityRecord
     include Hke::Deduplicatable
+    include Hke::MessageGenerator
     deduplication_fields :deceased_person_id, :contact_person_id
 
     belongs_to :deceased_person
@@ -40,11 +41,11 @@ module Hke
 
     def create_future_messages
       dp = deceased_person
-
+      snippets = generate_hebrew_snippets(self, [:sms])
       fm = FutureMessage.create!(
         messageable: self, # Changed relation to messageable since it is polymorphic
         send_date: calculate_reminder_date(dp.name, dp.hebrew_month_of_death, dp.hebrew_day_of_death), # Changed send_at to send_date, assuming it matches the column name
-        full_message: "Reminder: Yahrzeit for #{deceased_person.first_name} #{deceased_person.last_name}",
+        full_message: snippets[:sms],
         delivery_method: calculate_delivery_method, # This will set the delivery_method enum
         email: contact_person.email,
         phone: contact_person.phone
