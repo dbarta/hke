@@ -1,4 +1,5 @@
-require '/Users/dbarta/Dropbox/Apps/web_apps/rails_apps/apps/hke/lib/hke/loggable.rb'
+#require '/Users/dbarta/Dropbox/Apps/web_apps/rails_apps/apps/hke/lib/hke/loggable.rb'
+require_relative '../../../lib/hke/loggable.rb'
 module Hke
   module Deduplicatable
     extend ActiveSupport::Concern
