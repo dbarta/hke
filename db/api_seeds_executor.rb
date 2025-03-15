@@ -1,5 +1,5 @@
 # require 'httparty'
-require 'CSV'
+require 'csv'
 require_relative '../lib/hke/api_helper.rb'
 require_relative '../lib/hke/log_helper.rb'
 require_relative '../lib/hke/loggable.rb'
