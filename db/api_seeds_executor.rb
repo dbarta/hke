@@ -95,11 +95,10 @@ class ApiSeedsExecutor
 
       contact_data_exists = false
       if row["שם פרטי איש קשר"] || row["שם משפחה איש קשר"]
-        log_info "Data for contact of #{row['שם פרטי של נפטר']} exists."
         if row[0] # The relationship must exist
           pair = @he_to_en_relations.find { |a| a[0] == row[0] }
           if pair
-            log_info "CSV file contains valid contact info for#{row['שם פרטי של נפטר']} with relationship #{pair[1]}."
+            log_info "CSV file contains valid contact info for #{row['שם פרטי של נפטר']} with relationship #{pair[1]}."
             contact_data_exists = true
             dp_data[:deceased_person][:relations_attributes] =
               [
