@@ -76,6 +76,9 @@ module Hke
                   terms_of_service: true, admin: true }})
       @user_id = response["id"]
       log_info "@@@ user: '#{admin_name}' successfully registered."
+      log_info "@@@ user id: #{@user_id}"
+      log_info "@@@ Response: #{response}"
+
 
       login_as_admin
       log_info "@@@ user: '#{admin_name}' successfully logged in. Got an API token."
