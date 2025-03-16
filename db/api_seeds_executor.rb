@@ -91,8 +91,9 @@ class ApiSeedsExecutor
                       mother_first_name: row["אמא של נפטר"],
                       cemetery_id: @cemetery_id
                     }
-                }
-      var contact_data_exists = false
+      }
+
+      contact_data_exists = false
       if row["שם פרטי איש קשר"] || row["שם משפחה איש קשר"]
         log_info "Data for contact of #{row['שם פרטי של נפטר']} exists."
         if row[0] # The relationship must exist
@@ -117,7 +118,7 @@ class ApiSeedsExecutor
           end
         end
       end
-      log_error "Missing or invalid contact info for: #{row['שם פרטי של נפטר']}."
+      log_error "Missing or invalid contact info for: #{row['שם פרטי של נפטר']}. " if !contact_data_exists
 
       dp_response = post("#{@hke_url}/deceased_people", dp_data, raise: false )
       log_info "@@@ Deceased: #{row['שם פרטי של נפטר']} id: #{dp_response[:id]} processed."
