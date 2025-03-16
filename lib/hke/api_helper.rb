@@ -84,13 +84,13 @@ module Hke
       account_name = "Kfar Vradim"
       response = post("#{@hakhel_url}/accounts", { account: {name: account_name, owner_id: @user_id, personal: false, billing_email: "david@odeca.net" }})
       log_info "@@@ account response: #{response}"
-      @account_id = response["account"]["id"]
+      @account_id = response["id"]
       log_info "@@@ Account: '#{account_name}' successfully created with id: #{@account_id}."
 
       # Create community
       community_name = "Kfar Vradim Synagogue"
       post("#{@hke_url}/communities", { community: {name: community_name, community_type: "synagogue", account_id: @account_id }})
-      @community_id = response["community"]["id"]
+      @community_id = response["id"]
       log_info "@@@ Community: '#{community_name}' successfully created with id: #{@community_id}."
 
       # Create system record
