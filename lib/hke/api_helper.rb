@@ -83,6 +83,7 @@ module Hke
       # Create account
       account_name = "Kfar Vradim"
       response = post("#{@hakhel_url}/accounts", { account: {name: account_name, owner_id: @user_id, personal: false, billing_email: "david@odeca.net" }})
+      log_info "@@@ account response: #{response}"
       @account_id = response["account"]["id"]
       log_info "@@@ Account: '#{account_name}' successfully created with id: #{@account_id}."
 
