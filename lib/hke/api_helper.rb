@@ -56,8 +56,9 @@ module Hke
     end
 
     def init_urls
-      @hakhel_url = "http://localhost:3000/api/v1"
-      @hke_url = "http://localhost:3000/hke/api/v1"
+      @API_URL = ENV.fetch("HAKHEL_BASE_URL", "http://localhost:3000")
+      @hakhel_url = "#{@API_URL}/api/v1"
+      @hke_url = "#{@API_URL}/hke/api/v1"
       @headers = {"Content-Type" => "application/json", "Accept" => "application/json"}
     end
 
