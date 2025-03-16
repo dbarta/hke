@@ -92,13 +92,14 @@ class ApiSeedsExecutor
                       cemetery_id: @cemetery_id
                     }
                 }
-
+      var contact_data_exists = false
       if row["שם פרטי איש קשר"] || row["שם משפחה איש קשר"]
         log_info "Data for contact of #{row['שם פרטי של נפטר']} exists."
         if row[0] # The relationship must exist
           pair = @he_to_en_relations.find { |a| a[0] == row[0] }
           if pair
-            log_info "Relationship #{pair[1]} exists."
+            log_info "CSV file contains valid contact info for#{row['שם פרטי של נפטר']} with relationship #{pair[1]}."
+            contact_data_exists = true
             dp_data[:deceased_person][:relations_attributes] =
               [
                 {
@@ -113,13 +114,10 @@ class ApiSeedsExecutor
                   }
                 }
               ]
-          else
-            log_info "Relationship #{row[0]} not  valid - not writing contact."
           end
-        else
-          log_info "Relationship for #{row['שם פרטי של נפטר']} does not exist - not writing contact."
         end
       end
+      log_error "Missing or invalid contact info for: #{row['שם פרטי של נפטר']}."
 
       dp_response = post("#{@hke_url}/deceased_people", dp_data, raise: false )
       log_info "@@@ Deceased: #{row['שם פרטי של נפטר']} id: #{dp_response[:id]} processed."
