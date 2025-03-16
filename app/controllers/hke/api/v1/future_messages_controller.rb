@@ -4,7 +4,14 @@ class Hke::Api::V1::FutureMessagesController < Api::BaseController
 
   # GET /future_messages
   def index
-    @future_messages = Hke::FutureMessage.all
+    name = params[:name]
+    start_date = params[:start_date]
+    end_date = params[:end_date]
+
+    @future_messages = Hke::FutureMessage
+      .filter_by_name(name)
+      .filter_by_date_range(start_date, end_date)
+
     render json: @future_messages, include: include_all?
   end
 
