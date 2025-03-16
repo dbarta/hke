@@ -74,11 +74,8 @@ module Hke
       response = post("#{@hakhel_url}/users",
           {user: {name: admin_name, email: "david@odeca.net", password: "password",
                   terms_of_service: true, admin: true }})
-      @user_id = response["id"]
-      log_info "@@@ user: '#{admin_name}' successfully registered."
-      log_info "@@@ user id: #{@user_id}"
-      log_info "@@@ Response: #{response}"
-
+      @user_id = response["user"]["id"]
+      log_info "@@@ user: '#{admin_name}' successfully registered with id: #{@user_id}."
 
       login_as_admin
       log_info "@@@ user: '#{admin_name}' successfully logged in. Got an API token."
@@ -86,13 +83,14 @@ module Hke
       # Create account
       account_name = "Kfar Vradim"
       response = post("#{@hakhel_url}/accounts", { account: {name: account_name, owner_id: @user_id, personal: false, billing_email: "david@odeca.net" }})
-      @account_id = response["id"]
-      log_info "@@@ Account: '#{account_name}' successfully created."
+      @account_id = response["account"]["id"]
+      log_info "@@@ Account: '#{account_name}' successfully created with id: #{@account_id}."
 
       # Create community
       community_name = "Kfar Vradim Synagogue"
       post("#{@hke_url}/communities", { community: {name: community_name, community_type: "synagogue", account_id: @account_id }})
-      log_info "@@@ Community: '#{community_name}' successfully created."
+      @community_id = response["community"]["id"]
+      log_info "@@@ Community: '#{community_name}' successfully created with id: #{@community_id}."
 
       # Create system record
       product_name = "Hakhel"
