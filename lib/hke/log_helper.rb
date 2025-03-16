@@ -8,7 +8,7 @@ module Hke
     end
 
     def initialize
-      @debug = Rails.env.development?
+      @debug = true # Rails.env.development?
       @num_errors = 0
       init_logging "api_import_csv"
     end
