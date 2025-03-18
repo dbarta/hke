@@ -19,6 +19,7 @@ gem "has_secure_token", "~> 1.0"
 gem "httparty"
 gem "standard"
 gem "liquid"
+gem "twilio-ruby"
 
 group :development, :test do
   gem "i18n-debug"

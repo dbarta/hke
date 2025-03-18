@@ -32,4 +32,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "faker", "~> 2.18"
   spec.add_development_dependency "rack-test"
   spec.add_dependency "liquid"
+  spec.add_dependency "twilio-ruby"
 end

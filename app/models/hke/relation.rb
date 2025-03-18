@@ -53,6 +53,7 @@ module Hke
       puts "Reminder for contact: #{contact_person.name}  deceased: #{dp.name} date: #{fm.send_date}"
     end
 
+
     private
 
     def calculate_reminder_date(name, hm, hd)

@@ -25,6 +25,9 @@ Hke::Engine.routes.draw do
       resources :cemeteries
       resources :communities
       resources :future_messages
+        member do
+          post :send
+      end
       resources :deceased_people
       resources :contact_people
       resources :relations

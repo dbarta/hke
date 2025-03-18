@@ -1,5 +1,8 @@
 module Hke
   class FutureMessage < CommunityRecord
+    include Hke::Loggable
+
+
     # TODO:
     # 1. delivery_method - implement as bit field, with accessor functions
     # 2. instead of send_date, use two fields: scheduled_send_date_and_time and actual_sent_date_and_time
@@ -47,6 +50,11 @@ module Hke
 
     # Placeholder for message_type validation; clarify what message_type represents
     # validates :message_type, presence: true, inclusion: { in: [/* expected values */] }
+
+    def send_now
+      log_info "Sending now #{self}"
+      update(sent_at: Time.current) # Mark as sent
+    end
 
     private
 
