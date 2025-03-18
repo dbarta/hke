@@ -24,7 +24,7 @@ Hke::Engine.routes.draw do
       resource :system, only: [:show, :edit, :update, :create]
       resources :cemeteries
       resources :communities
-      resources :future_messages
+      resources :future_messages do
         member do
           post :send
         end
