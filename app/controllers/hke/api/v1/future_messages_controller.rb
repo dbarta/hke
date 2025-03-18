@@ -1,6 +1,6 @@
 class Hke::Api::V1::FutureMessagesController < Api::BaseController
   include Hke::SetCommunityAsTenant
-  before_action :set_future_message, only: %i[show update destroy send]
+  before_action :set_future_message, only: %i[show update destroy] # send]
 
   # GET /future_messages
   def index
@@ -16,13 +16,13 @@ class Hke::Api::V1::FutureMessagesController < Api::BaseController
   end
 
   # POST /api/v1/future_messages/123/send
-  def send
-    if @future_message.send_now()
-      render json: @future_message, status: :ok, location: @future_message
-    else
-      render json: @future_message.errors, status: :unprocessable_entity
-    end
-  end
+  # def send
+  #   if @future_message.send_now()
+  #     render json: @future_message, status: :ok, location: @future_message
+  #   else
+  #     render json: @future_message.errors, status: :unprocessable_entity
+  #   end
+  # end
 
 
   # GET /future_messages/1
