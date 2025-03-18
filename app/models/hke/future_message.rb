@@ -53,6 +53,7 @@ module Hke
 
     def send_now
       log_info "Sending now #{self}"
+      Hke::TwilioSmsSender.send_sms(to: '+972584579444', message: full_message)
       update(sent_at: Time.current) # Mark as sent
     end
 
