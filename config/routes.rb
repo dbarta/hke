@@ -26,7 +26,7 @@ Hke::Engine.routes.draw do
       resources :communities
       resources :future_messages do
         member do
-          post :send
+          post :blast
         end
       end
       resources :deceased_people

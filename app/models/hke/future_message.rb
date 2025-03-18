@@ -51,7 +51,7 @@ module Hke
     # Placeholder for message_type validation; clarify what message_type represents
     # validates :message_type, presence: true, inclusion: { in: [/* expected values */] }
 
-    def send_now
+    def blast
       log_info "Sending now #{self}"
       Hke::TwilioSmsSender.send_sms(to: '+972584579444', message: full_message)
       update(sent_at: Time.current) # Mark as sent
