@@ -17,7 +17,7 @@ class Hke::Api::V1::FutureMessagesController < Api::BaseController
 
   # POST /api/v1/future_messages/123/send
   def send
-    if @future_message.send_now
+    if @future_message.send_now()
       render json: @future_message, status: :ok, location: @future_message
     else
       render json: @future_message.errors, status: :unprocessable_entity
