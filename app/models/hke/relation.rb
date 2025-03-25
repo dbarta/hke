@@ -41,16 +41,26 @@ module Hke
 
     def create_future_messages
       dp = deceased_person
+      cp = contact_person
       snippets = generate_hebrew_snippets(self, [:sms])
       fm = FutureMessage.create!(
         messageable: self, # Changed relation to messageable since it is polymorphic
         send_date: calculate_reminder_date(dp.name, dp.hebrew_month_of_death, dp.hebrew_day_of_death), # Changed send_at to send_date, assuming it matches the column name
         full_message: snippets[:sms],
         delivery_method: calculate_delivery_method, # This will set the delivery_method enum
-        email: contact_person.email,
-        phone: contact_person.phone
+        email: cp.email,
+        phone: cp.phone,
+        deceased_first_name: dp.first_name,
+        deceased_last_name: dp.last_name,
+        date_of_death: dp.date_of_death,
+        contact_first_name: cp.first_name,
+        contact_last_name: cp.last_name,
+        hebrew_year_of_death: dp.hebrew_year_of_death,
+        hebrew_month_of_death: dp.hebrew_month_of_death,
+        hebrew_day_of_death: dp.hebrew_day_of_death,
+        relation_of_deceased_to_contact: relation_of_deceased_to_contact,
       )
-      puts "Reminder for contact: #{contact_person.name}  deceased: #{dp.name} date: #{fm.send_date}"
+      log_info "Reminder for contact: #{contact_person.name}  deceased: #{dp.name} date: #{fm.send_date}"
     end
 
 
