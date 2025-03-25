@@ -1,4 +1,4 @@
-class AddCachedFieldsToHkeFutureMessages < ActiveRecord::Migration[8.0]
+class AddCachedFieldsToHkeFutureMessages < ActiveRecord::Migration[7.1]
   def change
     change_table :hke_future_messages do |t|
       t.string :deceased_first_name

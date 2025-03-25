@@ -1,4 +1,4 @@
-class CreateHkeSentMessages < ActiveRecord::Migration[8.0]
+class CreateHkeSentMessages < ActiveRecord::Migration[7.1]
   def change
     create_table :hke_sent_messages do |t|
       t.references :messageable, polymorphic: true, null: false
