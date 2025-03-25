@@ -33,4 +33,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rack-test"
   spec.add_dependency "liquid"
   spec.add_dependency "twilio-ruby"
+  spec.add_dependency "sendgrid-ruby"
 end

@@ -20,6 +20,7 @@ gem "httparty"
 gem "standard"
 gem "liquid"
 gem "twilio-ruby"
+gem "sendgrid-ruby"
 
 group :development, :test do
   gem "i18n-debug"
