@@ -6,6 +6,7 @@ RSpec.describe Hke::MessageProcessor, type: :service do
   subject { described_class.new(future_message) }
 
   before do
+    allow_any_instance_of(Hke::MessageProcessor).to receive(:send_email).and_return('email-sid')
     # Stub Twilio client globally to prevent real API calls
     allow_any_instance_of(Hke::MessageProcessor).to receive(:build_twilio_client).and_return(double('TwilioClient', messages: messages_double))
   end
@@ -31,7 +32,7 @@ RSpec.describe Hke::MessageProcessor, type: :service do
 
     context 'when WhatsApp fails with no account, SMS fallback works' do
       before do
-        allow(messages_double).to receive(:create).and_wrap_original do |m, params|
+        allow(messages_double).to receive(:create) do |params|
           if params[:from].include?('whatsapp')
             raise Twilio::REST::RestError.new('No WhatsApp account', double(code: 63016))
           else
