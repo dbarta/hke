@@ -6,6 +6,7 @@ PATH
       httparty
       liquid
       rails (>= 7.1.2)
+      sendgrid-ruby
       twilio-ruby
 
 GEM
@@ -276,7 +277,10 @@ GEM
       rubocop (>= 1.48.1, < 2.0)
       rubocop-ast (>= 1.31.1, < 2.0)
     ruby-progressbar (1.13.0)
+    ruby_http_client (3.5.5)
     securerandom (0.4.1)
+    sendgrid-ruby (6.7.0)
+      ruby_http_client (~> 3.4)
     shoulda-matchers (5.3.0)
       activesupport (>= 5.2.0)
     sprockets (4.2.1)
@@ -342,6 +346,7 @@ DEPENDENCIES
   rack-cors
   rack-test
   rspec-rails (~> 6.1)
+  sendgrid-ruby
   shoulda-matchers (~> 5.0)
   sprockets-rails
   standard
