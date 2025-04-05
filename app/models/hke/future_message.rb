@@ -54,6 +54,7 @@ module Hke
     def blast
       log_info "Sending now #{self}"
       response = Hke::TwilioSmsSender.send_sms(to: '+972584579444', message: full_message)
+
       log_info "#{response}"
       # update(sent_at: Time.current) # Mark as sent
     end
