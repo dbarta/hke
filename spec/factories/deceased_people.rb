@@ -1,6 +1,7 @@
 # spec/factories/deceased_people.rb
 FactoryBot.define do
   factory :deceased_person, class: "Hke::DeceasedPerson" do
+    association :community, factory: :community
     first_name { Faker::Name.first_name }
     last_name { Faker::Name.last_name }
     gender { ["male", "female"].sample }

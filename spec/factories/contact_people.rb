@@ -1,6 +1,7 @@
 # spec/factories/contact_people.rb
 FactoryBot.define do
   factory :contact_person, class: "Hke::ContactPerson" do
+    association :community, factory: :community
     first_name { Faker::Name.first_name }
     last_name { Faker::Name.last_name }
     gender { ["male", "female"].sample }
