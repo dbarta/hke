@@ -9,6 +9,7 @@ module Hke
     include Hke::Loggable
 
     def initialize(future_message)
+      puts "@@@@@ in initialize"
       @future_message = future_message
     end
 
