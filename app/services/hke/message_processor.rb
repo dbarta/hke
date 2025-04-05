@@ -6,6 +6,7 @@
 module Hke
   class MessageProcessor
     include Hke::TwilioSend
+    include Hke::Loggable
 
     def initialize(future_message)
       @future_message = future_message
