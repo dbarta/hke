@@ -1,5 +1,6 @@
 FactoryBot.define do
   factory :future_message, class: "Hke::FutureMessage" do
+    association :community, factory: :community
     messageable { create(:relation) } # assuming you have this, or you can stub
     send_date { Time.current }
     full_message { 'Test message body' }
