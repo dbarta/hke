@@ -9,7 +9,7 @@ FactoryBot.define do
     email { 'test@example.com' }
     phone { '+1234567890' }
     token { SecureRandom.hex(10) }
-    community_id { 1 } # or dynamically create if your setup requires
+    # community_id { 1 } # or dynamically create if your setup requires
     deceased_first_name { 'John' }
     deceased_last_name { 'Doe' }
     contact_first_name { 'Jane' }
