@@ -28,7 +28,7 @@ FactoryBot.define do
         friend: "חבר",
         ex_wife: "גרושה",
         ex_husband: "גרוש"
-      }.values.sample
+    }.keys.sample.to_s
     end
   end
 end
