@@ -63,6 +63,9 @@ module Hke
       log_info "Reminder for contact: #{contact_person.name}  deceased: #{dp.name} date: #{fm.send_date}"
     end
 
+    def delivery_method_name
+      calculate_delivery_method
+    end
 
     private
 
