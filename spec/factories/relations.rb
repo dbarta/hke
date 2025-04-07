@@ -3,7 +3,7 @@ FactoryBot.define do
   factory :relation, class: "Hke::Relation" do
     association :contact_person, factory: :contact_person
     association :deceased_person, factory: :deceased_person
-    association :community, factory: :community
+    # association :community, factory: :community
 
     relation_of_deceased_to_contact do
       {
