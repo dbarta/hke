@@ -109,7 +109,7 @@ module Hke
 
     # Generate Twilio webhook URL for delivery status callbacks.
     def webhook_url(modality)
-      Rails.application.routes.url_helpers.twilio_sms_status_url(
+      Hke::Engine.routes.url_helpers.twilio_sms_status_url(
         host: ENV['WEBHOOK_HOST'],
         modality: modality
       )
