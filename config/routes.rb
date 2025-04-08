@@ -21,6 +21,7 @@ Hke::Engine.routes.draw do
 
   namespace :api, defaults: {format: :json} do
     namespace :v1 do
+      post 'twilio/sms/status', to: 'twilio_callback#sms_status'
       resource :system, only: [:show, :edit, :update, :create]
       resources :cemeteries
       resources :communities
