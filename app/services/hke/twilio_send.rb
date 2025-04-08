@@ -109,7 +109,7 @@ module Hke
 
     # Generate Twilio webhook URL for delivery status callbacks.
     def webhook_url(modality)
-      Hke::Engine.routes.url_helpers.hke_api_v1_twilio_sms_status_url(
+      Hke::Engine.routes.url_helpers.api_v1_twilio_sms_status_url(
         host: ENV['WEBHOOK_HOST'],
         modality: modality
       )

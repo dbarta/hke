@@ -1,4 +1,4 @@
-require_dependency 'hke/loggable'
+require_dependency 'hke/loggable' # loading order
 class Hke::Api::V1::TwilioCallbackController < Api::BaseController
   include Hke::Loggable
 #  Hke::Loggable
