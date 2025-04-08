@@ -42,7 +42,7 @@ module Hke
       end
 
       @message_sids
-    rescue Twilio::REST::RestError, SendGrid::Error => e
+    rescue Twilio::REST::RestError, StandardError => e
       log_error "Message sending failed: #{e.message}"
       raise
     end
@@ -103,7 +103,7 @@ module Hke
         log_info "Email sent to #{@future_message.email}, Status: #{response.status_code}"
         "email-#{SecureRandom.hex(6)}"
       else
-        raise SendGrid::Error.new("Email failed with status #{response.status_code}")
+        raise StandardError.new("SendGrid email send failed with status #{response.status_code}")
       end
     end
 
