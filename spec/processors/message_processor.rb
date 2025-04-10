@@ -7,7 +7,6 @@ RSpec.describe Hke::MessageProcessor, type: :service do
 
   before do
     allow_any_instance_of(Hke::MessageProcessor).to receive(:send_email).and_return('email-sid')
-    # Stub Twilio client globally to prevent real API calls
     allow_any_instance_of(Hke::MessageProcessor).to receive(:build_twilio_client).and_return(double('TwilioClient', messages: messages_double))
   end
 
@@ -16,8 +15,13 @@ RSpec.describe Hke::MessageProcessor, type: :service do
   describe '#call' do
     context 'when WhatsApp succeeds' do
       before do
-        # ✅ FIX 1: Return a double with sid for WhatsApp
-        allow(messages_double).to receive(:create).and_return(double('Message', sid: 'whatsapp-sid', status_code: 200))
+        allow(messages_double).to receive(:create) do |params|
+          if params[:from].include?('whatsapp')
+            double('Message', sid: 'whatsapp-sid', status_code: 200)
+          else
+            double('Message', sid: 'sms-sid', status_code: 200)
+          end
+        end
       end
 
       it 'creates a sent message and deletes the future message' do
@@ -34,9 +38,8 @@ RSpec.describe Hke::MessageProcessor, type: :service do
     context 'when WhatsApp fails with no account, SMS fallback works' do
       before do
         allow(messages_double).to receive(:create) do |params|
-          # ✅ FIX 2a: Safe guard params[:from].to_s
-          if params[:from].to_s.include?('whatsapp')
-            raise Twilio::REST::RestError.new('No WhatsApp account', double(status_code: 63016))
+          if params[:from].include?('whatsapp')
+            raise Twilio::REST::RestError.new('No WhatsApp account', double(code: 63016, body: 'No WhatsApp account'))
           else
             double('Message', sid: 'sms-sid', status_code: 200)
           end
@@ -56,9 +59,10 @@ RSpec.describe Hke::MessageProcessor, type: :service do
 
     context 'when Twilio raises an unexpected error' do
       before do
-        # ✅ FIX 3: Provide status_code on double
-        error_response = double(status_code: 500)
-        allow(messages_double).to receive(:create).and_raise(Twilio::REST::RestError.new('Unexpected error', error_response))
+        error_response = double(status_code: 500, body: 'Twilio error body')
+        allow(messages_double).to receive(:create).and_raise(
+          Twilio::REST::RestError.new('Unexpected error', error_response)
+        )
       end
 
       it 'raises an error and does not create a sent message or delete the future message' do
