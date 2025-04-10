@@ -16,7 +16,8 @@ RSpec.describe Hke::MessageProcessor, type: :service do
   describe '#call' do
     context 'when WhatsApp succeeds' do
       before do
-        allow(messages_double).to receive(:create).and_return(double('Message', sid: 'whatsapp-sid'))
+        # ✅ FIX 1: Return a double with sid for WhatsApp
+        allow(messages_double).to receive(:create).and_return(double('Message', sid: 'whatsapp-sid', status_code: 200))
       end
 
       it 'creates a sent message and deletes the future message' do
@@ -33,10 +34,11 @@ RSpec.describe Hke::MessageProcessor, type: :service do
     context 'when WhatsApp fails with no account, SMS fallback works' do
       before do
         allow(messages_double).to receive(:create) do |params|
-          if params[:from].include?('whatsapp')
-            raise Twilio::REST::RestError.new('No WhatsApp account', double(code: 63016))
+          # ✅ FIX 2a: Safe guard params[:from].to_s
+          if params[:from].to_s.include?('whatsapp')
+            raise Twilio::REST::RestError.new('No WhatsApp account', double(status_code: 63016))
           else
-            double('Message', sid: 'sms-sid')
+            double('Message', sid: 'sms-sid', status_code: 200)
           end
         end
       end
@@ -54,7 +56,9 @@ RSpec.describe Hke::MessageProcessor, type: :service do
 
     context 'when Twilio raises an unexpected error' do
       before do
-        allow(messages_double).to receive(:create).and_raise(Twilio::REST::RestError.new('Unexpected error', double(code: 12345)))
+        # ✅ FIX 3: Provide status_code on double
+        error_response = double(status_code: 500)
+        allow(messages_double).to receive(:create).and_raise(Twilio::REST::RestError.new('Unexpected error', error_response))
       end
 
       it 'raises an error and does not create a sent message or delete the future message' do
