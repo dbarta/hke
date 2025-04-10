@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Hke::MessageProcessor, type: :service do
-  let(:future_message) { create(:future_message, delivery_method: :sms, phone: ENV['TWILIO_TEST_PHONE'] || '+1234567890') }
+  let(:future_message) { create(:future_message, delivery_method: :sms, phone: ENV['TWILIO_TEST_PHONE'] || '+972584579444') }
 
   subject { described_class.new(future_message) }
 
