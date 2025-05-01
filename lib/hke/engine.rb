@@ -16,6 +16,9 @@ module Hke
     config.autoload_paths << File.expand_path("../lib", __dir__)
     config.eager_load_paths << File.expand_path("../lib", __dir__)
 
+    config.autoload_paths << root.join('app/lib')
+    config.eager_load_paths << root.join('app/lib') if Rails.env.production?
+
     initializer "hke.assets.precompile" do |app|
       app.config.assets.precompile += %w[hke/application.css]
     end
