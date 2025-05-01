@@ -1,6 +1,7 @@
 module Hke
   class Relation < CommunityRecord
     include Hke::Deduplicatable
+    include Hke::LogModelEvents
     include Hke::MessageGenerator
     deduplication_fields :deceased_person_id, :contact_person_id
 

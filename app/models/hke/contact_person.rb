@@ -3,6 +3,7 @@ module Hke
     include Hke::Addressable
     include Hke::Deduplicatable
     deduplication_fields :first_name, :last_name, :phone
+    include Hke::LogModelEvents
 
     has_person_name
     has_many :relations, dependent: :destroy

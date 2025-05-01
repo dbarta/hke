@@ -1,6 +1,7 @@
 module Hke
   class FutureMessage < CommunityRecord
     include Hke::Loggable
+    include Hke::LogModelEvents
 
 
     # TODO:
