@@ -17,8 +17,8 @@ module Hke
       log_path_info = Rails.root.join("log", "info_#{filename}.log")
       log_path_error = Rails.root.join("log", "error_#{filename}.log")
 
-      @info_logger = Logger.new(log_path_info)
-      @error_logger = Logger.new(log_path_error)
+      @info_logger = Rails.logger.new(log_path_info)
+      @error_logger = Rails.logger.new(log_path_error)
 
       [@info_logger, @error_logger].each { |logger| logger.datetime_format = "%Y-%m-%d %H:%M" }
     end
