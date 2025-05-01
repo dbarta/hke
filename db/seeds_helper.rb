@@ -9,7 +9,7 @@ module SeedsHelper
   def log(filename)
     log_path = Rails.root.join("db", filename)
     File.delete(log_path) if File.exist?(log_path)
-    logger = Rails.logger.new(log_path)
+    logger = ::Logger.new(log_path)
     logger.datetime_format = "%Y-%m-%d %H:%M"
     logger
   end
