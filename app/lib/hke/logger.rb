@@ -7,7 +7,7 @@ module Hke
         entity_id:      entity&.id,
         user_id:        Current.user&.id,
         community_id:   ActsAsTenant.current_tenant&.id,
-        ip_address:     Current.request&.ip,
+        # ip_address:     Current.request&.ip,
         message_token:  message_token,
         event_time:     event_time,
         details:        details.presence || {},
