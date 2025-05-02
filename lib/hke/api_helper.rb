@@ -16,6 +16,7 @@ module Hke
           AccountUser,
           Hke::System,
           Hke::Community,
+          Hke::Log,
           ApiToken,
           Account,
           User,

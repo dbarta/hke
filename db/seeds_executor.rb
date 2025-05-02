@@ -12,23 +12,6 @@ class SeedsExecutor
     I18n.locale = :he
   end
 
-  def clear_database
-    Hke::FutureMessage.delete_all
-    Hke::Relation.delete_all
-    Hke::DeceasedPerson.delete_all
-    Hke::ContactPerson.delete_all
-    Hke::Cemetery.delete_all
-
-    AccountUser.delete_all
-    Hke::System.delete_all
-    Hke::Community.delete_all
-
-    ApiToken.delete_all
-
-    Account.delete_all
-    User.delete_all
-  end
-
   def create_users_and_accounts
     Hke::System.create!(product_name: "Hakhel", version: "0.1")
     admin_user = User.create!(name: "admin", email: "david@odeca.net", password: "password", terms_of_service: true, admin: true)
