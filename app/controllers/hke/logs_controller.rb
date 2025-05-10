@@ -13,13 +13,21 @@ module Hke
         scope = scope.where(event_type: params[:event_type])
       end
 
-      # if params[:start].present? && params[:end].present?
-      #   scope = scope.where(event_time: params[:start]..params[:end])
-      # elsif params[:start].present?
-      #   scope = scope.where("event_time >= ?", params[:start])
-      # elsif params[:end].present?
-      #   scope = scope.where("event_time <= ?", params[:end])
-      # end
+      begin
+        start_date = Date.parse(params[:start]) if params[:start].present?
+        end_date = Date.parse(params[:end]) if params[:end].present?
+      rescue ArgumentError
+        start_date = end_date = nil
+      end
+
+      if start_date && end_date
+        scope = scope.where(event_time: start_date.beginning_of_day..end_date.end_of_day)
+      elsif start_date
+        scope = scope.where("event_time >= ?", start_date.beginning_of_day)
+      elsif end_date
+        scope = scope.where("event_time <= ?", end_date.end_of_day)
+      end
+
 
 
       sort_column = %w[event_time event_type entity_type message_token ip_address error_type].include?(params[:sort]) ? params[:sort] : "event_time"
