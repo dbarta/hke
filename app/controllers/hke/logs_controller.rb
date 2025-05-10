@@ -1,4 +1,5 @@
 class Hke::LogsController < ApplicationController
+  helper Hke::ApplicationHelper
   include Pagy::Backend
 
   def index
