@@ -1,4 +1,5 @@
 class Hke::LogsController < ApplicationController
+  before_action :set_community_as_current_tenant
   helper Hke::ApplicationHelper
   include Pagy::Backend
 
