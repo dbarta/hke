@@ -24,7 +24,7 @@ module Hke
 
       # scope = Hke::Log.all
       @pagy, @logs = pagy(scope, items: 100)
-      @logs = Hke::Log.all
+      # @logs = Hke::Log.all
       @logs.load
       puts "@@@@@@@@@ log count: #{@logs.count}"
 
