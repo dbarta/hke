@@ -9,9 +9,9 @@ module Hke
 
       scope = Hke::Log.all
 
-      # if params[:event_type].present?
-      #   scope = scope.where(event_type: params[:event_type])
-      # end
+      if params[:event_type].present?
+        scope = scope.where(event_type: params[:event_type])
+      end
 
       # if params[:start].present? && params[:end].present?
       #   scope = scope.where(event_time: params[:start]..params[:end])
