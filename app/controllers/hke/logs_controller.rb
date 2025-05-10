@@ -20,6 +20,7 @@ class Hke::LogsController < ApplicationController
 
     scope = scope.order("#{sort_column} #{sort_direction}")
 
+    scope = Hke::Log.all
     @pagy, @logs = pagy(scope, items: 100)
 
     respond_to do |format|
