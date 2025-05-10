@@ -1,6 +1,6 @@
 Hke::Engine.routes.draw do
 
-  resources :selections
+  resources :logs, only: [:index]
   # get 'hke/landing_pages/:id1/:token1', to: 'hke/landing_pages#show'
   # get 'hke/landing_pages/:id1', to: "hke/landing_pages#show", as: "landing"
   resources :cemeteries

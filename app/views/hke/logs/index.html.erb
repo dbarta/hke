@@ -1,0 +1,63 @@
+<%# Sort helper with ▲▼ indicators %>
+<% def sort_link(column, label) %>
+  current = params[:sort] == column
+  direction = current && params[:direction] == "asc" ? "desc" : "asc"
+  arrow = if current
+    params[:direction] == "asc" ? "▲" : "▼"
+  else
+    ""
+  end
+  link_to "#{label} #{arrow}".html_safe, request.query_parameters.merge(sort: column, direction: direction)
+<% end %>
+
+<h1>Debug Log Viewer</h1>
+
+<form method="get" class="filters" style="margin-bottom: 1rem;">
+  <label>Event Type:
+    <select name="event_type">
+      <option value="">All</option>
+      <% @event_types.each do |type| %>
+        <option value="<%= type %>" <%= 'selected' if params[:event_type] == type %>><%= type %></option>
+      <% end %>
+    </select>
+  </label>
+
+  <label>Start Date:
+    <input type="date" name="start" value="<%= params[:start] %>">
+  </label>
+
+  <label>End Date:
+    <input type="date" name="end" value="<%= params[:end] %>">
+  </label>
+
+  <button type="submit">Apply Filters</button>
+</form>
+
+<table>
+  <thead>
+    <tr>
+      <th><%= sort_link("event_time", "Event Time") %></th>
+      <th><%= sort_link("event_type", "Event Type") %></th>
+      <th><%= sort_link("entity_type", "Entity") %></th>
+      <th><%= sort_link("message_token", "Message Token") %></th>
+      <th><%= sort_link("ip_address", "IP Address") %></th>
+      <th><%= sort_link("error_type", "Error Type") %></th>
+      <th>Error Message</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @logs.each do |log| %>
+      <tr>
+        <td><%= log.event_time.strftime("%Y-%m-%d %H:%M:%S") %></td>
+        <td><%= log.event_type %></td>
+        <td><%= [log.entity_type, log.entity_id].compact.join("#") %></td>
+        <td><%= log.message_token %></td>
+        <td><%= log.ip_address %></td>
+        <td><%= log.error_type %></td>
+        <td><%= truncate(log.error_message.to_s, length: 100) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= pagy_nav(@pagy) %>
