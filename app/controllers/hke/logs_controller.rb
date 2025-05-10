@@ -22,6 +22,7 @@ class Hke::LogsController < ApplicationController
 
     scope = Hke::Log.all
     @pagy, @logs = pagy(scope, items: 100)
+    @logs.load
 
     respond_to do |format|
       format.html
