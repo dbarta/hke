@@ -1,6 +1,17 @@
 module Hke
   module ApplicationHelper
 
+    def sort_link(column, label)
+      current = params[:sort] == column
+      direction = current && params[:direction] == "asc" ? "desc" : "asc"
+      arrow = if current
+        params[:direction] == "asc" ? "▲" : "▼"
+      else
+        ""
+      end
+      link_to "#{label} #{arrow}".html_safe, request.query_parameters.merge(sort: column, direction: direction)
+    end
+
     def num_days_till_yahrzeit(deceased)
       gregorian_yahrzeit_date = Hke.yahrzeit_date(deceased.name, deceased.hebrew_month_of_death, deceased.hebrew_day_of_death)
       return (gregorian_yahrzeit_date - Date.today).to_i

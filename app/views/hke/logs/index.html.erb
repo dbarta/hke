@@ -1,15 +1,4 @@
 <%# Sort helper with ▲▼ indicators %>
-<% def sort_link(column, label) %>
-  current = params[:sort] == column
-  direction = current && params[:direction] == "asc" ? "desc" : "asc"
-  arrow = if current
-    params[:direction] == "asc" ? "▲" : "▼"
-  else
-    ""
-  end
-  link_to "#{label} #{arrow}".html_safe, request.query_parameters.merge(sort: column, direction: direction)
-<% end %>
-
 <h1>Debug Log Viewer</h1>
 
 <form method="get" class="filters" style="margin-bottom: 1rem;">
