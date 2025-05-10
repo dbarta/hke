@@ -23,8 +23,8 @@ class Hke::LogsController < ApplicationController
     # scope = Hke::Log.all
     # @pagy, @logs = pagy(scope, items: 100)
     @logs = Hke::Log.all
-    puts "@@@@@@@@@ log count: #{@logs.count}"
     @logs.load
+    puts "@@@@@@@@@ log count: #{@logs.count}"
 
     # respond_to do |format|
     #   format.html
