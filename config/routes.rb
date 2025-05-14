@@ -6,7 +6,6 @@ Hke::Engine.routes.draw do
   resources :cemeteries
   resources :communities
   resources :future_messages
-  resources :sms_messages
   resources :landing_pages
   resources :contact_people do
     collection do
