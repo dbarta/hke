@@ -4,7 +4,6 @@
         <thead>
           <tr>
             <% fields.each do |field| %>
-              xxx
               <% field_translation = t(field.to_s).presence || "ERROR" %>
               <% if field_translation == "ERROR" %>
                 <% puts "@@@@@@@@@ t(field.to_s) in search results is nil for field #{field.to_s}" %>
