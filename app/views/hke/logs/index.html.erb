@@ -1,9 +1,9 @@
-<%# Sort helper with ▲▼ indicators %>
-<h1>Debug Log Viewer</h1>
+<h1 class="text-xl font-semibold mb-4">Debug Log Viewer</h1>
 
-<form method="get" class="filters" style="margin-bottom: 1rem;">
-  <label>Event Type:
-    <select name="event_type">
+<form method="get" class="mb-4 flex flex-wrap gap-4 items-end">
+  <label class="block">
+    <span class="text-sm font-medium">Event Type:</span>
+    <select name="event_type" class="border border-gray-300 rounded px-2 py-1">
       <option value="">All</option>
       <% @event_types.each do |type| %>
         <option value="<%= type %>" <%= 'selected' if params[:event_type] == type %>><%= type %></option>
@@ -11,42 +11,61 @@
     </select>
   </label>
 
-  <label>Start Date:
-    <input type="date" name="start" value="<%= params[:start] %>">
+  <label class="block">
+    <span class="text-sm font-medium">Start Date:</span>
+    <input type="date" name="start" value="<%= params[:start] %>" class="border border-gray-300 rounded px-2 py-1">
   </label>
 
-  <label>End Date:
-    <input type="date" name="end" value="<%= params[:end] %>">
+  <label class="block">
+    <span class="text-sm font-medium">End Date:</span>
+    <input type="date" name="end" value="<%= params[:end] %>" class="border border-gray-300 rounded px-2 py-1">
   </label>
 
-  <button type="submit">Apply Filters</button>
+  <button type="submit" class="bg-blue-600 text-white px-4 py-1 rounded">Apply Filters</button>
 </form>
 
-<table>
-  <thead>
+<table class="min-w-full border border-gray-300 text-sm">
+  <thead class="bg-gray-100">
     <tr>
-      <th><%= sort_link("event_time", "Event Time") %></th>
-      <th><%= sort_link("event_type", "Event Type") %></th>
-      <th><%= sort_link("entity_type", "Entity") %></th>
-      <th><%= sort_link("message_token", "Message Token") %></th>
-      <th><%= sort_link("ip_address", "IP Address") %></th>
-      <th><%= sort_link("error_type", "Error Type") %></th>
-      <th>Error Message</th>
+      <th class="px-2 py-1 border-r text-left"><%= sort_link("event_time", "Date") %></th>
+      <th class="px-2 py-1 border-r text-left"><%= sort_link("event_type", "Event Type") %></th>
+      <th class="px-2 py-1 border-r text-left"><%= sort_link("entity_type", "Entity") %></th>
+      <th class="px-2 py-1 border-r text-left">Details</th>
+      <th class="px-2 py-1 border-r text-left"><%= sort_link("message_token", "Token") %></th>
+      <th class="px-2 py-1 border-r text-left"><%= sort_link("ip_address", "IP") %></th>
+      <th class="px-2 py-1 border-r text-left"><%= sort_link("error_type", "Error Type") %></th>
+      <th class="px-2 py-1 text-left">Message</th>
     </tr>
   </thead>
-  <tbody>
+  <tbody class="divide-y divide-gray-100">
     <% @logs.each do |log| %>
-      <tr>
-        <td><%= log.event_time.strftime("%Y-%m-%d %H:%M:%S") %></td>
-        <td><%= log.event_type %></td>
-        <td><%= [log.entity_type, log.entity_id].compact.join("#") %></td>
-        <td><%= log.message_token %></td>
-        <td><%= log.ip_address %></td>
-        <td><%= log.error_type %></td>
-        <td><%= truncate(log.error_message.to_s, length: 100) %></td>
+      <% details = log.details || {} %>
+      <% human_details = case log.entity_type
+        when "Hke::DeceasedPerson"
+          "שם: #{details['first_name']} #{details['last_name']}"
+        when "Hke::ContactPerson"
+          "שם: #{details['first_name']} #{details['last_name']}"
+        when "Hke::Relation"
+          rel = details['relation']
+          contact = details.dig('contact', 'first_name')
+          "קשר: #{rel}, איש קשר: #{contact}"
+        else
+          ""
+        end %>
+      <tr class="hover:bg-gray-50">
+        <td class="px-2 py-1 border-r"><%= log.event_time.strftime("%m/%d %H:%M:%S") %></td>
+        <td class="px-2 py-1 border-r"><%= log.event_type %></td>
+        <td class="px-2 py-1 border-r"><%= [log.entity_type, log.entity_id].compact.join("#") %></td>
+        <td class="px-2 py-1 border-r text-gray-600 text-xs"><%= human_details %></td>
+        <td class="px-2 py-1 border-r"><%= log.message_token %></td>
+        <td class="px-2 py-1 border-r"><%= log.ip_address %></td>
+        <td class="px-2 py-1 border-r"><%= log.error_type %></td>
+        <td class="px-2 py-1 whitespace-pre-wrap"><%= truncate(log.error_message.to_s, length: 80) %></td>
       </tr>
     <% end %>
   </tbody>
 </table>
 
-<%= pagy_nav(@pagy).html_safe %>
+<div class="mt-4">
+  <%= pagy_nav(@pagy).html_safe %>
+</div>
