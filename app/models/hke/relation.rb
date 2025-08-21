@@ -36,6 +36,7 @@ module Hke
     end
 
     def process_future_messages
+      return if destroyed? || !persisted?
       future_messages.destroy_all
       create_future_messages
     end

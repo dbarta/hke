@@ -13,7 +13,7 @@ module Hke
     validates :first_name, :last_name, :gender, :phone, presence: {message: :presence}
     validates :gender, inclusion: {in: ["male", "female"], message: :gender_invalid}
     accepts_nested_attributes_for :relations, allow_destroy: true, reject_if: :all_blank
-    after_commit :process_future_messages
+    after_commit :process_future_messages, on: :update
 
     private
 

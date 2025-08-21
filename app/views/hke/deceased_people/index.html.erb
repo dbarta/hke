@@ -10,12 +10,16 @@
     </div>
   </div>
   <div id="search_results">
-      <%= render partial: "hke/shared/search_results", 
-      locals: {       people: @deceased_people,
+      <%= render partial: "hke/shared/search_results",
+      locals: {       items: @deceased_people,
                       fields: [ :first_name, :last_name, :father_first_name, :mother_first_name,
                                 :hebrew_year_of_death, :hebrew_month_of_death, :hebrew_day_of_death,
                                 :date_of_death, :gender],
-                other_fields: [{header: t('contact_people'), data: "contact_name"}]
+                other_fields: [{header: t('contact_people'), data: "contact_name"}],
+                actions: [
+                  {name: "action_edit", path: :edit_deceased_person_path},
+                  {name: "action_delete", path: :deceased_person_path, method: :delete, confirm: true}
+                ]
               } %>
   </div>
 </div>

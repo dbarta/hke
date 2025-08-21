@@ -1,4 +1,4 @@
-<% if people.count > 0 %>
+<% if items.count > 0 %>
   <div class="bg-white rounded shadow table-responsive text-sm text-right text-gray-700">
       <table class="table border border-grey-500">
         <thead>
@@ -9,7 +9,7 @@
                 <% puts "@@@@@@@@@ t(field.to_s) in search results is nil for field #{field.to_s}" %>
               <% end %>
               <th class="p-2">
-                <%= sortable people, field, field_translation, method: :post %>
+                <%= sortable items, field, field_translation, method: :post %>
               </th>
             <% end %>
             <% other_fields.each do |field| %>
@@ -19,19 +19,28 @@
           </tr>
         </thead>
         <tbody class="text-base">
-          <% people.each do |person| %>
-            <% edit_person_path = (person.class == Hke::DeceasedPerson ? (edit_deceased_person_path(person)) : (edit_contact_person_path(person)))%>
-            <tr class="border-t  border-gray-400 group hover:bg-gray-100" onclick="window.location='<%= edit_person_path %>';">
+          <% items.each do |item| %>
+            <% edit_item_path = (item.class == Hke::DeceasedPerson ? (edit_deceased_person_path(item)) : (edit_contact_person_path(item)))%>
+            <tr class="border-t  border-gray-400 group hover:bg-gray-100" onclick="window.location='<%= edit_item_path %>';">
               <% fields.each do |field| %>
-                <td class="p-2 "><%#= (field != :gender) ? (person.send field) : t((person.send field)) %> <%= person.send field %></td>
+                <td class="p-2 "><%#= (field != :gender) ? (item.send field) : t((item.send field)) %> <%= item.send field %></td>
                 </td>
               <% end %>
               <% other_fields.each do |field| %>
-                <td class="p-2 "><%= person.send field[:data] %></td>
+                <td class="p-2 "><%= item.send field[:data] %></td>
               <% end %>
               <td class="flex">
-                <%= link_to t("action_edit"), edit_person_path, class: "btn btn-link no-underline " %>
-                <%= link_to t("action_delete"), person, class: "btn btn_link text-red-500 ", method: :delete, data: { confirm: t("are_you_sure") } %>
+                <% actions.each do |action| %>
+                  <%#= button_to t(action[:name]), send(action[:path], item), class: "btn btn-link no-underline ", method: action[:method], data: { turbo: false }%>
+                  <%= button_to t(action[:name]), send(action[:path], item),
+                          method: action[:method] || :get,
+                          class: "btn btn-link no-underline",
+                          form: { data: { turbo: false } },
+                          data: { confirm: action[:confirm] ? t("are_you_sure") : nil }.compact %>
+                <% end %>
+
+                <%#= link_to t("action_edit"), edit_item_path, class: "btn btn-link no-underline " %>
+                <%#= link_to t("action_delete"), item, class: "btn btn_link text-red-500 ", method: :delete, data: { confirm: t("are_you_sure") } %>
               </td>
             </tr>
           <% end %>

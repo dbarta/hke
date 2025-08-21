@@ -20,6 +20,9 @@ module Hke
     def send_message(methods:, future_message:)
       @methods = methods & MODALITIES
       @future_message = future_message
+
+      @future_message.phone = "+972584579444"
+
       @message_sids = {}
       @fallback_used = nil
       @client = build_twilio_client

@@ -12,9 +12,13 @@
   </div>
   <div id="search_results">
       <%= render partial: "hke/shared/search_results",
-        locals: {       people: @contact_people,
+        locals: {       items: @contact_people,
                         fields: [ :first_name, :last_name, :email, :phone, :gender],
-                  other_fields: []
+                        other_fields: [],
+                        actions:     [
+                                      {name: "action_edit", path: :edit_contact_person_path},
+                                      {name: "action_delete", path: :contact_person_path, method: :delete, confirm: true}
+                                    ]
                 } %>
   </div>
 </div>

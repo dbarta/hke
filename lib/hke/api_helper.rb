@@ -9,6 +9,7 @@ module Hke
     def clear_database
       [
           Hke::FutureMessage,
+          Hke::SentMessage,
           Hke::Relation,
           Hke::DeceasedPerson,
           Hke::ContactPerson,

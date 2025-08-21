@@ -4,7 +4,10 @@ module Hke
 
     included do
       after_create  { log_model_event("create", self.attributes) }
-      after_update  { log_model_event("update", saved_changes.except(:updated_at)) }
+      after_update do
+        changes = saved_changes.except(:updated_at)
+        log_model_event("update", changes) unless changes.empty?
+      end
       after_destroy { log_model_event("destroy", self.attributes) }
     end
 

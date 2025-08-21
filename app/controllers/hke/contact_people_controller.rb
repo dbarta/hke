@@ -21,7 +21,7 @@ module Hke
         format.html # Response for normal get - show full index
         format.turbo_stream do # Response from post, which is result of input from the search box
           render turbo_stream: [
-            turbo_stream.update("search_results", partial: "hke/shared/search_results", locals: {people: @contact_people}),
+            turbo_stream.update("search_results", partial: "hke/shared/search_results", locals: {items: @contact_people}),
             turbo_stream.update("people_count", @contact_people.count)
           ]
         end

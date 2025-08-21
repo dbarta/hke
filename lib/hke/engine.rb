@@ -2,6 +2,9 @@ module Hke
   class Engine < ::Rails::Engine
     isolate_namespace Hke
 
+    # -------------------------------
+    # Generators configuration
+    # -------------------------------
     config.generators do |g|
       g.test_framework :rspec,
         fixtures: true,
@@ -10,25 +13,35 @@ module Hke
         routing_specs: false,
         controller_specs: false,
         request_specs: false
-      g.fixture_replacement :factory_bot, dir: "spec/factories" # If using FactoryBot
+      g.fixture_replacement :factory_bot, dir: "spec/factories"
     end
 
-    config.autoload_paths << File.expand_path("../lib", __dir__)
-    config.eager_load_paths << File.expand_path("../lib", __dir__)
+    # -------------------------------
+    # Autoload & Eager Load Paths
+    # -------------------------------
 
-    config.autoload_paths << root.join('app/lib')
-    config.eager_load_paths << root.join('app/lib') if Rails.env.production?
+    lib_path = root.join("lib")
+    app_lib_path = root.join("app/lib")
 
+    config.autoload_paths += [lib_path, app_lib_path, root.join("app/helpers")]
+    config.eager_load_paths += [lib_path, app_lib_path] if Rails.env.production?
+
+    # -------------------------------
+    # Asset Precompilation
+    # -------------------------------
     initializer "hke.assets.precompile" do |app|
       app.config.assets.precompile += %w[hke/application.css]
     end
-    # initializer 'hke.load_locale' do |app|
-    #   app.config.i18n.load_path += Dir[File.join(root, 'config', 'locales', '**', '*.{rb,yml}')]
-    # end
-    # Permitted locales available for the application
-    config.i18n.available_locales = [:en, :he]
 
-    # Set default locale
+    # -------------------------------
+    # I18n Settings
+    # -------------------------------
+    config.i18n.available_locales = [:en, :he]
     config.i18n.default_locale = :he
+
+    # Optional: enable deep locale loading if needed
+    # initializer "hke.load_locales" do |app|
+    #   app.config.i18n.load_path += Dir[root.join("config/locales/**/*.{rb,yml}")]
+    # end
   end
 end

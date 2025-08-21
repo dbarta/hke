@@ -1,6 +1,7 @@
 module Hke
   class SentMessage < CommunityRecord
     include Hke::Loggable
+    include Hke::LogModelEvents
 
     belongs_to :messageable, polymorphic: true
     has_secure_token :token

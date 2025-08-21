@@ -5,7 +5,11 @@ Hke::Engine.routes.draw do
   # get 'hke/landing_pages/:id1', to: "hke/landing_pages#show", as: "landing"
   resources :cemeteries
   resources :communities
-  resources :future_messages
+  resources :future_messages do
+    member do
+      post :blast
+    end
+  end
   resources :landing_pages
   resources :contact_people do
     collection do
@@ -36,7 +40,7 @@ Hke::Engine.routes.draw do
   end
 
 
-  root to: "contact_people#index"
+  root to: "future_messages#index"
   get "contact_people/index"
   get "contact_people/edit"
   get "contact_people/show"

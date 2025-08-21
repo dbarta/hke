@@ -7,18 +7,23 @@ module Hke
   class MessageProcessor
     include Hke::TwilioSend
     include Hke::Loggable
+    include Hke::JobLoggingHelper
 
     def initialize(future_message)
-      puts "@@@@@ in initialize"
       @future_message = future_message
     end
 
-    # Main entry point: sends the message, records the result, and deletes the future message.
     def call
+      log_event "Process Message", details:
+        {text: "Start send process for message: #{@future_message.id} delivery_methods: #{delivery_methods}" }
+
       message_sids = send_message(
         methods: delivery_methods,
         future_message: @future_message
       )
+
+      log_event "Process Message", details:
+        {text: "Message: #{@future_message.id} sent. sid: #{message_sids.values.first} delivery_method: #{final_delivery_method}" }
 
       Hke::SentMessage.create!(
         copy_attributes.merge(
@@ -28,43 +33,28 @@ module Hke
       )
 
       @future_message.destroy!
+    rescue => e
+      log_error "Process Message", entity: @future_message, error: e
+      raise
     end
 
     private
 
-    # Determine delivery methods based on cached relation preference.
     def delivery_methods
       [@future_message.messageable.delivery_method_name]
     end
 
-    # Determine the final delivery method, accounting for possible fallback.
     def final_delivery_method
       @fallback_used || @future_message.messageable.delivery_method_name
     end
 
-    # Copy relevant attributes from the future message to the sent message.
     def copy_attributes
       @future_message.attributes.slice(
-        "messageable_type",
-        "messageable_id",
-        "send_date",
-        "full_message",
-        "message_type",
-        "metadata",
-        "delivery_method",
-        "email",
-        "phone",
-        "token",
-        "deceased_first_name",
-        "deceased_last_name",
-        "contact_first_name",
-        "contact_last_name",
-        "hebrew_year_of_death",
-        "hebrew_month_of_death",
-        "hebrew_day_of_death",
-        "relation_of_deceased_to_contact",
-        "date_of_death",
-        "community_id"
+        "messageable_type", "messageable_id", "send_date", "full_message",
+        "message_type", "metadata", "delivery_method", "email", "phone", "token",
+        "deceased_first_name", "deceased_last_name", "contact_first_name", "contact_last_name",
+        "hebrew_year_of_death", "hebrew_month_of_death", "hebrew_day_of_death",
+        "relation_of_deceased_to_contact", "date_of_death", "community_id"
       )
     end
   end

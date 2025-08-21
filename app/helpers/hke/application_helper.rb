@@ -45,6 +45,12 @@ module Hke
       gender == "male" ? "פטירתו" : "פטירתה"
     end
 
+    def muzmenet(gender)
+      gender == "male" ? "מוזמן" : "מוזמנת"
+    end
+
+
+
 
 
 

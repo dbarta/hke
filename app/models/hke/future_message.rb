@@ -53,11 +53,12 @@ module Hke
     # validates :message_type, presence: true, inclusion: { in: [/* expected values */] }
 
     def blast
-      log_info "Sending now #{self}"
-      response = Hke::TwilioSmsSender.send_sms(to: '+972584579444', message: full_message)
+      log_info "Enqueuing delivery job for #{self}"
+      Hke::FutureMessageSendJob.perform_async(id)
+    end
 
-      log_info "#{response}"
-      # update(sent_at: Time.current) # Mark as sent
+    def name
+      [contact_first_name, contact_last_name].compact.join(" ")
     end
 
     private

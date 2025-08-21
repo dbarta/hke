@@ -21,7 +21,7 @@ module Hke
     # Transformations
     include Hke::HebrewTransformations
     after_validation :transform_hebrew_dates
-    after_commit :process_future_messages
+    after_commit :process_future_messages, on: :update
 
     def contact_name
       if relations.empty?

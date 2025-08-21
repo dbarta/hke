@@ -1,71 +1,74 @@
-<h1 class="text-xl font-semibold mb-4">Debug Log Viewer</h1>
+<style>
+  table.hke-log-table {
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+  }
 
-<form method="get" class="mb-4 flex flex-wrap gap-4 items-end">
-  <label class="block">
-    <span class="text-sm font-medium">Event Type:</span>
-    <select name="event_type" class="border border-gray-300 rounded px-2 py-1">
-      <option value="">All</option>
-      <% @event_types.each do |type| %>
-        <option value="<%= type %>" <%= 'selected' if params[:event_type] == type %>><%= type %></option>
-      <% end %>
-    </select>
-  </label>
+  table.hke-log-table th,
+  table.hke-log-table td {
+    border: 1px solid #ccc;
+    padding: 4px 8px;
+    text-align: right;
+    word-break: break-word;
+    vertical-align: top;
+  }
 
-  <label class="block">
-    <span class="text-sm font-medium">Start Date:</span>
-    <input type="date" name="start" value="<%= params[:start] %>" class="border border-gray-300 rounded px-2 py-1">
-  </label>
+  .col-date   { width: 150px; }
+  .col-event  { width: 150px; }
+  .col-entity { width: 170px; }
+  /* Other columns grow automatically */
+</style>
 
-  <label class="block">
-    <span class="text-sm font-medium">End Date:</span>
-    <input type="date" name="end" value="<%= params[:end] %>" class="border border-gray-300 rounded px-2 py-1">
-  </label>
-
-  <button type="submit" class="bg-blue-600 text-white px-4 py-1 rounded">Apply Filters</button>
-</form>
-
-<table class="min-w-full border border-gray-300 text-sm">
-  <thead class="bg-gray-100">
-    <tr>
-      <th class="px-2 py-1 border-r text-left"><%= sort_link("event_time", "Date") %></th>
-      <th class="px-2 py-1 border-r text-left"><%= sort_link("event_type", "Event Type") %></th>
-      <th class="px-2 py-1 border-r text-left"><%= sort_link("entity_type", "Entity") %></th>
-      <th class="px-2 py-1 border-r text-left">Details</th>
-      <th class="px-2 py-1 border-r text-left"><%= sort_link("message_token", "Token") %></th>
-      <th class="px-2 py-1 border-r text-left"><%= sort_link("ip_address", "IP") %></th>
-      <th class="px-2 py-1 border-r text-left"><%= sort_link("error_type", "Error Type") %></th>
-      <th class="px-2 py-1 text-left">Message</th>
-    </tr>
-  </thead>
-  <tbody class="divide-y divide-gray-100">
-    <% @logs.each do |log| %>
-      <% details = log.details || {} %>
-      <% human_details = case log.entity_type
-        when "Hke::DeceasedPerson"
-          "שם: #{details['first_name']} #{details['last_name']}"
-        when "Hke::ContactPerson"
-          "שם: #{details['first_name']} #{details['last_name']}"
-        when "Hke::Relation"
-          rel = details['relation']
-          contact = details.dig('contact', 'first_name')
-          "קשר: #{rel}, איש קשר: #{contact}"
-        else
-          ""
-        end %>
-      <tr class="hover:bg-gray-50">
-        <td class="px-2 py-1 border-r"><%= log.event_time.strftime("%m/%d %H:%M:%S") %></td>
-        <td class="px-2 py-1 border-r"><%= log.event_type %></td>
-        <td class="px-2 py-1 border-r"><%= [log.entity_type, log.entity_id].compact.join("#") %></td>
-        <td class="px-2 py-1 border-r text-gray-600 text-xs"><%= human_details %></td>
-        <td class="px-2 py-1 border-r"><%= log.message_token %></td>
-        <td class="px-2 py-1 border-r"><%= log.ip_address %></td>
-        <td class="px-2 py-1 border-r"><%= log.error_type %></td>
-        <td class="px-2 py-1 whitespace-pre-wrap"><%= truncate(log.error_message.to_s, length: 80) %></td>
+<div style="padding-left: 1rem; padding-right: 1rem;">
+  <table class="hke-log-table text-sm">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="col-date"><%= sort_link("event_time", "תאריך") %></th>
+        <th class="col-event"><%= sort_link("event_type", "אירוע") %></th>
+        <th class="col-entity"><%= sort_link("entity_type", "ישות") %></th>
+        <th>פרטים</th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% @logs.each do |log| %>
+        <% details = log.details || {} %>
+        <% human_details = case log.entity_type
+          when "Hke::DeceasedPerson"
+            name = "שם: #{details['first_name']} #{details['last_name']}"
+            date = "תאריך פטירה: #{details['date_of_death']&.to_date}"
+            hebrew_date = "תאריך עברי: #{[details['hebrew_day_of_death'], details['hebrew_month_of_death'], details['hebrew_year_of_death']].compact.join(' ')}"
+            [name, date, hebrew_date].join("; ")
 
-<div class="mt-4">
-  <%= pagy_nav(@pagy).html_safe %>
+          when "Hke::ContactPerson"
+            name = "שם: #{details['first_name']} #{details['last_name']}"
+            phone = "טלפון: #{details['phone']}"
+            email = details['email'].present? ? "אימייל: #{details['email']}" : nil
+            [name, phone, email].compact.join("; ")
+
+          when "Hke::Relation"
+            relation = "Relation: #{details['relation_of_deceased_to_contact']}"
+            contact_id = "Contact: #{details['contact_person_id']}"
+            deceased_id = "Deceased: #{details['deceased_person_id']}"
+            [relation, contact_id, deceased_id].join("; ")
+
+          when "Hke::FutureMessage"
+            "הודעה: #{details['full_message']}<br>טלפון: #{details['phone']}}"
+
+          when "Hke::SentMessage"
+            "הודעה: #{details['full_message']}<br>טלפון: #{details['phone']}}"
+
+          else
+            "#{details['text']}"
+          end %>
+        <tr>
+          <td class="col-date"><%= log.event_time.strftime("%H:%M:%S.%L %m/%d ") %></td>
+          <td class="col-event"><%= log.event_type %></td>
+          <td class="col-entity"><%= [log.entity_type&.demodulize, log.entity_id].compact.join("#") %></td>
+          <td><%= human_details.html_safe %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 </div>
+

@@ -14,6 +14,7 @@ module Hke::MessageGenerator
       c_last_name: c.last_name,
       c_salutation: generate_salutation(c.gender),
       welcome: generate_welcome(c.gender),
+      muzmenet: muzmenet(c.gender),
       d_name: d.name,
       d_first_name: d.first_name,
       d_last_name: d.last_name,
@@ -25,6 +26,7 @@ module Hke::MessageGenerator
       heb_month_and_day: hebrew_date_of_yahrzeit(d),
       yahrzeit_years: num_of_years_gone(d),
       petirata: petirata(d.gender)
+
     }
   end
 
