@@ -53,8 +53,8 @@ module Hke
     # validates :message_type, presence: true, inclusion: { in: [/* expected values */] }
 
     def blast
-      log_info "Enqueuing delivery job for #{self}"
-      Hke::FutureMessageSendJob.perform_async(id)
+  log_info "Enqueuing delivery job for #{self}"
+  Hke::FutureMessageSendJob.perform_async(id, community_id)
     end
 
     def name

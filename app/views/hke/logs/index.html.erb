@@ -59,7 +59,7 @@
             "הודעה: #{details['full_message']}<br>טלפון: #{details['phone']}}"
 
           else
-            "#{details['text']}"
+            details.map { |k, v| "<strong>#{h k}:</strong> #{h v}" }.join("<br>").html_safe
           end %>
         <tr>
           <td class="col-date"><%= log.event_time.strftime("%H:%M:%S.%L %m/%d ") %></td>

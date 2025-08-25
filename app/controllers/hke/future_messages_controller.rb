@@ -8,7 +8,7 @@ module Hke
     # GET /future_messages index
     # POST /future_messages search
     def index
-      @future_messages = FutureMessage.all
+  @future_messages = FutureMessage.order(:send_date)
       if params[:name_search]
         key = "%#{params[:name_search]}%"
         @future_messages = @future_messages.where("first_name ILIKE ?", key)

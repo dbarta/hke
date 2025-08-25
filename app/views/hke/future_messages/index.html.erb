@@ -10,11 +10,15 @@
     </div>
   </div>
   <div id="search_results">
-      <%= render partial: "hke/shared/search_results",
-      locals: {       items: @future_messages,
-                      fields: [:send_date, :full_message, :message_type, :delivery_method, :email, :phone, :token],
-                other_fields: [],
-                    actions: [{name: "send_individual_message", path: :blast_future_message_path, method: :post}]
-              } %>
+  <%= render partial: "hke/shared/search_results",
+  locals: {       items: @future_messages,
+          fields: [:send_date, :full_message, :message_type, :delivery_method, :email, :phone, :token],
+        other_fields: [
+      {header: t('hebrew_year_of_death'), data: :hebrew_year_of_death},
+      {header: t('hebrew_month_of_death'), data: :hebrew_month_of_death},
+      {header: t('hebrew_day_of_death'), data: :hebrew_day_of_death}
+        ],
+        actions: [{name: "send_individual_message", path: :blast_future_message_path, method: :post}]
+      } %>
   </div>
 </div>
