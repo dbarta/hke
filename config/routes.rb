@@ -10,7 +10,7 @@ Hke::Engine.routes.draw do
       post :blast
     end
   end
-  resources :landing_pages
+  resources  :landing_pages
   resources :contact_people do
     collection do
       post :index
