@@ -1,5 +1,11 @@
 module Hke
   class FutureMessage < CommunityRecord
+    # Scope: messages scheduled to be sent this week, tenant-scoped
+    scope :for_current_week, -> {
+      week_start = Date.current.beginning_of_week(:sunday)
+      week_end = Date.current.end_of_week(:saturday)
+      where(send_date: week_start..week_end).order(:send_date)
+    }
     include Hke::Loggable
     include Hke::LogModelEvents
 
