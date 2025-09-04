@@ -53,7 +53,7 @@ module Hke
     end
 
     def login_as_admin
-      response = post("#{@hakhel_url}/auth", {email: "david@odeca.net", password: "password"})
+      response = post("#{@hakhel_url}/auth", {email: "david@odeca.net", password: "odeca111"})
       @headers["Authorization"] = "Bearer #{response["token"]}"
     end
 
@@ -71,16 +71,21 @@ module Hke
 
     def create_admin_account_community_system
       init_urls
-      # Register new admin user
-      admin_name = "admin"
+      # Register new admin user with new role system
       response = post("#{@hakhel_url}/users",
-          {user: {name: admin_name, email: "david@odeca.net", password: "password",
-                  terms_of_service: true, admin: true }})
+          {user: {
+            first_name: "David",
+            last_name: "Barta",
+            email: "david@odeca.net",
+            password: "odeca111",
+            terms_of_service: true,
+            roles: { system_admin: true, community_admin: false, community_user: false }
+          }})
       @user_id = response["user"]["id"]
-      log_info "@@@ user: '#{admin_name}' successfully registered with id: #{@user_id}."
+      log_info "@@@ user: 'David Barta' successfully registered with id: #{@user_id}."
 
       login_as_admin
-      log_info "@@@ user: '#{admin_name}' successfully logged in. Got an API token."
+      log_info "@@@ user: 'David Barta' successfully logged in. Got an API token."
 
       # Create account
       account_name = "Kfar Vradim"

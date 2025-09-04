@@ -1,0 +1,115 @@
+<div class="container mx-auto p-4">
+  <div class="my-8">
+    <h1 class="text-2xl font-bold mb-4" style="direction: rtl;">ברוכים הבאים להקהל!</h1>
+    <p class="mb-4" style="direction: rtl;">
+      ברוכים הבאים לאפליקציית הקהל. כאן תוכלו להוסיף נפטרים, לנהל אנשי קשר, ולתזמן הודעות זיכרון שישלחו אוטומטית למשפחות.
+    </p>
+  </div>
+
+  <!-- Message Statistics Dashboard -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-blue-100 p-6 rounded-lg">
+      <h3 class="text-lg font-semibold text-blue-800" style="direction: rtl;">הודעות נשלחו השבוע</h3>
+      <p class="text-3xl font-bold text-blue-600"><%= @stats[:total_sent_this_week] %></p>
+    </div>
+    <div class="bg-green-100 p-6 rounded-lg">
+      <h3 class="text-lg font-semibold text-green-800" style="direction: rtl;">הודעות ממתינות לאישור</h3>
+      <p class="text-3xl font-bold text-green-600"><%= @pending_approvals.count %></p>
+    </div>
+    <div class="bg-red-100 p-6 rounded-lg">
+      <h3 class="text-lg font-semibold text-red-800" style="direction: rtl;">כשלונות בשליחה</h3>
+      <p class="text-3xl font-bold text-red-600"><%= @stats[:total_failures] %></p>
+    </div>
+  </div>
+
+  <!-- Pending Approvals Section -->
+  <% if @pending_approvals.any? %>
+    <div class="my-8 bg-yellow-50 p-6 rounded-lg">
+      <h2 class="text-xl font-semibold mb-4" style="direction: rtl;">הודעות הממתינות לאישור</h2>
+      <div class="overflow-x-auto">
+        <table class="table-auto w-full mb-4 text-right">
+          <thead>
+            <tr class="bg-yellow-100">
+              <th class="px-2 py-2">תאריך שליחה</th>
+              <th class="px-2 py-2">שם נפטר</th>
+              <th class="px-2 py-2">איש קשר</th>
+              <th class="px-2 py-2">הודעה מקוצרת</th>
+              <th class="px-2 py-2">פעולות</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @pending_approvals.each do |msg| %>
+              <tr class="border-b">
+                <td class="px-2 py-2"><%= l(msg.send_date) %></td>
+                <td class="px-2 py-2"><%= msg.try(:deceased_person)&.name || "-" %></td>
+                <td class="px-2 py-2"><%= msg.try(:contact_person)&.name || "-" %></td>
+                <td class="px-2 py-2"><%= truncate(msg.full_message, length: 50) %></td>
+                <td class="px-2 py-2">
+                  <%= link_to 'אשר', future_message_path(msg, approve: true), method: :patch, 
+                              class: 'btn btn-sm btn-success mr-2' %>
+                  <%= link_to 'צפה', future_message_path(msg), class: 'btn btn-sm btn-primary' %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+        <%= link_to 'צפה בכל ההודעות הממתינות', future_messages_path(status: 'pending'), 
+                    class: 'btn btn-primary' %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- This Week's Messages -->
+  <div class="my-8">
+    <h2 class="text-xl font-semibold mb-2" style="direction: rtl;">הודעות שישלחו השבוע</h2>
+    <div class="overflow-x-auto">
+      <table class="table-auto w-full mb-4 text-right">
+        <thead>
+          <tr class="bg-gray-100">
+            <th class="px-2 py-2">שם נפטר</th>
+            <th class="px-2 py-2">תאריך שליחה</th>
+            <th class="px-2 py-2">מספר טלפון</th>
+            <th class="px-2 py-2">הודעה</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @messages.each do |msg| %>
+            <tr class="border-b">
+              <td class="px-2 py-1"><%= msg.try(:deceased_person)&.name || "-" %></td>
+              <td class="px-2 py-1"><%= l(msg.send_date) %></td>
+              <td class="px-2 py-1"><%= msg.phone %></td>
+              <td class="px-2 py-1"><%= truncate(msg.full_message, length: 100) %></td>
+            </tr>
+          <% end %>
+          <% if @messages.empty? %>
+            <tr><td colspan="4" class="text-center py-4">אין הודעות מתוזמנות לשבוע זה</td></tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Recent Failures -->
+  <% if @recent_failures.any? %>
+    <div class="my-8 bg-red-50 p-6 rounded-lg">
+      <h2 class="text-xl font-semibold mb-4 text-red-800" style="direction: rtl;">כשלונות אחרונים בשליחה</h2>
+      <div class="space-y-2">
+        <% @recent_failures.each do |failure| %>
+          <div class="flex justify-between items-center p-2 border-b border-red-200">
+            <span><%= failure.phone %> - <%= failure.error_message %></span>
+            <span class="text-sm text-red-600"><%= time_ago_in_words(failure.created_at) %> ago</span>
+          </div>
+        <% end %>
+      </div>
+      <%= link_to 'צפה בכל הכשלונות', logs_path(filter: 'failures'), class: 'btn btn-outline-red mt-4' %>
+    </div>
+  <% end %>
+
+  <!-- Quick Actions -->
+  <div class="flex gap-4 justify-center mt-8 flex-wrap">
+    <%= link_to 'ניהול נפטרים ואנשי קשר', deceased_people_path, class: 'btn btn-primary' %>
+    <%= link_to 'ניהול הודעות', future_messages_path, class: 'btn btn-secondary' %>
+    <%= link_to 'יבוא קובץ CSV', new_import_path, class: 'btn btn-success' %>
+    <%= link_to 'העדפות קהילה', community_preferences_path, class: 'btn btn-outline' %>
+  </div>
+</div>

@@ -1,0 +1,91 @@
+<div class="container mx-auto p-4" style="direction: rtl;">
+  <div class="my-8">
+    <h1 class="text-3xl font-bold mb-4"><%= t('admin.dashboard.title') %></h1>
+    <p class="text-gray-600 mb-6"><%= t('admin.dashboard.welcome', name: current_user.name) %></p>
+  </div>
+
+  <!-- Quick Actions - Single Button Pattern -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-lg shadow border-r-4 border-blue-500">
+      <h3 class="text-xl font-semibold mb-4"><%= t('admin.dashboard.quick_actions.communities') %></h3>
+      <p class="text-gray-600 mb-4"><%= t('admin.dashboard.quick_actions.manage_communities') %></p>
+      <%= link_to admin_communities_path, class: 'btn btn-primary block text-center w-full' do %>
+        <i class="fas fa-users ml-2"></i>
+        <%= t('admin.dashboard.quick_actions.communities') %>
+      <% end %>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow border-r-4 border-green-500">
+      <h3 class="text-xl font-semibold mb-4"><%= t('admin.dashboard.quick_actions.users') %></h3>
+      <p class="text-gray-600 mb-4"><%= t('admin.dashboard.quick_actions.manage_users') %></p>
+      <%= link_to admin_users_path, class: 'btn btn-primary block text-center w-full' do %>
+        <i class="fas fa-user ml-2"></i>
+        <%= t('admin.dashboard.quick_actions.users') %>
+      <% end %>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow border-r-4 border-purple-500">
+      <h3 class="text-xl font-semibold mb-4"><%= t('admin.dashboard.quick_actions.system_settings') %></h3>
+      <p class="text-gray-600 mb-4"><%= t('admin.dashboard.quick_actions.configure_preferences') %></p>
+      <%= link_to admin_system_preferences_path, class: 'btn btn-primary block text-center w-full' do %>
+        <i class="fas fa-cog ml-2"></i>
+        <%= t('admin.dashboard.quick_actions.system_settings') %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- System Statistics -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-blue-100 p-6 rounded-lg">
+      <h3 class="text-lg font-semibold text-blue-800"><%= t('admin.dashboard.statistics.communities') %></h3>
+      <p class="text-3xl font-bold text-blue-600"><%= @total_communities %></p>
+    </div>
+    <div class="bg-green-100 p-6 rounded-lg">
+      <h3 class="text-lg font-semibold text-green-800"><%= t('admin.dashboard.statistics.total_users') %></h3>
+      <p class="text-3xl font-bold text-green-600"><%= @total_users %></p>
+    </div>
+    <div class="bg-purple-100 p-6 rounded-lg">
+      <h3 class="text-lg font-semibold text-purple-800"><%= t('admin.dashboard.statistics.community_admins') %></h3>
+      <p class="text-3xl font-bold text-purple-600"><%= @total_community_admins %></p>
+    </div>
+    <div class="bg-yellow-100 p-6 rounded-lg">
+      <h3 class="text-lg font-semibold text-yellow-800"><%= t('admin.dashboard.statistics.messages_sent') %></h3>
+      <p class="text-3xl font-bold text-yellow-600"><%= @stats[:total_messages_sent] %></p>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h3 class="text-xl font-semibold mb-4"><%= t('admin.dashboard.recent_activity.recent_communities') %></h3>
+      <% if @recent_communities.any? %>
+        <div class="space-y-2">
+          <% @recent_communities.each do |community| %>
+            <div class="flex justify-between items-center p-2 border-b">
+              <span><%= community.name %></span>
+              <span class="text-sm text-gray-500"><%= time_ago_in_words(community.created_at) %> ago</span>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-500"><%= t('admin.dashboard.recent_activity.no_communities') %></p>
+      <% end %>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h3 class="text-xl font-semibold mb-4"><%= t('admin.dashboard.recent_activity.recent_users') %></h3>
+      <% if @recent_users.any? %>
+        <div class="space-y-2">
+          <% @recent_users.each do |user| %>
+            <div class="flex justify-between items-center p-2 border-b">
+              <span><%= user.name %> (<%= user.email %>)</span>
+              <span class="text-sm text-gray-500"><%= time_ago_in_words(user.created_at) %> ago</span>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-500"><%= t('admin.dashboard.recent_activity.no_users') %></p>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -1,26 +1,42 @@
 Hke::Engine.routes.draw do
 
+  # System Admin Routes
+  namespace :admin do
+    resources :communities do
+      resources :users, controller: 'community_users'
+    end
+    resources :users
+    resources :system_preferences
+    root to: 'dashboard#show'
+  end
+
+  # Community Admin Routes (existing + enhanced)
   resources :logs, only: [:index]
-  # get 'hke/landing_pages/:id1/:token1', to: 'hke/landing_pages#show'
-  # get 'hke/landing_pages/:id1', to: "hke/landing_pages#show", as: "landing"
   resources :cemeteries
-  resources :communities
+  resources :communities, only: [:show, :edit, :update]  # Limited for community admins
   resources :future_messages do
     member do
       post :blast
     end
+    collection do
+      get :approve
+      post :bulk_approve
+    end
   end
-  resources  :landing_pages
+  resources :landing_pages
   resources :contact_people do
     collection do
       post :index
+      post :import_csv
     end
   end
   resources :deceased_people do
     collection do
       post :index
+      post :import_csv
     end
   end
+  resources :community_preferences
 
   namespace :api, defaults: {format: :json} do
     namespace :v1 do
@@ -40,7 +56,8 @@ Hke::Engine.routes.draw do
   end
 
 
-  root to: "future_messages#index"
+  # Role-based dashboard routing
+  root to: "dashboard#show"
   get "contact_people/index"
   get "contact_people/edit"
   get "contact_people/show"

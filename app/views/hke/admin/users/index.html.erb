@@ -1,0 +1,113 @@
+<div class="container mx-auto my-8" style="direction: rtl;">
+  <div class="flex items-center mb-8">
+    <h4 class="h4 ml-10">
+      <span id="users_count"><%= @users.count %></span>
+      <%= " #{t('admin.users.index.title')}" %>
+    </h4>
+    <div class="mr-auto flex items-center">
+      <%= render partial: "hke/shared/search_box", locals: {url: admin_users_path} if defined?(render) %>
+      <%= link_to t('admin.users.index.create_new'), new_admin_user_path, class: "btn btn-small btn-primary mr-10" %>
+    </div>
+  </div>
+
+  <!-- Role Summary Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-blue-100 p-4 rounded-lg">
+      <h3 class="text-lg font-semibold text-blue-800"><%= t('admin.users.index.role_summary.system_admins') %></h3>
+      <p class="text-2xl font-bold text-blue-600"><%= @system_admins.count %></p>
+    </div>
+    <div class="bg-green-100 p-4 rounded-lg">
+      <h3 class="text-lg font-semibold text-green-800"><%= t('admin.users.index.role_summary.community_admins') %></h3>
+      <p class="text-2xl font-bold text-green-600"><%= @community_admins.count %></p>
+    </div>
+    <div class="bg-purple-100 p-4 rounded-lg">
+      <h3 class="text-lg font-semibold text-purple-800"><%= t('admin.users.index.role_summary.community_users') %></h3>
+      <p class="text-2xl font-bold text-purple-600"><%= @community_users.count %></p>
+    </div>
+  </div>
+
+  <div id="search_results">
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <%= t('admin.users.index.user') %>
+            </th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <%= t('admin.users.index.email') %>
+            </th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <%= t('admin.users.index.roles') %>
+            </th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <%= t('admin.users.index.community') %>
+            </th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <%= t('admin.users.index.created') %>
+            </th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <%= t('admin.users.index.actions') %>
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% @users.each do |user| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900">
+                  <%= link_to user.name, admin_user_path(user), class: 'text-indigo-600 hover:text-indigo-900' %>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <%= user.email %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex flex-wrap gap-1">
+                  <% if user.system_admin? %>
+                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800"><%= t('admin.users.index.role_labels.system_admin') %></span>
+                  <% end %>
+                  <% if user.community_admin? %>
+                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800"><%= t('admin.users.index.role_labels.community_admin') %></span>
+                  <% end %>
+                  <% if user.community_user? %>
+                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800"><%= t('admin.users.index.role_labels.community_user') %></span>
+                  <% end %>
+                  <% if user.active_roles.empty? %>
+                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800"><%= t('admin.users.index.role_labels.no_roles') %></span>
+                  <% end %>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <%= user.community&.name || 'None' %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <%= time_ago_in_words(user.created_at) %> ago
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                <%= link_to t('admin.users.index.view'), admin_user_path(user), class: 'text-indigo-600 hover:text-indigo-900' %>
+                <%= link_to t('admin.users.index.edit'), edit_admin_user_path(user), class: 'text-yellow-600 hover:text-yellow-900' %>
+                <% unless user == current_user %>
+                  <%= link_to t('admin.users.index.delete'), admin_user_path(user), method: :delete,
+                              confirm: t('admin.users.index.confirm_delete'),
+                              class: 'text-red-600 hover:text-red-900' %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+          <% if @users.empty? %>
+            <tr>
+              <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                <%= t('admin.users.index.no_users') %> <%= link_to t('admin.users.index.create_first'), new_admin_user_path, class: 'text-indigo-600 hover:text-indigo-900' %>.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="mt-6 text-sm text-gray-600">
+    <p><%= t('admin.users.index.total_users', count: @users.count) %></p>
+  </div>
+</div>

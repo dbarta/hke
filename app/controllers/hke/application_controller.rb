@@ -1,7 +1,7 @@
 module Hke
   class ApplicationController < ActionController::Base
-    
-    
+    include Hke::Authorization  # Use Hke's authorization instead of main app's
+
     #include JumpstartApp::Application.routes.url_helpers
     #helper Devise::Controllers::Helpers
     impersonates :user
@@ -10,6 +10,11 @@ module Hke
     include CurrentHelper
     include SetCurrentRequestDetails
     layout 'application'
+
+    # Enable Pundit authorization for all Hke controllers
+    after_action :verify_authorized, except: [:index]
+    after_action :verify_policy_scoped, only: [:index]
+    rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
     def remove_empty_relations_from(model_name, nested_model_name)
       x = params[model_name]
@@ -43,16 +48,26 @@ module Hke
     end
 
     private
-    
+
     def set_community_as_current_tenant
-      # Temporarily setting the tenant to the "Kfar Vradim Synagogue" community
-      community = Community.find_by(name: "Kfar Vradim Synagogue")
-      if community
+      if current_user&.system_admin?
+        # System admin: use selected community or global access
+        community = selected_community_for_system_admin
         ActsAsTenant.current_tenant = community
+      elsif current_user&.community_admin? || current_user&.community_user?
+        # Community users: scope to their assigned community
+        ActsAsTenant.current_tenant = current_user.community
       else
-        # Handle if the community is not found
-        raise "Community 'Kfar Vradim Synagogue' not found"
+        # Fallback to hardcoded community (temporary)
+        community = Community.find_by(name: "Kfar Vradim Synagogue")
+        ActsAsTenant.current_tenant = community if community
       end
+    end
+
+    def selected_community_for_system_admin
+      # For now, return nil for global access
+      # Later we'll add community selection UI
+      nil
     end
 
     def authenticate_admin
