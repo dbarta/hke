@@ -1,21 +1,23 @@
-class Hke::Api::V1::ContactPeopleController < Api::BaseController
+class Hke::Api::V1::ContactPeopleController < Hke::Api::BaseController
   include Hke::SetCommunityAsTenant
   before_action :set_contact_person, only: %i[show update destroy]
 
   # GET /hke/contact_people
   def index
-    @contact_people = Hke::ContactPerson.all
+    @contact_people = policy_scope(Hke::ContactPerson)
     render json: @contact_people, include: include_all?
   end
 
   # GET /hke/contact_people/1
   def show
+    authorize @contact_person
     render json: @contact_person, include: include_all?
   end
 
   # POST /hke/contact_people
   def create
     @contact_person = Hke::ContactPerson.new(contact_person_params)
+    authorize @contact_person
     if @contact_person.save
       render json: @contact_person, include: include_all?, status: :created, location: @contact_person
     else
@@ -25,6 +27,7 @@ class Hke::Api::V1::ContactPeopleController < Api::BaseController
 
   # PATCH/PUT /hke/contact_people/1
   def update
+    authorize @contact_person
     params = contact_person_params
     if @contact_person.update(params)
       render json: @contact_person, include: include_all?, status: :ok
@@ -35,6 +38,7 @@ class Hke::Api::V1::ContactPeopleController < Api::BaseController
 
   # DELETE /hke/contact_people/1
   def destroy
+    authorize @contact_person
     @contact_person.destroy!
   end
 

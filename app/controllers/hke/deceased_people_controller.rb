@@ -1,14 +1,13 @@
 module Hke
   class DeceasedPeopleController < ApplicationController
-    # before_action :authenticate_user!
+    before_action :authenticate_user!
     before_action :set_community_as_current_tenant
-    before_action :authenticate_admin
     before_action :set_deceased_person, only: [:show, :edit, :update, :destroy]
 
     # GET /deceased_people index
     # POST /deceased_people search
     def index
-      @deceased_people = DeceasedPerson.includes(relations: [:contact_person])
+      @deceased_people = policy_scope(DeceasedPerson).includes(relations: [:contact_person])
       if params[:name_search]
         key = "%#{params[:name_search]}%"
         @deceased_people = @deceased_people.where("first_name ILIKE ?", key)
@@ -30,22 +29,26 @@ module Hke
 
     # GET /deceased_people/1 or /deceased_people/1.json
     def show
+      authorize @deceased_person
       @contacts = @deceased_person.contact_people
     end
 
     # GET /deceased_people/new
     def new
       @deceased_person = DeceasedPerson.new
+      authorize @deceased_person
       @deceased_person.relations.build.build_contact_person
     end
 
     # GET /deceased_people/1/edit
     def edit
+      authorize @deceased_person
     end
 
     # POST /deceased_people or /deceased_people.json
     def create
       @deceased_person = DeceasedPerson.new(deceased_person_params)
+      authorize @deceased_person
 
       respond_to do |format|
         if @deceased_person.save
@@ -60,6 +63,7 @@ module Hke
 
     # PATCH/PUT /deceased_people/1 or /deceased_people/1.json
     def update
+      authorize @deceased_person
       remove_empty_relations_from "deceased_person", "contact_person"
       respond_to do |format|
         if @deceased_person.update(deceased_person_params)
@@ -74,6 +78,7 @@ module Hke
 
     # DELETE /deceased_people/1 or /deceased_people/1.json
     def destroy
+      authorize @deceased_person
       @deceased_person.destroy
       respond_to do |format|
         format.html { redirect_to deceased_people_url, notice: "Deceased person was successfully destroyed." }

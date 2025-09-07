@@ -5,8 +5,9 @@ Hke::Engine.routes.draw do
     resources :communities do
       resources :users, controller: 'community_users'
     end
-    resources :users
-    resources :system_preferences
+
+    resource :system_preferences, only: [:show, :edit, :update]
+    post :switch_to_community, to: "dashboard#switch_to_community"
     root to: 'dashboard#show'
   end
 

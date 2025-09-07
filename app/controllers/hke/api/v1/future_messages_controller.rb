@@ -1,4 +1,4 @@
-class Hke::Api::V1::FutureMessagesController < Api::BaseController
+class Hke::Api::V1::FutureMessagesController < Hke::Api::BaseController
   include Hke::SetCommunityAsTenant
   before_action :set_future_message, only: %i[show update destroy blast]
 
@@ -8,7 +8,7 @@ class Hke::Api::V1::FutureMessagesController < Api::BaseController
     start_date = params[:start_date]
     end_date = params[:end_date]
 
-    @future_messages = Hke::FutureMessage
+    @future_messages = policy_scope(Hke::FutureMessage)
       .filter_by_name(name)
       .filter_by_date_range(start_date, end_date)
 
@@ -17,6 +17,7 @@ class Hke::Api::V1::FutureMessagesController < Api::BaseController
 
   # POST /api/v1/future_messages/123/blast
   def blast
+    authorize @future_message, :blast?
     if @future_message.blast
       render json: @future_message, status: :ok, location: @future_message
     else

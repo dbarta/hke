@@ -18,6 +18,11 @@ module Hke
     after_create :schedule_daily_job
     after_destroy :remove_daily_job
 
+    # Method for search_results partial
+    def account_name
+      account&.name || 'N/A'
+    end
+
     private
 
     # Ensure an account is created before saving the community

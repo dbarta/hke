@@ -1,46 +1,38 @@
 module Hke
   class CemeteriesController < ApplicationController
+    before_action :authenticate_user!
     before_action :set_community_as_current_tenant
     before_action :set_cemetery, only: [:show, :edit, :update, :destroy]
 
-    # Uncomment to enforce Pundit authorization
-    # after_action :verify_authorized
-    # rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
-
     # GET /cemeteries
     def index
-      @pagy, @cemeteries = pagy(Cemetery.sort_by_params(params[:sort], sort_direction))
+      @pagy, @cemeteries = pagy(policy_scope(Cemetery).sort_by_params(params[:sort], sort_direction))
 
       # We explicitly load the records to avoid triggering multiple DB calls in the views when checking if records exist and iterating over them.
       # Calling @cemeteries.any? in the view will use the loaded records to check existence instead of making an extra DB call.
       @cemeteries.load
-
-      # Uncomment to authorize with Pundit
-      # authorize @cemeteries
     end
 
     # GET /cemeteries/1 or /cemeteries/1.json
     def show
+      authorize @cemetery
     end
 
     # GET /cemeteries/new
     def new
       @cemetery = Cemetery.new
-
-      # Uncomment to authorize with Pundit
-      # authorize @cemetery
+      authorize @cemetery
     end
 
     # GET /cemeteries/1/edit
     def edit
+      authorize @cemetery
     end
 
     # POST /cemeteries or /cemeteries.json
     def create
       @cemetery = Cemetery.new(cemetery_params)
-
-      # Uncomment to authorize with Pundit
-      # authorize @cemetery
+      authorize @cemetery
 
       respond_to do |format|
         if @cemetery.save
@@ -55,6 +47,7 @@ module Hke
 
     # PATCH/PUT /cemeteries/1 or /cemeteries/1.json
     def update
+      authorize @cemetery
       respond_to do |format|
         if @cemetery.update(cemetery_params)
           format.html { redirect_to @cemetery, notice: "Cemetery was successfully updated." }
@@ -68,6 +61,7 @@ module Hke
 
     # DELETE /cemeteries/1 or /cemeteries/1.json
     def destroy
+      authorize @cemetery
       @cemetery.destroy
       respond_to do |format|
         format.html { redirect_to cemeteries_url, notice: "Cemetery was successfully destroyed." }
@@ -80,17 +74,11 @@ module Hke
     # Use callbacks to share common setup or constraints between actions.
     def set_cemetery
       @cemetery = Cemetery.find(params[:id])
-
-      # Uncomment to authorize with Pundit
-      # authorize @cemetery
     end
 
     # Only allow a list of trusted parameters through.
     def cemetery_params
       params.require(:cemetery).permit(:name, :description)
-
-      # Uncomment to use Pundit permitted attributes
-      # params.require(:cemetery).permit(policy(@cemetery).permitted_attributes)
     end
   end
 end

@@ -1,21 +1,23 @@
-class Hke::Api::V1::DeceasedPeopleController < Api::BaseController
+class Hke::Api::V1::DeceasedPeopleController < Hke::Api::BaseController
   include Hke::SetCommunityAsTenant
   before_action :set_hke_deceased_person, only: %i[show update destroy]
 
   # GET /hke/deceased_people
   def index
-    @hke_deceased_people = Hke::DeceasedPerson.all
+    @hke_deceased_people = policy_scope(Hke::DeceasedPerson)
     render json: @hke_deceased_people, include: include_all?
   end
 
   # GET /hke/deceased_people/1
   def show
+    authorize @hke_deceased_person
     render json: @hke_deceased_person, include: {relations: {include: {contact_person: {include: :address}}}}
   end
 
   # POST /hke/deceased_people
   def create
     @hke_deceased_person = Hke::DeceasedPerson.new(deceased_person_params)
+    authorize @hke_deceased_person
     if @hke_deceased_person.save
       render json: @hke_deceased_person, include: {relations: {include: {contact_person: {include: :address}}}}, status: :created
     else
@@ -25,6 +27,7 @@ class Hke::Api::V1::DeceasedPeopleController < Api::BaseController
 
   # PATCH/PUT /hke/deceased_people/1
   def update
+    authorize @hke_deceased_person
     if @hke_deceased_person.update(deceased_person_params)
       render json: @hke_deceased_person, include: {relations: {include: {contact_person: {include: :address}}}}
     else
@@ -34,6 +37,7 @@ class Hke::Api::V1::DeceasedPeopleController < Api::BaseController
 
   # DELETE /hke/deceased_people/1
   def destroy
+    authorize @hke_deceased_person
     @hke_deceased_person.destroy!
   end
 

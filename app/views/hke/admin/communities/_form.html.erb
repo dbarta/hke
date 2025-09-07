@@ -1,0 +1,17 @@
+<%= form_with(model: [:admin, community]) do |form| %>
+  <%= render "shared/error_messages", resource: form.object %>
+
+  <div class="flex items-center justify-between mb-4 h4">   
+    <%= t("shared.scaffold.edit.title", model: t("admin.communities.index.title")) + ": #{@community.name}" %>
+    <div class="mr-auto flex">
+      <%= form.button t('save'), class: "btn btn-link" %>
+      <% if form.object.persisted? %>
+        <%= link_to t("delete"), [:admin, form.object], class: "btn btn-link", method: :delete, data: { confirm: t("are_you_sure") } %>
+      <% end %>
+      <%= link_to t("cancel"), [:admin, @community], class: "btn btn-link" %>
+    </div>
+  </div>
+
+  <%= render "community_fields", form: form %>
+
+<% end %>

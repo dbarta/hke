@@ -1,15 +1,16 @@
-class Hke::Api::V1::SystemsController < Api::BaseController
+class Hke::Api::V1::SystemsController < Hke::Api::BaseController
   before_action :set_system, except: :create
 
   # GET /api/system
   def show
+    authorize @system
     render json: @system, status: :ok
   end
 
   # POST /api/system
   def create
     @system = Hke::System.new(system_params)
-
+    authorize @system
     if @system.save
       render json: @system, status: :created
     else

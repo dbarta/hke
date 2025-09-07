@@ -1,20 +1,22 @@
-class Hke::Api::V1::CommunitiesController < Api::BaseController
+class Hke::Api::V1::CommunitiesController < Hke::Api::BaseController
   # include Hke::SetCommunityAsTenant
   before_action :set_community, only: %i[show update destroy]
 
   # GET /communities
   def index
-    @communities = Hke::Community.all
+    @communities = policy_scope(Hke::Community)
     render json: @communities, include: include_all?
   end
 
   # GET /communities/1
   def show
+    authorize @community
     render json: @community, include: include_all?
   end
 
   def create
     @community = Hke::Community.new(community_params)
+    authorize @community
     if @community.save
       render json: @community, status: :created
     else
@@ -23,6 +25,7 @@ class Hke::Api::V1::CommunitiesController < Api::BaseController
   end
 
   def update
+    authorize @community
     params = community_params
     if @community.update(params)
       render json: @community, include: :address, status: :ok
@@ -33,6 +36,7 @@ class Hke::Api::V1::CommunitiesController < Api::BaseController
 
   # DELETE /communities/1
   def destroy
+    authorize @community
     @community.destroy!
   end
 

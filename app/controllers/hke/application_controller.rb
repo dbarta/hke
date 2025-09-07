@@ -65,9 +65,12 @@ module Hke
     end
 
     def selected_community_for_system_admin
-      # For now, return nil for global access
-      # Later we'll add community selection UI
-      nil
+      # Check if system admin has selected a specific community
+      if session[:selected_community_id].present?
+        Community.find_by(id: session[:selected_community_id])
+      else
+        nil # Global access
+      end
     end
 
     def authenticate_admin

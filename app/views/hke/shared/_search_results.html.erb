@@ -20,7 +20,20 @@
         </thead>
         <tbody class="text-base">
           <% items.each do |item| %>
-            <% edit_item_path = (item.class == Hke::DeceasedPerson ? (edit_deceased_person_path(item)) : (edit_contact_person_path(item)))%>
+            <%
+              edit_item_path = case item.class.name
+                when 'Hke::DeceasedPerson'
+                  edit_deceased_person_path(item)
+                when 'Hke::ContactPerson'
+                  edit_contact_person_path(item)
+                when 'Hke::Community'
+                  edit_admin_community_path(item)
+                when 'User'
+                  edit_admin_user_path(item)
+                else
+                  '#'
+                end
+            %>
             <tr class="border-t  border-gray-400 group hover:bg-gray-100" onclick="window.location='<%= edit_item_path %>';">
               <% fields.each do |field| %>
                 <td class="p-2 "><%#= (field != :gender) ? (item.send field) : t((item.send field)) %> <%= item.send field %></td>

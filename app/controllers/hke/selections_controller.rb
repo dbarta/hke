@@ -1,21 +1,19 @@
 module Hke
   class SelectionsController < ApplicationController
+    before_action :authenticate_user!
     before_action :set_community_as_current_tenant
     before_action :set_selection, only: [:show, :edit, :update, :destroy]
-
-    # Uncomment to enforce Pundit authorization
-    # after_action :verify_authorized
-    # rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
     # GET /selections
     # Show table of selections.
     def index
-      @pagy, @selections = pagy(Selection.sort_by_params(params[:sort], sort_direction))
+      @pagy, @selections = pagy(policy_scope(Selection).sort_by_params(params[:sort], sort_direction))
       @selections.load
     end
 
     # GET /selections/1 or /selections/1.json
     def show
+      authorize @selection
     end
 
     # GET /selections/new
