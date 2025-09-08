@@ -323,6 +323,113 @@ he:
         no_communities: "לא נמצאו קהילות."
         create_first: "צור את הקהילה הראשונה"
         total_communities: "סה״כ קהילות: %{count}"
+        phone_number: "מספר טלפון"
+        email_address: "כתובת דואר אלקטרוני"
+      new:
+        title: "קהילה חדשה"
+      edit:
+        title: "עריכת קהילה"
+      show:
+        title: "פרטי קהילה"
+
+  community_admin:
+    dashboard:
+      title: "לוח בקרה מנהל קהילה"
+      message_approval:
+        title: "אישור הודעות"
+        time_filters:
+          one_week: "שבוע אחד"
+          two_weeks: "שבועיים"
+          one_month: "חודש אחד"
+          all: "הכל"
+        table_headers:
+          send_date: "תאריך שליחה"
+          message_preview: "תוכן ההודעה"
+          approve: "אישור"
+        bulk_actions:
+          approve_all: "אשר הכל"
+          disapprove_all: "בטל אישור הכל"
+          submit: "שלח לעדכון"
+        no_messages: "אין הודעות לאישור בתקופה זו"
+    navbar:
+      deceased_people: "נפטרים"
+      contact_people: "אנשי קשר"
+      import_csv: "יבוא CSV"
+      message_management: "ניהול הודעות"
+
+  csv_imports:
+    new:
+      title: "יבוא קובץ CSV"
+      import_type: "סוג יבוא"
+      file_upload: "העלאת קובץ"
+      drag_drop_text: "גרור ושחרר קובץ CSV כאן או לחץ לבחירה"
+      file_requirements: "קבצי CSV בלבד, עד 10MB"
+      upload_and_process: "העלה ועבד"
+      instructions_title: "הוראות"
+      instruction_1: "ודא שהקובץ שלך בפורמט CSV עם כותרות בשורה הראשונה"
+      instruction_2: "בחר את סוג היבוא המתאים לתוכן הקובץ"
+      instruction_3: "העיבוד יתבצע ברקע ותוכל לעקוב אחר ההתקדמות"
+    show:
+      title: "פרטי יבוא CSV"
+      status: "סטטוס"
+      import_type: "סוג יבוא"
+      uploaded_by: "הועלה על ידי"
+      uploaded_at: "הועלה ב"
+      progress: "התקדמות"
+      successful: "הצליחו"
+      failed: "נכשלו"
+      success_rate: "אחוז הצלחה"
+      errors_title: "שגיאות"
+      row_number: "מספר שורה"
+      error_message: "הודעת שגיאה"
+      back_to_list: "חזרה לרשימה"
+      retry: "נסה שוב"
+    import_types:
+      deceased_people: "נפטרים בלבד"
+      contact_people: "אנשי קשר בלבד"
+      combined: "נפטרים ואנשי קשר"
+    statuses:
+      pending: "ממתין"
+      processing: "מעבד"
+      completed: "הושלם"
+      failed: "נכשל"
+    upload_success: "הקובץ הועלה בהצלחה ומתחיל עיבוד"
+
+  message_management:
+    index:
+      title: "ניהול הודעות"
+      back_to_dashboard: "חזרה ללוח הבקרה"
+      filters: "מסננים"
+      messages_history: "היסטוריית הודעות"
+      common_errors: "שגיאות נפוצות"
+      error_count: "%{count} פעמים"
+      no_messages: "לא נמצאו הודעות בתקופה זו"
+    stats:
+      total_sent: "סה״כ נשלחו"
+      total_failed: "סה״כ נכשלו"
+      success_rate: "אחוז הצלחה"
+      pending_approval: "ממתינות לאישור"
+    filters:
+      time_period: "תקופת זמן"
+      status: "סטטוס"
+      last_7_days: "7 ימים אחרונים"
+      last_30_days: "30 ימים אחרונים"
+      last_90_days: "90 ימים אחרונים"
+      this_year: "השנה"
+      all_messages: "כל ההודעות"
+      successful_only: "הצליחו בלבד"
+      failed_only: "נכשלו בלבד"
+    table:
+      sent_at: "נשלח ב"
+      recipient: "נמען"
+      method: "שיטה"
+      status: "סטטוס"
+      message_preview: "תוכן ההודעה"
+      view_error: "צפה בשגיאה"
+    statuses:
+      sent: "נשלח"
+      failed: "נכשל"
+      pending: "ממתין"
     users:
       index:
         title: "ניהול משתמשים"

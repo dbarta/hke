@@ -21,7 +21,17 @@
         <h5><%= t("admin.communities.index.account") %></h5>
         <%= @community.account&.name %>
       </div>
-      
+
+      <div class="mb-4">
+        <h5><%= t("admin.communities.index.phone_number") %></h5>
+        <%= @community.phone_number.present? ? @community.phone_number : "לא הוגדר" %>
+      </div>
+
+      <div class="mb-4">
+        <h5><%= t("admin.communities.index.email_address") %></h5>
+        <%= @community.email_address.present? ? @community.email_address : "לא הוגדר" %>
+      </div>
+
       <div class="mb-4">
         <h5><%= t("created_at") %></h5>
         <%= @community.created_at.strftime("%B %d, %Y") %>
@@ -31,7 +41,7 @@
         <h5>סה״כ משתמשים</h5>
         <%= @stats[:total_users] %>
       </div>
-      
+
       <div class="mb-4">
         <h5>מנהלי קהילה</h5>
         <%= @stats[:total_admins] %>

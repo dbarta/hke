@@ -60,8 +60,9 @@ module Hke
 
     # Send SMS via Twilio.
     def send_sms
+      from_phone = current_community_phone || ENV['TWILIO_PHONE_NUMBER'] || Rails.application.credentials.dig(:twilio, :phone_number)
       message = @client.messages.create(
-        from: ENV['TWILIO_PHONE_NUMBER'] || Rails.application.credentials.dig(:twilio, :phone_number),
+        from: from_phone,
         to: @future_message.phone,
         body: @future_message.full_message,
         status_callback: webhook_url(:sms)
@@ -93,7 +94,8 @@ module Hke
 
     # Send email via SendGrid.
     def send_email
-      from = SendGrid::Email.new(email: ENV['SENDGRID_FROM_EMAIL'] || 'no-reply@yourapp.com')
+      from_email = current_community_email || ENV['SENDGRID_FROM_EMAIL'] || 'no-reply@yourapp.com'
+      from = SendGrid::Email.new(email: from_email)
       to = SendGrid::Email.new(email: @future_message.email)
       subject = 'Message from Hakhel'
       content = SendGrid::Content.new(type: 'text/plain', value: @future_message.full_message)
@@ -116,6 +118,18 @@ module Hke
         host: ENV['WEBHOOK_HOST'],
         modality: modality
       )
+    end
+
+    # Get current community's phone number for sending messages
+    def current_community_phone
+      return nil unless ActsAsTenant.current_tenant.is_a?(Hke::Community)
+      ActsAsTenant.current_tenant.phone_number
+    end
+
+    # Get current community's email address for sending messages
+    def current_community_email
+      return nil unless ActsAsTenant.current_tenant.is_a?(Hke::Community)
+      ActsAsTenant.current_tenant.email_address
     end
   end
 end

@@ -80,7 +80,7 @@ module Hke
       end
 
       def community_params
-        params.require(:community).permit(:name, :community_type, :account_id)
+        params.require(:community).permit(:name, :community_type, :account_id, :phone_number, :email_address)
       end
     end
   end

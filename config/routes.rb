@@ -24,6 +24,9 @@ Hke::Engine.routes.draw do
       post :bulk_approve
     end
   end
+
+  resources :csv_imports, only: [:new, :create, :show, :index]
+  resources :message_management, only: [:index, :show]
   resources :landing_pages
   resources :contact_people do
     collection do

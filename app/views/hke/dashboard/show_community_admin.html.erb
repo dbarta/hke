@@ -1,115 +1,72 @@
-<div class="container mx-auto p-4">
-  <div class="my-8">
-    <h1 class="text-2xl font-bold mb-4" style="direction: rtl;">ברוכים הבאים להקהל!</h1>
-    <p class="mb-4" style="direction: rtl;">
-      ברוכים הבאים לאפליקציית הקהל. כאן תוכלו להוסיף נפטרים, לנהל אנשי קשר, ולתזמן הודעות זיכרון שישלחו אוטומטית למשפחות.
-    </p>
-  </div>
+<%= render 'hke/shared/community_admin_navbar' %>
 
-  <!-- Message Statistics Dashboard -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="bg-blue-100 p-6 rounded-lg">
-      <h3 class="text-lg font-semibold text-blue-800" style="direction: rtl;">הודעות נשלחו השבוע</h3>
-      <p class="text-3xl font-bold text-blue-600"><%= @stats[:total_sent_this_week] %></p>
-    </div>
-    <div class="bg-green-100 p-6 rounded-lg">
-      <h3 class="text-lg font-semibold text-green-800" style="direction: rtl;">הודעות ממתינות לאישור</h3>
-      <p class="text-3xl font-bold text-green-600"><%= @pending_approvals.count %></p>
-    </div>
-    <div class="bg-red-100 p-6 rounded-lg">
-      <h3 class="text-lg font-semibold text-red-800" style="direction: rtl;">כשלונות בשליחה</h3>
-      <p class="text-3xl font-bold text-red-600"><%= @stats[:total_failures] %></p>
-    </div>
-  </div>
+<div class="container mx-auto p-4" style="direction: rtl;">
 
-  <!-- Pending Approvals Section -->
-  <% if @pending_approvals.any? %>
-    <div class="my-8 bg-yellow-50 p-6 rounded-lg">
-      <h2 class="text-xl font-semibold mb-4" style="direction: rtl;">הודעות הממתינות לאישור</h2>
-      <div class="overflow-x-auto">
-        <table class="table-auto w-full mb-4 text-right">
-          <thead>
-            <tr class="bg-yellow-100">
-              <th class="px-2 py-2">תאריך שליחה</th>
-              <th class="px-2 py-2">שם נפטר</th>
-              <th class="px-2 py-2">איש קשר</th>
-              <th class="px-2 py-2">הודעה מקוצרת</th>
-              <th class="px-2 py-2">פעולות</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% @pending_approvals.each do |msg| %>
-              <tr class="border-b">
-                <td class="px-2 py-2"><%= l(msg.send_date) %></td>
-                <td class="px-2 py-2"><%= msg.try(:deceased_person)&.name || "-" %></td>
-                <td class="px-2 py-2"><%= msg.try(:contact_person)&.name || "-" %></td>
-                <td class="px-2 py-2"><%= truncate(msg.full_message, length: 50) %></td>
-                <td class="px-2 py-2">
-                  <%= link_to 'אשר', future_message_path(msg, approve: true), method: :patch, 
-                              class: 'btn btn-sm btn-success mr-2' %>
-                  <%= link_to 'צפה', future_message_path(msg), class: 'btn btn-sm btn-primary' %>
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-        <%= link_to 'צפה בכל ההודעות הממתינות', future_messages_path(status: 'pending'), 
-                    class: 'btn btn-primary' %>
-      </div>
-    </div>
-  <% end %>
+  <!-- Message Approval Dashboard -->
+  <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-semibold"><%= t('community_admin.dashboard.message_approval.title') %></h2>
 
-  <!-- This Week's Messages -->
-  <div class="my-8">
-    <h2 class="text-xl font-semibold mb-2" style="direction: rtl;">הודעות שישלחו השבוע</h2>
-    <div class="overflow-x-auto">
-      <table class="table-auto w-full mb-4 text-right">
-        <thead>
-          <tr class="bg-gray-100">
-            <th class="px-2 py-2">שם נפטר</th>
-            <th class="px-2 py-2">תאריך שליחה</th>
-            <th class="px-2 py-2">מספר טלפון</th>
-            <th class="px-2 py-2">הודעה</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @messages.each do |msg| %>
-            <tr class="border-b">
-              <td class="px-2 py-1"><%= msg.try(:deceased_person)&.name || "-" %></td>
-              <td class="px-2 py-1"><%= l(msg.send_date) %></td>
-              <td class="px-2 py-1"><%= msg.phone %></td>
-              <td class="px-2 py-1"><%= truncate(msg.full_message, length: 100) %></td>
-            </tr>
-          <% end %>
-          <% if @messages.empty? %>
-            <tr><td colspan="4" class="text-center py-4">אין הודעות מתוזמנות לשבוע זה</td></tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Recent Failures -->
-  <% if @recent_failures.any? %>
-    <div class="my-8 bg-red-50 p-6 rounded-lg">
-      <h2 class="text-xl font-semibold mb-4 text-red-800" style="direction: rtl;">כשלונות אחרונים בשליחה</h2>
-      <div class="space-y-2">
-        <% @recent_failures.each do |failure| %>
-          <div class="flex justify-between items-center p-2 border-b border-red-200">
-            <span><%= failure.phone %> - <%= failure.error_message %></span>
-            <span class="text-sm text-red-600"><%= time_ago_in_words(failure.created_at) %> ago</span>
-          </div>
+      <!-- Time Filter Dropdown -->
+      <div class="flex items-center space-x-4 space-x-reverse">
+        <label class="text-sm font-medium text-gray-700">תקופת זמן:</label>
+        <%= form_with url: hke.root_path, method: :get, local: false, data: { turbo_stream: true }, class: "inline" do |form| %>
+          <%= form.select :time_filter,
+              options_for_select([
+                [t('community_admin.dashboard.message_approval.time_filters.one_week'), 'one_week'],
+                [t('community_admin.dashboard.message_approval.time_filters.two_weeks'), 'two_weeks'],
+                [t('community_admin.dashboard.message_approval.time_filters.one_month'), 'one_month'],
+                [t('community_admin.dashboard.message_approval.time_filters.all'), 'all']
+              ], @time_filter),
+              {},
+              { class: "rounded border-gray-300 text-sm", onchange: "this.form.submit();" } %>
         <% end %>
       </div>
-      <%= link_to 'צפה בכל הכשלונות', logs_path(filter: 'failures'), class: 'btn btn-outline-red mt-4' %>
     </div>
-  <% end %>
 
-  <!-- Quick Actions -->
-  <div class="flex gap-4 justify-center mt-8 flex-wrap">
-    <%= link_to 'ניהול נפטרים ואנשי קשר', deceased_people_path, class: 'btn btn-primary' %>
-    <%= link_to 'ניהול הודעות', future_messages_path, class: 'btn btn-secondary' %>
-    <%= link_to 'יבוא קובץ CSV', new_import_path, class: 'btn btn-success' %>
-    <%= link_to 'העדפות קהילה', community_preferences_path, class: 'btn btn-outline' %>
+    <!-- Messages Approval Form -->
+    <%= form_with url: bulk_approve_future_messages_path, method: :post, local: true, id: "approval_form" do |form| %>
+      <!-- Bulk Actions -->
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex space-x-4 space-x-reverse">
+          <button type="button" id="approve_all_btn" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+            <%= t('community_admin.dashboard.message_approval.bulk_actions.approve_all') %>
+          </button>
+          <button type="button" id="disapprove_all_btn" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+            <%= t('community_admin.dashboard.message_approval.bulk_actions.disapprove_all') %>
+          </button>
+        </div>
+        <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+          <%= t('community_admin.dashboard.message_approval.bulk_actions.submit') %>
+        </button>
+      </div>
+
+      <!-- Messages Table -->
+      <div id="messages_table">
+        <%= render partial: "messages_approval_table", locals: { messages: @messages, time_filter: @time_filter } %>
+      </div>
+    <% end %>
   </div>
+
+  <!-- JavaScript for Bulk Actions -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const approveAllBtn = document.getElementById('approve_all_btn');
+      const disapproveAllBtn = document.getElementById('disapprove_all_btn');
+
+      if (approveAllBtn) {
+        approveAllBtn.addEventListener('click', function() {
+          const checkboxes = document.querySelectorAll('input[name="approved_message_ids[]"]');
+          checkboxes.forEach(checkbox => checkbox.checked = true);
+        });
+      }
+
+      if (disapproveAllBtn) {
+        disapproveAllBtn.addEventListener('click', function() {
+          const checkboxes = document.querySelectorAll('input[name="approved_message_ids[]"]');
+          checkboxes.forEach(checkbox => checkbox.checked = false);
+        });
+      }
+    });
+  </script>
 </div>

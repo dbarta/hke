@@ -1,0 +1,57 @@
+<div class="overflow-x-auto">
+  <% if messages.any? %>
+    <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <%= t('community_admin.dashboard.message_approval.table_headers.send_date') %>
+          </th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <%= t('community_admin.dashboard.message_approval.table_headers.message_preview') %>
+          </th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <%= t('community_admin.dashboard.message_approval.table_headers.approve') %>
+          </th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <% messages.each do |message| %>
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+              <%= message.send_date.strftime("%b %d, %Y") %>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-900 text-right">
+              <div class="max-w-xs">
+                <%= message.message_preview(length: 150) %>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-center">
+              <!-- Hidden field to track all message IDs -->
+              <%= hidden_field_tag "message_ids[]", message.id %>
+
+              <!-- Approval checkbox -->
+              <div class="flex items-center justify-center">
+                <%= check_box_tag "approved_message_ids[]", message.id,
+                    message.approved?,
+                    { class: "h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" } %>
+                <label class="mr-2 text-sm text-gray-700">
+                  <% if message.approved? %>
+                    <span class="text-green-600 font-medium">מאושר</span>
+                  <% elsif message.rejected? %>
+                    <span class="text-red-600 font-medium">נדחה</span>
+                  <% else %>
+                    <span class="text-yellow-600 font-medium">ממתין</span>
+                  <% end %>
+                </label>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="text-center py-8 text-gray-500">
+      <%= t('community_admin.dashboard.message_approval.no_messages') %>
+    </div>
+  <% end %>
+</div>

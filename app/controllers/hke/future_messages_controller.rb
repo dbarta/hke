@@ -54,6 +54,28 @@ module Hke
       end
     end
 
+    # GET /future_messages/approve
+    def approve
+      @messages = Hke::FutureMessage.pending_approval.includes(:messageable, :approved_by).order(:send_date)
+      render 'approve'
+    end
+
+    # POST /future_messages/bulk_approve
+    def bulk_approve
+      message_ids = params[:message_ids] || []
+      approved_ids = params[:approved_message_ids] || []
+
+      # Reset all specified messages to pending first
+      Hke::FutureMessage.where(id: message_ids).each(&:reset_approval!)
+
+      # Then approve the selected ones
+      Hke::FutureMessage.where(id: approved_ids).each do |message|
+        message.approve!(current_user)
+      end
+
+      redirect_to approve_future_messages_path, notice: "הודעות עודכנו בהצלחה"
+    end
+
     private
 
     # Use callbacks to share common setup or constraints between actions.

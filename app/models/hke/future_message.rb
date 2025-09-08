@@ -1,11 +1,31 @@
 module Hke
   class FutureMessage < CommunityRecord
+    # Approval system
+    attribute :approval_status, :integer, default: 0
+    enum approval_status: {
+      pending: 0,
+      approved: 1,
+      rejected: 2
+    }
+
     # Scope: messages scheduled to be sent this week, tenant-scoped
     scope :for_current_week, -> {
       week_start = Date.current.beginning_of_week(:sunday)
       week_end = Date.current.end_of_week(:saturday)
       where(send_date: week_start..week_end).order(:send_date)
     }
+
+    # Approval-related scopes
+    scope :pending_approval, -> { where(approval_status: :pending) }
+    scope :approved_messages, -> { where(approval_status: :approved) }
+    scope :rejected_messages, -> { where(approval_status: :rejected) }
+
+    # Time-based scopes for dashboard filters
+    scope :in_next_week, -> { where(send_date: Time.current..1.week.from_now) }
+    scope :in_next_two_weeks, -> { where(send_date: Time.current..2.weeks.from_now) }
+    scope :in_next_month, -> { where(send_date: Time.current..1.month.from_now) }
+    scope :future_messages, -> { where('send_date >= ?', Time.current) }
+
     include Hke::Loggable
     include Hke::LogModelEvents
 
@@ -16,6 +36,7 @@ module Hke
     # 3. Include also the yarzheit date, in case the message was not sent for some reason it could still be sent.
 
     belongs_to :messageable, polymorphic: true
+    belongs_to :approved_by, class_name: 'User', optional: true
     has_secure_token :token
 
     scope :filter_by_name, ->(name) {
@@ -65,6 +86,46 @@ module Hke
 
     def name
       [contact_first_name, contact_last_name].compact.join(" ")
+    end
+
+    # Approval methods
+    def approve!(user)
+      update!(
+        approval_status: :approved,
+        approved_at: Time.current,
+        approved_by: user
+      )
+    end
+
+    def reject!(user)
+      update!(
+        approval_status: :rejected,
+        approved_at: Time.current,
+        approved_by: user
+      )
+    end
+
+    def reset_approval!
+      update!(
+        approval_status: :pending,
+        approved_at: nil,
+        approved_by: nil
+      )
+    end
+
+    # Get message preview for approval interface
+    def message_preview(length: 100)
+      return "" if full_message.blank?
+
+      # Extract the first part that identifies deceased, contact, and Hebrew date
+      lines = full_message.split("\n")
+      preview_text = lines.first(2).join(" ")
+
+      if preview_text.length > length
+        preview_text.truncate(length)
+      else
+        preview_text
+      end
     end
 
     private

@@ -1,23 +1,46 @@
 <div class="container mx-auto my-8">
-  <div class="flex items-center mb-8 ">
-    <h4 class="h4 ml-10" >
-      <span id="communities_count"><%= "#{@communities.count}" %></span>
-      <%= " #{t('admin.communities.index.title')}" %>
-    </h4>
-    <div class="mr-auto flex items-center">
-      <%= render partial: "hke/shared/search_box", locals: {url: admin_communities_path} %>
-      <%= link_to t('admin.communities.index.create_new'), new_admin_community_path, class: "btn btn-small btn-primary mr-10" %>
+  <div class="flex items-center justify-between mb-8">
+    <h4 class="h4"><%= t('admin.communities.index.title') %></h4>
+    <div class="flex items-center">
+      <%= link_to t('admin.communities.index.create_new'), new_admin_community_path, class: "btn btn-small btn-primary" %>
     </div>
   </div>
-  <div id="search_results">
-      <%= render partial: "hke/shared/search_results",
-      locals: {       items: @communities,
-                      fields: [ :name, :community_type, :created_at],
-                other_fields: [{header: t('admin.communities.index.account'), data: "account_name"}],
-                actions: [
-                  {name: "action_edit", path: :edit_admin_community_path},
-                  {name: "action_delete", path: :admin_community_path, method: :delete, confirm: true}
-                ]
-              } %>
+
+  <div class="bg-white rounded shadow">
+    <table class="min-w-full">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"><%= t('name') %></th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"><%= t('community_type') %></th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"><%= t('admin.communities.index.account') %></th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"><%= t('created_at') %></th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"><%= t('actions') %></th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <% @communities.each do |community| %>
+          <tr>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right">
+              <%= link_to community.name, admin_community_path(community), class: "text-blue-600 hover:text-blue-900" %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+              <%= community.community_type&.humanize %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+              <%= community.account&.name %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+              <%= community.created_at.strftime("%b %d, %Y") %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
+              <%= link_to t('edit'), edit_admin_community_path(community), class: "text-blue-600 hover:text-blue-900 ml-4" %>
+              <%= link_to t('delete'), admin_community_path(community), method: :delete,
+                  data: { confirm: t('admin.communities.index.confirm_delete') },
+                  class: "text-red-600 hover:text-red-900 ml-4" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
   </div>
 </div>
