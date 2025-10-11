@@ -2,7 +2,7 @@ module Hke
   class FutureMessagePolicy < ApplicationPolicy
     # Future messages can be managed by system admins and community admins
     # Community admins can only manage future messages in their community
-    
+
     def index?
       user.system_admin? || user.community_admin?
     end
@@ -26,6 +26,18 @@ module Hke
     def blast?
       user.system_admin? || (user.community_admin? && same_community?)
     end
+
+    def bulk_approve?
+      user.system_admin? || user.community_admin?
+    end
+
+  def approve?
+    user.system_admin? || user.community_admin?
+  end
+
+  def disapprove?
+    user.system_admin? || user.community_admin?
+  end
 
     class Scope < Scope
       def resolve

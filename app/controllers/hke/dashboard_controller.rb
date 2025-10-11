@@ -31,21 +31,8 @@ module Hke
       # Get time filter from params, default to one week
       @time_filter = params[:time_filter] || 'one_week'
 
-      # Get messages based on time filter
-      @messages = case @time_filter
-                  when 'one_week'
-                    Hke::FutureMessage.in_next_week
-                  when 'two_weeks'
-                    Hke::FutureMessage.in_next_two_weeks
-                  when 'one_month'
-                    Hke::FutureMessage.in_next_month
-                  when 'all'
-                    Hke::FutureMessage.future_messages
-                  else
-                    Hke::FutureMessage.in_next_week
-                  end
-
-      @messages = @messages.includes(:messageable, :approved_by).order(:send_date)
+      # Get messages based on time filter using same logic as future_messages controller
+      @messages = get_filtered_messages(@time_filter)
 
       @pending_approvals = Hke::FutureMessage.pending_approval.limit(10)
 
@@ -69,6 +56,21 @@ module Hke
     def show_community_user_dashboard
       # Future implementation for community users
       render 'show_community_user'
+    end
+
+    private
+
+    def get_filtered_messages(time_filter)
+      case time_filter
+      when 'one_week'
+        Hke::FutureMessage.where(send_date: Date.current..1.week.from_now).order(:send_date)
+      when 'two_weeks'
+        Hke::FutureMessage.where(send_date: Date.current..2.weeks.from_now).order(:send_date)
+      when 'one_month'
+        Hke::FutureMessage.where(send_date: Date.current..1.month.from_now).order(:send_date)
+      else
+        Hke::FutureMessage.order(:send_date)
+      end
     end
   end
 end

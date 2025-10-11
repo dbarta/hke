@@ -2,7 +2,8 @@ module Hke
   class FutureMessagesController < ApplicationController
     # before_action :authenticate_user!
     before_action :set_community_as_current_tenant
-    before_action :authenticate_admin
+    before_action :authenticate_user!
+    before_action :authorize_community_admin!
     before_action :set_future_message, only: [:show, :destroy, :blast]
 
     # GET /future_messages index
@@ -60,20 +61,45 @@ module Hke
       render 'approve'
     end
 
-    # POST /future_messages/bulk_approve
-    def bulk_approve
-      message_ids = params[:message_ids] || []
-      approved_ids = params[:approved_message_ids] || []
+    # POST /future_messages/:id/toggle_approval
+    def toggle_approval
+      @message = Hke::FutureMessage.find(params[:id])
+      authorize @message, :approve?
 
-      # Reset all specified messages to pending first
-      Hke::FutureMessage.where(id: message_ids).each(&:reset_approval!)
-
-      # Then approve the selected ones
-      Hke::FutureMessage.where(id: approved_ids).each do |message|
-        message.approve!(current_user)
+      if @message.approved?
+        @message.reset_approval!
+      else
+        @message.approve!(current_user)
       end
 
-      redirect_to approve_future_messages_path, notice: "הודעות עודכנו בהצלחה"
+      @time_filter = params[:time_filter] || 'one_week'
+      @messages = get_filtered_messages(@time_filter)
+
+      redirect_back(fallback_location: root_path)
+    end
+
+    # POST /future_messages/approve_all
+    def approve_all
+      authorize Hke::FutureMessage, :bulk_approve?
+
+      time_filter = params[:time_filter] || 'one_week'
+      messages_to_update = get_filtered_messages(time_filter).pending_approval
+
+      messages_to_update.each { |message| message.approve!(current_user) }
+
+      redirect_back(fallback_location: root_path)
+    end
+
+    # POST /future_messages/disapprove_all
+    def disapprove_all
+      authorize Hke::FutureMessage, :bulk_approve?
+
+      time_filter = params[:time_filter] || 'one_week'
+      messages_to_update = get_filtered_messages(time_filter).approved_messages
+
+      messages_to_update.each(&:reset_approval!)
+
+      redirect_back(fallback_location: root_path)
     end
 
     private
@@ -82,6 +108,27 @@ module Hke
     def set_future_message
       @future_message = FutureMessage.find(params[:id])
     end
+
+    def authorize_community_admin!
+      unless current_user.community_admin? || current_user.system_admin?
+        redirect_to root_path, alert: t('unauthorized')
+      end
+    end
+
+    def get_filtered_messages(time_filter)
+      case time_filter
+      when 'one_week'
+        Hke::FutureMessage.where(send_date: Date.current..1.week.from_now).order(:send_date)
+      when 'two_weeks'
+        Hke::FutureMessage.where(send_date: Date.current..2.weeks.from_now).order(:send_date)
+      when 'one_month'
+        Hke::FutureMessage.where(send_date: Date.current..1.month.from_now).order(:send_date)
+      else
+        Hke::FutureMessage.order(:send_date)
+      end
+    end
+
+
 
   end
 end

@@ -7,25 +7,62 @@ module Hke
 
 
     def clear_database
+      # Clear Sidekiq queues first to avoid orphaned jobs
+      clear_sidekiq
+
+      # Clear any user community assignments to break foreign key constraints
+      if User.table_exists?
+        users_with_community = User.where.not(community_id: nil).count
+        log_info "@@@ Found #{users_with_community} users with community assignments."
+
+        if users_with_community > 0
+          # Temporarily disable foreign key constraint to allow nullifying
+          ActiveRecord::Base.connection.execute("SET session_replication_role = replica;")
+          User.update_all(community_id: nil)
+          ActiveRecord::Base.connection.execute("SET session_replication_role = DEFAULT;")
+          log_info "@@@ Cleared community_id for #{users_with_community} users."
+        else
+          log_info "@@@ No users with community assignments found."
+        end
+      end
+
       [
-          Hke::FutureMessage,
-          Hke::SentMessage,
-          Hke::Relation,
-          Hke::DeceasedPerson,
-          Hke::ContactPerson,
-          Hke::Cemetery,
-          AccountUser,
-          Hke::System,
-          Hke::Community,
-          Hke::Log,
-          ApiToken,
-          Account,
-          User,
+          Hke::FutureMessage,    # No dependencies
+          Hke::SentMessage,      # No dependencies
+          Hke::Relation,         # References DeceasedPerson/ContactPerson
+          Hke::DeceasedPerson,   # References Cemetery/Community
+          Hke::ContactPerson,    # References Community
+          Hke::Cemetery,         # References Community
+          Hke::System,           # No dependencies
+          Hke::Log,              # No dependencies
+          ApiToken,              # References User
+          AccountUser,           # References Account + User
+          Hke::Community,        # References Account (delete before Account)
+          Account,               # References User (delete before User)
+          User,                  # Delete last
       ].each do |model|
         model.delete_all
         log_info "@@@ Database table for: #{model.to_s} successfully cleared."
       end
       log_info "@@@ All Hakhel database tables successfully cleared."
+    end
+
+    def clear_sidekiq
+      begin
+        require 'sidekiq/api'
+
+        # Clear all Sidekiq queues and jobs
+        Sidekiq::Queue.new.clear
+        Sidekiq::RetrySet.new.clear
+        Sidekiq::DeadSet.new.clear
+        Sidekiq::ScheduledSet.new.clear
+
+        log_info "@@@ All Sidekiq queues successfully cleared."
+      rescue LoadError
+        log_info "@@@ Sidekiq not available - skipping queue clearing."
+      rescue => e
+        log_error "@@@ Error clearing Sidekiq queues: #{e.message}"
+      end
     end
 
     def check_response(request_body, response, raise: true)
@@ -103,7 +140,7 @@ module Hke
       # Create system record
       product_name = "Hakhel"
       product_version = "0.1"
-      post("#{@hke_url}/system", {system: {product_name: "Hakhel", version: "0.1" }})
+      post("#{@hke_url}/system", {system: {product_name: product_name, version: product_version }})
       log_info "@@@ System record with product: '#{product_name}', version: #{product_version} successfully created."
     end
 

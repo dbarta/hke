@@ -18,10 +18,13 @@ Hke::Engine.routes.draw do
   resources :future_messages do
     member do
       post :blast
+      post :toggle_approval
     end
     collection do
       get :approve
       post :bulk_approve
+      post :approve_all
+      post :disapprove_all
     end
   end
 

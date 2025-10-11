@@ -24,49 +24,28 @@
       </div>
     </div>
 
-    <!-- Messages Approval Form -->
-    <%= form_with url: bulk_approve_future_messages_path, method: :post, local: true, id: "approval_form" do |form| %>
-      <!-- Bulk Actions -->
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex space-x-4 space-x-reverse">
-          <button type="button" id="approve_all_btn" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-            <%= t('community_admin.dashboard.message_approval.bulk_actions.approve_all') %>
-          </button>
-          <button type="button" id="disapprove_all_btn" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
-            <%= t('community_admin.dashboard.message_approval.bulk_actions.disapprove_all') %>
-          </button>
-        </div>
-        <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-          <%= t('community_admin.dashboard.message_approval.bulk_actions.submit') %>
-        </button>
-      </div>
+    <!-- Stats Line -->
+    <div id="stats_line">
+      <%= render partial: "stats_line", locals: { messages: @messages, time_filter: @time_filter } %>
+    </div>
 
-      <!-- Messages Table -->
-      <div id="messages_table">
-        <%= render partial: "messages_approval_table", locals: { messages: @messages, time_filter: @time_filter } %>
-      </div>
-    <% end %>
+    <!-- Bulk Actions -->
+    <div class="flex gap-4 mb-4 p-4 bg-gray-50 rounded-lg border">
+      <%= link_to t('community_admin.dashboard.message_approval.bulk_actions.approve_all'),
+          approve_all_future_messages_path(time_filter: @time_filter),
+          method: :post,
+          class: "btn btn-secondary" %>
+      <%= link_to t('community_admin.dashboard.message_approval.bulk_actions.disapprove_all'),
+          disapprove_all_future_messages_path(time_filter: @time_filter),
+          method: :post,
+          class: "btn btn-danger" %>
+    </div>
+
+    <!-- Messages Table -->
+    <div id="messages_table">
+      <%= render partial: "messages_approval_table", locals: { messages: @messages, time_filter: @time_filter } %>
+    </div>
   </div>
 
-  <!-- JavaScript for Bulk Actions -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const approveAllBtn = document.getElementById('approve_all_btn');
-      const disapproveAllBtn = document.getElementById('disapprove_all_btn');
 
-      if (approveAllBtn) {
-        approveAllBtn.addEventListener('click', function() {
-          const checkboxes = document.querySelectorAll('input[name="approved_message_ids[]"]');
-          checkboxes.forEach(checkbox => checkbox.checked = true);
-        });
-      }
-
-      if (disapproveAllBtn) {
-        disapproveAllBtn.addEventListener('click', function() {
-          const checkboxes = document.querySelectorAll('input[name="approved_message_ids[]"]');
-          checkboxes.forEach(checkbox => checkbox.checked = false);
-        });
-      }
-    });
-  </script>
 </div>

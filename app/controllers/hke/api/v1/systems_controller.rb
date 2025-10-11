@@ -1,6 +1,11 @@
 class Hke::Api::V1::SystemsController < Hke::Api::BaseController
   before_action :set_system, except: :create
 
+  # Override Pundit callbacks since this controller doesn't have an index action
+  skip_after_action :verify_authorized, except: [:index]
+  skip_after_action :verify_policy_scoped
+  after_action :verify_authorized, only: [:show, :create, :edit, :update]
+
   # GET /api/system
   def show
     authorize @system
