@@ -70,7 +70,11 @@ module Hke
       def destroy
         authorize @community
         @community.destroy
-        redirect_to admin_communities_path, notice: 'Community was successfully deleted.'
+        respond_to do |format|
+          format.turbo_stream { redirect_to admin_communities_path, notice: t('admin.communities.index.deleted', default: 'Community was successfully deleted.'), status: :see_other }
+          format.html { redirect_to admin_communities_path, notice: t('admin.communities.index.deleted', default: 'Community was successfully deleted.'), status: :see_other }
+          format.json { head :no_content }
+        end
       end
 
       private

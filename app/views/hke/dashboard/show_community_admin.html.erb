@@ -31,13 +31,15 @@
 
     <!-- Bulk Actions -->
     <div class="flex gap-4 mb-4 p-4 bg-gray-50 rounded-lg border">
-      <%= link_to t('community_admin.dashboard.message_approval.bulk_actions.approve_all'),
+      <%= button_to t('community_admin.dashboard.message_approval.bulk_actions.approve_all'),
           approve_all_future_messages_path(time_filter: @time_filter),
           method: :post,
+          form: { data: { turbo: true }, class: "inline" },
           class: "btn btn-secondary" %>
-      <%= link_to t('community_admin.dashboard.message_approval.bulk_actions.disapprove_all'),
+      <%= button_to t('community_admin.dashboard.message_approval.bulk_actions.disapprove_all'),
           disapprove_all_future_messages_path(time_filter: @time_filter),
           method: :post,
+          form: { data: { turbo: true }, class: "inline" },
           class: "btn btn-danger" %>
     </div>
 

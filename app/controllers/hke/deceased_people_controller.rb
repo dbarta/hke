@@ -20,7 +20,21 @@ module Hke
         format.html # Response for normal get - show full index
         format.turbo_stream do # Response from post, which is result of input from the search box
           render turbo_stream: [
-            turbo_stream.update("search_results", partial: "hke/shared/search_results", locals: {items: @deceased_people}),
+            turbo_stream.update(
+              "search_results",
+              partial: "hke/shared/search_results",
+              locals: {
+                items: @deceased_people,
+                fields: [:first_name, :last_name, :father_first_name, :mother_first_name,
+                         :hebrew_year_of_death, :hebrew_month_of_death, :hebrew_day_of_death,
+                         :date_of_death, :gender],
+                other_fields: [{ header: t('contact_people'), data: "contact_name" }],
+                actions: [
+                  { name: "action_edit", path: :edit_deceased_person_path },
+                  { name: "action_delete", path: :deceased_person_path, method: :delete, confirm: true }
+                ]
+              }
+            ),
             turbo_stream.update("people_count", @deceased_people.count)
           ]
         end
@@ -81,7 +95,8 @@ module Hke
       authorize @deceased_person
       @deceased_person.destroy
       respond_to do |format|
-        format.html { redirect_to deceased_people_url, notice: "Deceased person was successfully destroyed." }
+        format.turbo_stream { redirect_to deceased_people_url, notice: "Deceased person was successfully destroyed.", status: :see_other }
+        format.html { redirect_to deceased_people_url, notice: "Deceased person was successfully destroyed.", status: :see_other }
         format.json { head :no_content }
       end
     end

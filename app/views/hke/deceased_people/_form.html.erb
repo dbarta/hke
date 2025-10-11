@@ -2,17 +2,17 @@
   <%= render "shared/error_messages", resource: form.object %>
 
 
-  <div class="flex items-center justify-between mb-4 h4">   
-      
+  <div class="flex items-center justify-between mb-4 h4">
+
         <%= t("shared.scaffold.edit.title", model: t("deceased_person")) + ": #{@deceased_person.name}" %>
         <div class="mr-auto flex">
           <%= form.button t('save_deceased'), class: "btn btn-link" %>
           <% if form.object.persisted? %>
-            <%= link_to t("delete"), form.object, class: "btn btn-link", method: :delete, data: { confirm: t("are_you_sure") } %>
+            <%= link_to t("delete"), form.object, class: "btn btn-link", data: { turbo_method: :delete, turbo_confirm: t("are_you_sure") } %>
           <% end %>
           <%= link_to t("cancel"), @deceased_person, class: "btn btn-link" %>
         </div>
-      
+
   </div>
 
   <%= render "deceased_person_fields", form: form %>

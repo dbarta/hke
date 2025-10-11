@@ -46,9 +46,16 @@ module Hke
       respond_to do |format|
         format.html { render 'show_community_admin' }
         format.turbo_stream do
-          render turbo_stream: turbo_stream.update("messages_table",
-            partial: "messages_approval_table",
-            locals: { messages: @messages, time_filter: @time_filter })
+          render turbo_stream: [
+            turbo_stream.update("stats_line",
+              partial: "stats_line",
+              locals: { messages: @messages, time_filter: @time_filter }
+            ),
+            turbo_stream.update("messages_table",
+              partial: "messages_approval_table",
+              locals: { messages: @messages, time_filter: @time_filter }
+            )
+          ]
         end
       end
     end

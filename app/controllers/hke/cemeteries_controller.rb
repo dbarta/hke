@@ -64,7 +64,8 @@ module Hke
       authorize @cemetery
       @cemetery.destroy
       respond_to do |format|
-        format.html { redirect_to cemeteries_url, notice: "Cemetery was successfully destroyed." }
+        format.turbo_stream { redirect_to cemeteries_url, notice: "Cemetery was successfully destroyed.", status: :see_other }
+        format.html { redirect_to cemeteries_url, notice: "Cemetery was successfully destroyed.", status: :see_other }
         format.json { head :no_content }
       end
     end

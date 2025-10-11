@@ -21,7 +21,19 @@ module Hke
         format.html # Response for normal get - show full index
         format.turbo_stream do # Response from post, which is result of input from the search box
           render turbo_stream: [
-            turbo_stream.update("search_results", partial: "hke/shared/search_results", locals: {items: @contact_people}),
+            turbo_stream.update(
+              "search_results",
+              partial: "hke/shared/search_results",
+              locals: {
+                items: @contact_people,
+                fields: [:first_name, :last_name, :email, :phone, :gender],
+                other_fields: [],
+                actions: [
+                  { name: "action_edit", path: :edit_contact_person_path },
+                  { name: "action_delete", path: :contact_person_path, method: :delete, confirm: true }
+                ]
+              }
+            ),
             turbo_stream.update("people_count", @contact_people.count)
           ]
         end
@@ -76,7 +88,8 @@ module Hke
     def destroy
       @contact_person.destroy
       respond_to do |format|
-        format.html { redirect_to contact_people_url, notice: "Contact person was successfully destroyed." }
+        format.turbo_stream { redirect_to contact_people_url, notice: "Contact person was successfully destroyed.", status: :see_other }
+        format.html { redirect_to contact_people_url, notice: "Contact person was successfully destroyed.", status: :see_other }
         format.json { head :no_content }
       end
     end

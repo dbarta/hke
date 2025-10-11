@@ -9,7 +9,7 @@
                 <% puts "@@@@@@@@@ t(field.to_s) in search results is nil for field #{field.to_s}" %>
               <% end %>
               <th class="p-2">
-                <%= sortable items, field, field_translation, method: :post %>
+                <%= sortable items, field, field_translation %>
               </th>
             <% end %>
             <% other_fields.each do |field| %>
@@ -48,8 +48,7 @@
                   <%= button_to t(action[:name]), send(action[:path], item),
                           method: action[:method] || :get,
                           class: "btn btn-link no-underline",
-                          form: { data: { turbo: false } },
-                          data: { confirm: action[:confirm] ? t("are_you_sure") : nil }.compact %>
+                          form: { data: { turbo_confirm: action[:confirm] ? t("are_you_sure") : nil }, onclick: "event.stopPropagation();" } %>
                 <% end %>
 
                 <%#= link_to t("action_edit"), edit_item_path, class: "btn btn-link no-underline " %>

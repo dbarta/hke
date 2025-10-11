@@ -8,7 +8,7 @@
         <div class="mr-auto flex">
           <%= form.button t('save_future_message'), class: "btn btn-link" %>
           <% if form.object.persisted? %>
-            <%= link_to t("delete"), form.object, class: "btn btn-link", method: :delete, data: { confirm: t("are_you_sure") } %>
+            <%= link_to t("delete"), form.object, class: "btn btn-link", data: { turbo_method: :delete, turbo_confirm: t("are_you_sure") } %>
           <% end %>
           <%= link_to t("cancel"), @future_message, class: "btn btn-link" %>
         </div>

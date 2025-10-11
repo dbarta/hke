@@ -16,7 +16,7 @@
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
         <% messages.each do |message| %>
-          <%= render partial: "message_row", locals: { message: message } %>
+          <%= render partial: "hke/future_messages/message_row", locals: { message: message, time_filter: time_filter } %>
         <% end %>
       </tbody>
     </table>

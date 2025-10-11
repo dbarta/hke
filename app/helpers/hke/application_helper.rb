@@ -12,9 +12,9 @@ module Hke
       link_to "#{label} #{arrow}".html_safe, request.query_parameters.merge(sort: column, direction: direction)
     end
 
-    def num_days_till_yahrzeit(deceased)
+    def num_days_till_yahrzeit(deceased, send_date)
       gregorian_yahrzeit_date = Hke.yahrzeit_date(deceased.name, deceased.hebrew_month_of_death, deceased.hebrew_day_of_death)
-      return (gregorian_yahrzeit_date - Date.today).to_i
+      (gregorian_yahrzeit_date - send_date).to_i
     end
 
     def day_of_week_of_yahrzeit(deceased)

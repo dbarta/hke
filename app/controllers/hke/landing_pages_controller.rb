@@ -21,7 +21,11 @@ module Hke
       if @token
         relation = Relation.find_by_token(@token)
         if relation
-          snippets = generate_hebrew_snippets(relation)
+          d = relation.deceased_person
+          yahrzeit_date = Hke.yahrzeit_date(d.name, d.hebrew_month_of_death, d.hebrew_day_of_death)
+          send_date = (yahrzeit_date - 1.week)
+          send_date = Date.today if send_date < Date.today
+          snippets = generate_hebrew_snippets(relation, send_date: send_date)
           @sms_preview = snippets[:sms]
           @landing_page_preview = snippets[:web]
         end

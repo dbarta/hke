@@ -33,7 +33,8 @@
           <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
             <%= link_to t('profile'), main_app.edit_user_registration_path,
                 class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" %>
-            <%= link_to t('logout'), main_app.destroy_user_session_path, method: :delete,
+            <%= link_to t('logout'), main_app.destroy_user_session_path,
+                data: { turbo_method: :delete, turbo_confirm: t('are_you_sure') },
                 class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" %>
           </div>
         </div>

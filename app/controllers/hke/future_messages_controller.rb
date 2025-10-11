@@ -22,7 +22,22 @@ module Hke
         format.html # Response for normal get - show full index
         format.turbo_stream do # Response from post, which is result of input from the search box
           render turbo_stream: [
-            turbo_stream.update("search_results", partial: "search_results", locals: {items: @future_messages}),
+            turbo_stream.update(
+              "search_results",
+              partial: "hke/shared/search_results",
+              locals: {
+                items: @future_messages,
+                fields: [:send_date, :full_message, :message_type, :delivery_method, :email, :phone, :token],
+                other_fields: [
+                  { header: t('hebrew_year_of_death'), data: :hebrew_year_of_death },
+                  { header: t('hebrew_month_of_death'), data: :hebrew_month_of_death },
+                  { header: t('hebrew_day_of_death'), data: :hebrew_day_of_death }
+                ],
+                actions: [
+                  { name: "send_individual_message", path: :blast_future_message_path, method: :post }
+                ]
+              }
+            ),
             turbo_stream.update("people_count", @future_messages.count)
           ]
         end
@@ -50,7 +65,8 @@ module Hke
     def destroy
       @future_message.destroy
       respond_to do |format|
-        format.html { redirect_to future_messages_url, notice: "Future Message was successfully destroyed." }
+        format.turbo_stream { redirect_to future_messages_url, notice: "Future Message was successfully destroyed.", status: :see_other }
+        format.html { redirect_to future_messages_url, notice: "Future Message was successfully destroyed.", status: :see_other }
         format.json { head :no_content }
       end
     end
@@ -75,7 +91,10 @@ module Hke
       @time_filter = params[:time_filter] || 'one_week'
       @messages = get_filtered_messages(@time_filter)
 
-      redirect_back(fallback_location: root_path)
+      respond_to do |format|
+        format.turbo_stream { render :toggle_approval }
+        format.html { redirect_back(fallback_location: root_path) }
+      end
     end
 
     # POST /future_messages/approve_all
