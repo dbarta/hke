@@ -5,7 +5,7 @@ module Hke
     before_action :authorize_community_admin!
 
     def index
-      authorize :message_management, :index?
+      authorize [:hke, :message_management], :index?
       @time_filter = params[:time_filter] || 'last_30_days'
       @status_filter = params[:status_filter] || 'all'
 
@@ -99,7 +99,7 @@ module Hke
 
     def authorize_community_admin!
       unless current_user.community_admin? || current_user.system_admin?
-        redirect_to root_path, alert: t('access_denied')
+        redirect_to hke.root_path, alert: t('admin.dashboard.access_denied')
       end
     end
   end

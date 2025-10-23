@@ -3,7 +3,7 @@ require 'csv'
 module Hke
   class CsvImportJob
     include Sidekiq::Job
-    include Hke::Loggable
+    include Hke::ApplicationHelper
 
     def perform(csv_import_id)
       csv_import = CsvImport.find(csv_import_id)
@@ -15,140 +15,242 @@ module Hke
       end
     rescue StandardError => e
       csv_import&.update!(status: :failed)
-      log_error "CSV Import Job failed: #{e.message}", { csv_import_id: csv_import_id, error: e.backtrace }
+      Hke::Logger.log(event_type: 'csv_import_failed', details: { csv_import_id: csv_import_id, error_message: e.message }, error: e)
       raise
     end
 
     private
 
     def process_csv_import(csv_import)
-      file_path = ActiveStorage::Blob.service.path_for(csv_import.file.key)
-      
-      # Count total rows first
-      total_rows = count_csv_rows(file_path)
-      csv_import.update!(total_rows: total_rows)
+      csv_import.file.open do |io|
+        file_path = io.path
 
-      processed = 0
-      successful = 0
-      failed = 0
+        # Count total rows first
+        total_rows = count_csv_rows(file_path)
+        csv_import.update!(total_rows: total_rows)
 
-      CSV.foreach(file_path, headers: true, encoding: 'UTF-8').with_index(2) do |row, line_number|
-        begin
-          case csv_import.import_type
-          when 'deceased_people'
-            import_deceased_person(row, csv_import)
-          when 'contact_people'
-            import_contact_person(row, csv_import)
-          when 'combined'
-            import_combined_record(row, csv_import)
+        processed = 0
+        successful = 0
+        failed = 0
+
+        CSV.foreach(file_path, headers: true, encoding: 'bom|utf-8').with_index(2) do |row, line_number|
+          begin
+            dp, contact_status, contact_warning = import_unified_row(row, csv_import)
+            # Per-row logs
+            csv_import.logs.create!(level: 'info', row_number: line_number, message: "יובא נפטר: #{dp.first_name} #{dp.last_name}")
+            if contact_warning
+              csv_import.logs.create!(level: 'error', row_number: line_number, message: 'נמצאו פרטי איש קשר אך קשר קרבה חסר/לא תקין — דילוג על יצירת קשר')
+            elsif contact_status == :with_contact
+              csv_import.logs.create!(level: 'info', row_number: line_number, message: 'נוסף איש קשר וקשר קרבה')
+            end
+
+            successful += 1
+          rescue StandardError => e
+            failed += 1
+            csv_import.add_error(line_number, e.message)
+            csv_import.logs.create!(level: 'error', row_number: line_number, message: e.message)
+            Hke::Logger.log(event_type: 'csv_import_row_error', details: {
+              csv_import_id: csv_import.id,
+              line_number: line_number,
+              error_message: e.message
+            }, error: e)
           end
-          
-          successful += 1
-        rescue StandardError => e
-          failed += 1
-          csv_import.add_error(line_number, e.message)
-          log_error "CSV Import row error", { 
-            csv_import_id: csv_import.id, 
-            line_number: line_number, 
-            error: e.message 
-          }
+
+          processed += 1
+
+          # Update progress every 10 rows
+          if processed % 10 == 0
+            csv_import.update!(
+              processed_rows: processed,
+              successful_rows: successful,
+              failed_rows: failed
+            )
+          end
         end
 
-        processed += 1
-        
-        # Update progress every 10 rows
-        if processed % 10 == 0
-          csv_import.update!(
-            processed_rows: processed,
-            successful_rows: successful,
-            failed_rows: failed
-          )
-        end
+        # Final update
+        csv_import.update!(
+          processed_rows: processed,
+          successful_rows: successful,
+          failed_rows: failed,
+          status: :completed
+        )
+
+        Hke::Logger.log(event_type: 'csv_import_completed', details: {
+          csv_import_id: csv_import.id,
+          total_rows: total_rows,
+          successful: successful,
+          failed: failed
+        })
       end
-
-      # Final update
-      csv_import.update!(
-        processed_rows: processed,
-        successful_rows: successful,
-        failed_rows: failed,
-        status: :completed
-      )
-
-      log_info "CSV Import completed", {
-        csv_import_id: csv_import.id,
-        total_rows: total_rows,
-        successful: successful,
-        failed: failed
-      }
     end
 
     def count_csv_rows(file_path)
-      CSV.foreach(file_path, headers: true).count
+      CSV.foreach(file_path, headers: true, encoding: 'bom|utf-8').count
     rescue StandardError
       0
     end
+    def import_unified_row(row, csv_import)
+      relation_he = hv(row, 'relation', 'קשר', 'קשר לנפטר', 'relation_to_deceased')
+      relation_he ||= row[0]
+      relation_pair = relations_select.find { |pair| pair[0] == relation_he }
+      relation_en = relation_pair ? relation_pair[1] : nil
+
+      dp_attrs = {
+        first_name: hv(row, 'first_name', 'שם פרטי של נפטר'),
+        last_name: hv(row, 'last_name', 'שם משפחה של נפטר'),
+        gender: normalize_gender(hv(row, 'gender', 'מין של נפטר')),
+        father_first_name: hv(row, 'father_first_name', 'אבא של נפטר'),
+        mother_first_name: hv(row, 'mother_first_name', 'אמא של נפטר'),
+        hebrew_year_of_death: hv(row, 'hebrew_year_of_death', 'שנת פטירה'),
+        hebrew_month_of_death: hv(row, 'hebrew_month_of_death', 'חודש פטירה'),
+        hebrew_day_of_death: hv(row, 'hebrew_day_of_death', 'יום פטירה'),
+        date_of_death: parse_date(hv(row, 'date_of_death', 'תאריך פטירה לועזי')),
+        cemetery_id: find_or_create_cemetery_id(hv(row, 'cemetery_name', 'מיקום בית קברות'))
+      }
+
+      has_contact_data = [
+        hv(row, 'contact_first_name', 'שם פרטי איש קשר'),
+        hv(row, 'contact_last_name', 'שם משפחה איש קשר'),
+        hv(row, 'contact_email', 'אימייל איש קשר'),
+        hv(row, 'contact_phone', 'טלפון איש קשר'),
+        hv(row, 'contact_gender', 'מין של איש קשר')
+      ].compact.any?
+
+      rel_attrs = {}
+      if relation_en.present? && has_contact_data
+        rel_attrs = {
+          relations_attributes: [
+            {
+              relation_of_deceased_to_contact: relation_en,
+              contact_person_attributes: {
+                first_name: hv(row, 'contact_first_name', 'שם פרטי איש קשר'),
+                last_name: hv(row, 'contact_last_name', 'שם משפחה איש קשר'),
+                email: hv(row, 'contact_email', 'אימייל איש קשר'),
+                phone: hv(row, 'contact_phone', 'טלפון איש קשר'),
+                gender: normalize_gender(hv(row, 'contact_gender', 'מין של איש קשר'))
+              }
+            }
+          ]
+        }
+      end
+
+      dp = DeceasedPerson.new(dp_attrs.merge(rel_attrs))
+      dp.save!
+
+      contact_status = rel_attrs.present? ? :with_contact : :without_contact
+      contact_warning = has_contact_data && relation_en.blank?
+      [dp, contact_status, contact_warning]
+    end
+
 
     def import_deceased_person(row, csv_import)
-      deceased_person = DeceasedPerson.new(
-        first_name: row['first_name']&.strip,
-        last_name: row['last_name']&.strip,
-        hebrew_year_of_death: row['hebrew_year_of_death']&.strip,
-        hebrew_month_of_death: row['hebrew_month_of_death']&.strip,
-        hebrew_day_of_death: row['hebrew_day_of_death']&.strip,
-        date_of_death: parse_date(row['date_of_death']),
-        cemetery_id: find_cemetery_id(row['cemetery_name'])
-      )
+      attrs = {
+        first_name: hv(row, 'first_name', 'שם פרטי של נפטר'),
+        last_name: hv(row, 'last_name', 'שם משפחה של נפטר'),
+        gender: normalize_gender(hv(row, 'gender', 'מין של נפטר')),
+        father_first_name: hv(row, 'father_first_name', 'אבא של נפטר'),
+        mother_first_name: hv(row, 'mother_first_name', 'אמא של נפטר'),
+        hebrew_year_of_death: hv(row, 'hebrew_year_of_death', 'שנת פטירה'),
+        hebrew_month_of_death: hv(row, 'hebrew_month_of_death', 'חודש פטירה'),
+        hebrew_day_of_death: hv(row, 'hebrew_day_of_death', 'יום פטירה'),
+        date_of_death: parse_date(hv(row, 'date_of_death', 'תאריך פטירה לועזי')),
+        cemetery_id: find_or_create_cemetery_id(hv(row, 'cemetery_name', 'מיקום בית קברות'))
+      }
 
-      unless deceased_person.save
-        raise "Failed to save deceased person: #{deceased_person.errors.full_messages.join(', ')}"
-      end
+      dp = DeceasedPerson.new(attrs)
+      dp.save!
+      dp
     end
 
     def import_contact_person(row, csv_import)
-      contact_person = ContactPerson.new(
-        first_name: row['first_name']&.strip,
-        last_name: row['last_name']&.strip,
-        phone: row['phone']&.strip,
-        email: row['email']&.strip,
-        relation_to_deceased: row['relation_to_deceased']&.strip
-      )
+      attrs = {
+        first_name: hv(row, 'first_name', 'שם פרטי איש קשר'),
+        last_name: hv(row, 'last_name', 'שם משפחה איש קשר'),
+        phone: hv(row, 'phone', 'טלפון איש קשר'),
+        email: hv(row, 'email', 'אימייל איש קשר'),
+        gender: normalize_gender(hv(row, 'gender', 'מין של איש קשר'))
+      }
 
-      unless contact_person.save
-        raise "Failed to save contact person: #{contact_person.errors.full_messages.join(', ')}"
-      end
+      cp = ContactPerson.new(attrs)
+      cp.save!
+      cp
     end
 
     def import_combined_record(row, csv_import)
-      # Import both deceased and contact person with relationship
-      deceased_person = import_deceased_person(row, csv_import)
-      
-      contact_person = ContactPerson.new(
-        first_name: row['contact_first_name']&.strip,
-        last_name: row['contact_last_name']&.strip,
-        phone: row['contact_phone']&.strip,
-        email: row['contact_email']&.strip,
-        relation_to_deceased: row['relation_to_deceased']&.strip
-      )
+      relation_he = hv(row, 'relation', 'קשר', 'קשר לנפטר', 'relation_to_deceased')
+      relation_he ||= row[0]
+      relation_pair = relations_select.find { |pair| pair[0] == relation_he }
+      relation_en = relation_pair ? relation_pair[1] : nil
 
-      unless contact_person.save
-        raise "Failed to save contact person: #{contact_person.errors.full_messages.join(', ')}"
+      dp_attrs = {
+        first_name: hv(row, 'first_name', 'שם פרטי של נפטר'),
+        last_name: hv(row, 'last_name', 'שם משפחה של נפטר'),
+        gender: normalize_gender(hv(row, 'gender', 'מין של נפטר')),
+        father_first_name: hv(row, 'father_first_name', 'אבא של נפטר'),
+        mother_first_name: hv(row, 'mother_first_name', 'אמא של נפטר'),
+        hebrew_year_of_death: hv(row, 'hebrew_year_of_death', 'שנת פטירה'),
+        hebrew_month_of_death: hv(row, 'hebrew_month_of_death', 'חודש פטירה'),
+        hebrew_day_of_death: hv(row, 'hebrew_day_of_death', 'יום פטירה'),
+        date_of_death: parse_date(hv(row, 'date_of_death', 'תאריך פטירה לועזי')),
+        cemetery_id: find_or_create_cemetery_id(hv(row, 'cemetery_name', 'מיקום בית קברות'))
+      }
+
+      rel_attrs = {}
+      if relation_en
+        rel_attrs = {
+          relations_attributes: [
+            {
+              relation_of_deceased_to_contact: relation_en,
+              contact_person_attributes: {
+                first_name: hv(row, 'contact_first_name', 'שם פרטי איש קשר'),
+                last_name: hv(row, 'contact_last_name', 'שם משפחה איש קשר'),
+                email: hv(row, 'contact_email', 'אימייל איש קשר'),
+                phone: hv(row, 'contact_phone', 'טלפון איש קשר'),
+                gender: normalize_gender(hv(row, 'contact_gender', 'מין של איש קשר'))
+              }
+            }
+          ]
+        }
       end
 
-      # Create relationship between deceased and contact
-      # This would depend on your relationship model structure
+      dp = DeceasedPerson.new(dp_attrs.merge(rel_attrs))
+      dp.save!
+      dp
     end
 
     def parse_date(date_string)
       return nil if date_string.blank?
-      Date.parse(date_string.strip)
-    rescue Date::Error
+      str = date_string.to_s.strip
+      begin
+        Date.parse(str)
+      rescue Date::Error
+        nil
+      end
+    end
+
+    # Helper: get first non-blank value by keys
+    def hv(row, *keys)
+      keys.each do |k|
+        v = row[k]
+        return v.to_s.strip if v.present?
+      end
       nil
     end
 
-    def find_cemetery_id(cemetery_name)
-      return nil if cemetery_name.blank?
-      cemetery = Cemetery.find_by(name: cemetery_name.strip)
-      cemetery&.id
+    def normalize_gender(value)
+      return nil if value.blank?
+      v = value.to_s.strip
+      return 'male' if %w[m male].include?(v.downcase) || v == 'זכר'
+      return 'female' if %w[f female].include?(v.downcase) || v == 'נקבה'
+      pair = gender_select.find { |p| p[0] == v }
+      pair ? pair[1] : nil
+    end
+
+    def find_or_create_cemetery_id(name)
+      return nil if name.blank?
+      n = name.to_s.strip
+      Cemetery.find_or_create_by!(name: n).id
     end
   end
 end

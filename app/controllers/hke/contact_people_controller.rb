@@ -8,7 +8,7 @@ module Hke
     # GET /contact_people index
     # POST /contact_people search
     def index
-      @contact_people = ContactPerson.includes(relations: [:deceased_person])
+      @contact_people = policy_scope(ContactPerson).includes(relations: [:deceased_person])
       if params[:name_search]
         key = "%#{params[:name_search]}%"
         @contact_people = @contact_people.where("first_name ILIKE ?", key)
@@ -42,22 +42,26 @@ module Hke
 
     # GET /contact_people/1 or /contact_people/1.json
     def show
+      authorize @contact_person
       @contact_people = @contact_person.deceased_people
     end
 
     # GET /contact_people/new
     def new
       @contact_person = ContactPerson.new
+      authorize @contact_person
       @contact_person.relations.build.build_deceased_person
     end
 
     # GET /contact_people/1/edit
     def edit
+      authorize @contact_person
     end
 
     # POST /contact_people or /contact_people.json
     def create
       @contact_person = ContactPerson.new(contact_person_params)
+      authorize @contact_person
 
       respond_to do |format|
         if @contact_person.save
@@ -72,6 +76,7 @@ module Hke
 
     # PATCH/PUT /contact_people/1 or /contact_people/1.json
     def update
+      authorize @contact_person
       remove_empty_relations_from "contact_person", "deceased_person"
       respond_to do |format|
         if @contact_person.update(contact_person_params)
@@ -86,6 +91,7 @@ module Hke
 
     # DELETE /contact_people/1 or /contact_people/1.json
     def destroy
+      authorize @contact_person
       @contact_person.destroy
       respond_to do |format|
         format.turbo_stream { redirect_to contact_people_url, notice: "Contact person was successfully destroyed.", status: :see_other }

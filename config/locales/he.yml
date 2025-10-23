@@ -357,6 +357,8 @@ he:
       import_csv: "יבוא CSV"
       message_management: "ניהול הודעות"
 
+      logs: "לוגים"
+
   csv_imports:
     new:
       title: "יבוא קובץ CSV"
@@ -367,12 +369,18 @@ he:
       upload_and_process: "העלה ועבד"
       instructions_title: "הוראות"
       instruction_1: "ודא שהקובץ שלך בפורמט CSV עם כותרות בשורה הראשונה"
+      run_name_label: "שם הריצה"
+      run_name_placeholder: "לדוגמה: יבוא פברואר 2022"
+
       instruction_2: "בחר את סוג היבוא המתאים לתוכן הקובץ"
       instruction_3: "העיבוד יתבצע ברקע ותוכל לעקוב אחר ההתקדמות"
     show:
       title: "פרטי יבוא CSV"
       status: "סטטוס"
       import_type: "סוג יבוא"
+      run_name: "שם הריצה"
+      logs_title: "יומן יבוא"
+
       uploaded_by: "הועלה על ידי"
       uploaded_at: "הועלה ב"
       progress: "התקדמות"
@@ -390,6 +398,12 @@ he:
       combined: "נפטרים ואנשי קשר"
     statuses:
       pending: "ממתין"
+  logs:
+    levels:
+      info: "מידע"
+      warn: "אזהרה"
+      error: "שגיאה"
+
       processing: "מעבד"
       completed: "הושלם"
       failed: "נכשל"

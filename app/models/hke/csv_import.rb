@@ -2,6 +2,8 @@ module Hke
   class CsvImport < CommunityRecord
     belongs_to :user
     has_one_attached :file
+    has_many :logs, class_name: "Hke::CsvImportLog", dependent: :destroy
+
 
     enum status: {
       pending: 0,
@@ -17,7 +19,6 @@ module Hke
     }
 
     validates :file, presence: true
-    validates :import_type, presence: true
     validate :file_is_csv
 
     # Statistics tracking
@@ -61,7 +62,7 @@ module Hke
 
     def file_is_csv
       return unless file.attached?
-      
+
       unless file.content_type == 'text/csv' || file.filename.extension.downcase == 'csv'
         errors.add(:file, 'must be a CSV file')
       end

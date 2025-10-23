@@ -6,24 +6,31 @@
     <div class="flex items-center justify-between">
       <!-- Right side: Navigation menu -->
       <div class="flex space-x-4 space-x-reverse">
-        <%= link_to t('community_admin.navbar.message_approval'), root_path,
+        <%= link_to t('community_admin.navbar.message_approval'), hke.root_path,
             class: "px-4 py-2 text-blue-600 hover:text-blue-800 font-medium" %>
-        <%= link_to t('community_admin.navbar.deceased_people'), deceased_people_path,
+        <%= link_to t('community_admin.navbar.deceased_people'), hke.deceased_people_path,
             class: "px-4 py-2 text-blue-600 hover:text-blue-800 font-medium" %>
-        <%= link_to t('community_admin.navbar.contact_people'), contact_people_path,
+        <%= link_to t('community_admin.navbar.contact_people'), hke.contact_people_path,
             class: "px-4 py-2 text-blue-600 hover:text-blue-800 font-medium" %>
         <%# TODO: Add community users management route %>
-        <%# link_to t('community_admin.navbar.users'), community_users_path,
+        <%# link_to t('community_admin.navbar.users'), hke.community_users_path,
             class: "px-4 py-2 text-blue-600 hover:text-blue-800 font-medium" %>
-        <%= link_to t('community_admin.navbar.import_csv'), new_csv_import_path,
+        <%= link_to t('community_admin.navbar.import_csv'), hke.new_csv_import_path,
             class: "px-4 py-2 text-blue-600 hover:text-blue-800 font-medium" %>
-        <%= link_to t('community_admin.navbar.message_management'), message_management_index_path,
+        <%= link_to t('community_admin.navbar.message_management'), hke.message_management_index_path,
+            class: "px-4 py-2 text-blue-600 hover:text-blue-800 font-medium" %>
+        <%= link_to t('community_admin.navbar.logs', default: '\u05dc\u05d5\u05d2\u05d9\u05dd'), hke.logs_path,
             class: "px-4 py-2 text-blue-600 hover:text-blue-800 font-medium" %>
       </div>
 
-      <!-- Left side: User profile and logout -->
+      <!-- Left side: Back to system admin (for sysadmins) + User profile -->
       <div class="flex items-center">
-        <div class="relative group">
+        <% if current_user.system_admin? %>
+          <%= link_to t('admin.dashboard.community_switching.back_to_system_admin'),
+              hke.admin_root_path,
+              class: "px-4 py-2 text-blue-600 hover:text-blue-800 font-medium" %>
+        <% end %>
+        <div class="relative group ml-2">
           <button class="flex items-center px-4 py-2 text-gray-700 hover:text-gray-900 font-medium">
             <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>

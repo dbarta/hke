@@ -10,9 +10,12 @@ module Hke
       def show
         # Check authorization manually for dashboard
         unless current_user.system_admin?
-          redirect_to root_path, alert: "Access denied. System admin privileges required."
+          redirect_to root_path, alert: t('admin.dashboard.access_denied')
           return
         end
+
+        # Returning to System Admin dashboard should clear any selected community scope
+        session[:selected_community_id] = nil
 
         @total_communities = Hke::Community.count
         @total_users = User.count
@@ -36,10 +39,10 @@ module Hke
         if community_id.present?
           community = Hke::Community.find(community_id)
           session[:selected_community_id] = community.id
-          redirect_to hke.root_path, notice: "Switched to #{community.name} community management"
+          redirect_to hke.root_path, notice: t('admin.dashboard.community_switching.switched_to_community', community: community.name)
         else
           session[:selected_community_id] = nil
-          redirect_to admin_root_path, notice: "Returned to system admin dashboard"
+          redirect_to admin_root_path, notice: t('admin.dashboard.community_switching.returned_to_system_admin')
         end
       end
     end
