@@ -9,9 +9,12 @@ module Hke
       csv_import = CsvImport.find(csv_import_id)
       csv_import.update!(status: :processing)
 
-      # Set tenant context
-      ActsAsTenant.with_tenant(csv_import.community) do
-        process_csv_import(csv_import)
+      # Set locale to Hebrew for translations in background job
+      I18n.with_locale(:he) do
+        # Set tenant context
+        ActsAsTenant.with_tenant(csv_import.community) do
+          process_csv_import(csv_import)
+        end
       end
     rescue StandardError => e
       csv_import&.update!(status: :failed)
@@ -32,16 +35,46 @@ module Hke
         processed = 0
         successful = 0
         failed = 0
+        total_deceased_in_input = 0
+        total_contacts_in_input = 0
+        new_deceased = 0
+        existing_deceased = 0
 
         CSV.foreach(file_path, headers: true, encoding: 'bom|utf-8').with_index(2) do |row, line_number|
           begin
-            dp, contact_status, contact_warning = import_unified_row(row, csv_import)
+            dp, contact_status, contact_warning, is_new = import_unified_row(row, csv_import)
+
+            # Track statistics
+            total_deceased_in_input += 1
+            if contact_status == :with_contact
+              total_contacts_in_input += 1
+            end
+            if is_new
+              new_deceased += 1
+            else
+              existing_deceased += 1
+            end
             # Per-row logs
-            csv_import.logs.create!(level: 'info', row_number: line_number, message: "יובא נפטר: #{dp.first_name} #{dp.last_name}")
+            deceased_log = "יובא נפטר: #{dp.first_name} #{dp.last_name}"
+            if is_new
+              deceased_log += " (חדש)"
+            else
+              deceased_log += " (קיים)"
+            end
+            csv_import.logs.create!(level: 'info', row_number: line_number, message: deceased_log)
+
             if contact_warning
               csv_import.logs.create!(level: 'error', row_number: line_number, message: 'נמצאו פרטי איש קשר אך קשר קרבה חסר/לא תקין — דילוג על יצירת קשר')
             elsif contact_status == :with_contact
-              csv_import.logs.create!(level: 'info', row_number: line_number, message: 'נוסף איש קשר וקשר קרבה')
+              # Get contact details from the relation
+              contact = dp.relations.last&.contact_person
+              if contact
+                relation_type = dp.relations.last&.relation_of_deceased_to_contact
+                contact_log = "נוסף איש קשר וקשר קרבה: #{contact.first_name} #{contact.last_name} (#{relation_type})"
+                csv_import.logs.create!(level: 'info', row_number: line_number, message: contact_log)
+              else
+                csv_import.logs.create!(level: 'info', row_number: line_number, message: 'נוסף איש קשר וקשר קרבה')
+              end
             end
 
             successful += 1
@@ -58,14 +91,19 @@ module Hke
 
           processed += 1
 
-          # Update progress every 10 rows
-          if processed % 10 == 0
-            csv_import.update!(
-              processed_rows: processed,
-              successful_rows: successful,
-              failed_rows: failed
-            )
-          end
+          # Update progress after every record for real-time feedback
+          csv_import.update!(
+            processed_rows: processed,
+            successful_rows: successful,
+            failed_rows: failed,
+            total_deceased_in_input: total_deceased_in_input,
+            total_contacts_in_input: total_contacts_in_input,
+            new_deceased: new_deceased,
+            existing_deceased: existing_deceased
+          )
+
+          # Broadcast update via Turbo for real-time UI updates
+          csv_import.broadcast_replace_to(csv_import)
         end
 
         # Final update
@@ -73,8 +111,15 @@ module Hke
           processed_rows: processed,
           successful_rows: successful,
           failed_rows: failed,
+          total_deceased_in_input: total_deceased_in_input,
+          total_contacts_in_input: total_contacts_in_input,
+          new_deceased: new_deceased,
+          existing_deceased: existing_deceased,
           status: :completed
         )
+
+        # Final broadcast
+        csv_import.broadcast_replace_to(csv_import)
 
         Hke::Logger.log(event_type: 'csv_import_completed', details: {
           csv_import_id: csv_import.id,
@@ -135,12 +180,29 @@ module Hke
         }
       end
 
-      dp = DeceasedPerson.new(dp_attrs.merge(rel_attrs))
-      dp.save!
+      # Check if deceased person already exists
+      existing_dp = DeceasedPerson.find_by(
+        first_name: dp_attrs[:first_name],
+        last_name: dp_attrs[:last_name],
+        hebrew_year_of_death: dp_attrs[:hebrew_year_of_death],
+        hebrew_month_of_death: dp_attrs[:hebrew_month_of_death],
+        hebrew_day_of_death: dp_attrs[:hebrew_day_of_death]
+      )
+
+      if existing_dp
+        # Record already exists - don't update, just count it
+        dp = existing_dp
+        is_new = false
+      else
+        # Create new record
+        dp = DeceasedPerson.new(dp_attrs.merge(rel_attrs))
+        dp.save!
+        is_new = true
+      end
 
       contact_status = rel_attrs.present? ? :with_contact : :without_contact
       contact_warning = has_contact_data && relation_en.blank?
-      [dp, contact_status, contact_warning]
+      [dp, contact_status, contact_warning, is_new]
     end
 
 

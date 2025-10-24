@@ -27,6 +27,10 @@ module Hke
     attribute :successful_rows, :integer, default: 0
     attribute :failed_rows, :integer, default: 0
     attribute :errors_data, :text # JSON string of errors
+    attribute :total_deceased_in_input, :integer, default: 0
+    attribute :total_contacts_in_input, :integer, default: 0
+    attribute :new_deceased, :integer, default: 0
+    attribute :existing_deceased, :integer, default: 0
 
     scope :recent, -> { order(created_at: :desc) }
     scope :by_status, ->(status) { where(status: status) }

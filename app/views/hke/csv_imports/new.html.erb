@@ -2,6 +2,16 @@
 
 <div class="container mx-auto p-4" style="direction: rtl;">
   <div class="max-w-2xl mx-auto">
+    <!-- Instructions at the top -->
+    <div class="mb-6 bg-blue-50 rounded-lg p-4 border border-blue-200">
+      <h3 class="text-lg font-medium text-gray-900 mb-3"><%= t('csv_imports.new.instructions_title') %></h3>
+      <div class="text-sm text-gray-700 space-y-2">
+        <p><strong><%= t('csv_imports.new.instruction_1') %></strong></p>
+        <p><%= t('csv_imports.new.instruction_2') %></p>
+        <p><%= t('csv_imports.new.instruction_3') %></p>
+      </div>
+    </div>
+
     <div class="bg-white rounded-lg shadow-sm p-6">
       <h1 class="text-2xl font-bold mb-6"><%= t('csv_imports.new.title') %></h1>
 
@@ -11,10 +21,19 @@
 
         <%= render "shared/error_messages", resource: form.object %>
 
-        <!-- Run Name (optional) -->
+        <!-- Run Name with auto-generated default -->
         <div class="space-y-2">
-          <label class="block text-sm font-medium text-gray-700"><%= t('csv_imports.new.run_name_label', default: 'שם הריצה (אופציונלי)') %></label>
-          <%= form.text_field :name, placeholder: t('csv_imports.new.run_name_placeholder', default: 'לדוגמה: יבוא פברואר 2022'), class: 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500' %>
+          <label class="block text-sm font-medium text-gray-700"><%= t('csv_imports.new.run_name_label', default: 'שם הריצה') %></label>
+          <div class="flex gap-2">
+            <%= form.text_field :name,
+                id: "run_name_field",
+                placeholder: t('csv_imports.new.run_name_placeholder', default: 'לדוגמה: יבוא פברואר 2022'),
+                class: 'flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500' %>
+            <button type="button" id="reset_name_btn" class="px-3 py-2 text-sm text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50">
+              <%= t('csv_imports.new.reset_name', default: 'אפס') %>
+            </button>
+          </div>
+          <p class="text-xs text-gray-500"><%= t('csv_imports.new.run_name_help', default: 'אם לא תשנה, יוקצה שם עם חותמת זמן') %></p>
         </div>
 
         <!-- File Upload with Drag and Drop -->
@@ -23,12 +42,12 @@
             <%= t('csv_imports.new.file_upload') %>
           </label>
 
-          <div id="drop_zone" role="button" tabindex="0" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors cursor-pointer">
+          <div id="drop_zone" role="button" tabindex="0" class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors cursor-pointer">
             <div id="drop_zone_content">
-              <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+              <svg class="mx-auto h-8 w-8 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
                 <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
-              <div class="mt-4">
+              <div class="mt-3">
                 <p class="text-sm text-gray-600">
                   <%= t('csv_imports.new.drag_drop_text') %>
                 </p>
@@ -66,20 +85,21 @@
         </div>
       <% end %>
     </div>
-
-    <!-- Instructions -->
-    <div class="mt-6 bg-gray-50 rounded-lg p-4">
-      <h3 class="text-lg font-medium text-gray-900 mb-3"><%= t('csv_imports.new.instructions_title') %></h3>
-      <div class="text-sm text-gray-600 space-y-2">
-        <p><%= t('csv_imports.new.instruction_1') %></p>
-        <p><%= t('csv_imports.new.instruction_2') %></p>
-        <p><%= t('csv_imports.new.instruction_3') %></p>
-      </div>
-    </div>
   </div>
 </div>
 
 <script>
+function generateDefaultName() {
+  const now = new Date();
+  return now.toLocaleString('he-IL', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
 document.addEventListener('turbo:load', function() {
   const dropZone = document.getElementById('drop_zone');
   const fileInput = document.getElementById('file_input');
@@ -87,8 +107,21 @@ document.addEventListener('turbo:load', function() {
   const fileName = document.getElementById('file_name');
   const fileSize = document.getElementById('file_size');
   const submitBtn = document.getElementById('submit_btn');
+  const runNameField = document.getElementById('run_name_field');
+  const resetNameBtn = document.getElementById('reset_name_btn');
+  const defaultName = generateDefaultName();
 
   if (!dropZone || !fileInput) { return; }
+
+  // Set initial placeholder with default name
+  runNameField.placeholder = defaultName;
+
+  // Reset name button
+  resetNameBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    runNameField.value = '';
+    runNameField.focus();
+  });
 
   // Click & keyboard to open file dialog
   dropZone.addEventListener('click', () => fileInput.click());
@@ -118,6 +151,13 @@ document.addEventListener('turbo:load', function() {
     if (files.length > 0) {
       fileInput.files = files;
       handleFileSelect(fileInput);
+    }
+  });
+
+  // Handle form submission to use default name if empty
+  document.getElementById('csv_import_form').addEventListener('submit', function(e) {
+    if (!runNameField.value.trim()) {
+      runNameField.value = defaultName;
     }
   });
 });

@@ -3,11 +3,13 @@ module Hke
     include Hke::SetCommunityAsTenant
     helper Hke::ApplicationHelper
     include Pagy::Backend
+    include Pundit::Authorization
 
     def index
+      authorize Hke::Log
       @event_types = Hke::Log.distinct.pluck(:event_type).compact.sort
 
-      scope = Hke::Log.all
+      scope = policy_scope(Hke::Log)
 
       if params[:event_type].present?
         scope = scope.where(event_type: params[:event_type])
