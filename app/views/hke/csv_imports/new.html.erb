@@ -61,6 +61,7 @@
                 id: "file_input",
                 class: "hidden",
                 accept: ".csv,text/csv",
+                required: true,
                 onchange: "handleFileSelect(this)" %>
           </div>
 
@@ -131,6 +132,9 @@ document.addEventListener('turbo:load', function() {
       fileInput.click();
     }
   });
+
+  // Also handle change from native file dialog
+  fileInput.addEventListener('change', () => handleFileSelect(fileInput));
 
   // Drag and drop handlers
   dropZone.addEventListener('dragover', (e) => {

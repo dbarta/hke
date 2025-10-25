@@ -9,5 +9,6 @@ init_logging "api_import_csv"
 puts "@@@@ 3"
 log_info "@@@ Running hke/db/import_from_csv.rb file. Setting locale to :he. Importing no more than #{max_num_people} deceased people."
 executor = ApiSeedsExecutor.new(max_num_people)
-executor.process_csv(Hke::Engine.root.join("db", "deceased_2022_02_28_no_blanks.csv"))
+#executor.process_csv(Hke::Engine.root.join("db", "deceased_2022_02_28_no_blanks.csv"))
+executor.process_csv(Hke::Engine.root.join("db", "test_deceased_1_deceased.csv"))
 # executor.summarize
