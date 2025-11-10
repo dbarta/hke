@@ -360,6 +360,24 @@ he:
       logs: "לוגים"
 
   csv_imports:
+    index:
+      title: "פעולות העלאת נתונים"
+      new_import: "יבוא חדש"
+      run_name: "שם הריצה"
+      uploaded_by: "הועלה על ידי"
+      uploaded_at: "תאריך העלאה"
+      status: "סטטוס"
+      total_input_rows: "סה״כ שורות"
+      error_rows: "שורות שגיאה"
+      deceased_input: "נפטרים בקלט"
+      contacts_input: "אנשי קשר בקלט"
+      new_vs_existing: "חדש / קיים"
+      progress: "התקדמות"
+      actions: "פעולות"
+      view: "צפה"
+      unnamed: "ללא שם"
+      no_imports: "אין יבואים עדיין"
+      create_first: "צור יבוא ראשון"
     new:
       title: "יבוא קובץ CSV"
       import_type: "סוג יבוא"
@@ -371,7 +389,8 @@ he:
       instruction_1: "ודא שהקובץ שלך בפורמט CSV עם כותרות בשורה הראשונה"
       run_name_label: "שם הריצה"
       run_name_placeholder: "לדוגמה: יבוא פברואר 2022"
-
+      run_name_help: "אם לא תשנה, יוקצה שם עם חותמת זמן"
+      reset_name: "אפס"
       instruction_2: "בחר את סוג היבוא המתאים לתוכן הקובץ"
       instruction_3: "העיבוד יתבצע ברקע ותוכל לעקוב אחר ההתקדמות"
     show:
@@ -392,6 +411,11 @@ he:
       error_message: "הודעת שגיאה"
       back_to_list: "חזרה לרשימה"
       retry: "נסה שוב"
+      existing_records_note: "נפטרים שכבר קיימים במערכת לא יעודכנו - רק נפטרים חדשים ייווצרו"
+      total_deceased_input: "נפטרים בקלט"
+      total_contacts_input: "אנשי קשר בקלט"
+      new_deceased: "נפטרים חדשים"
+      existing_deceased: "נפטרים קיימים"
     import_types:
       deceased_people: "נפטרים בלבד"
       contact_people: "אנשי קשר בלבד"

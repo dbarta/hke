@@ -4,6 +4,9 @@ module Hke
     has_one_attached :file
     has_many :logs, class_name: "Hke::CsvImportLog", dependent: :destroy
 
+    # Enable Turbo Stream broadcasting
+    broadcasts
+
 
     enum status: {
       pending: 0,

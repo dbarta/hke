@@ -33,6 +33,7 @@ module Hke
           Hke::DeceasedPerson,   # References Cemetery/Community
           Hke::ContactPerson,    # References Community
           Hke::Cemetery,         # References Community
+          Hke::CsvImport,         # References Community
           Hke::System,           # No dependencies
           Hke::Log,              # No dependencies
           ApiToken,              # References User

@@ -53,6 +53,87 @@ en:
   hke:
     unauthorized: "You are not authorized !!! to perform this action."
 
+  csv_imports:
+    index:
+      title: "CSV Import Operations"
+      new_import: "New Import"
+      run_name: "Run Name"
+      uploaded_by: "Uploaded By"
+      uploaded_at: "Upload Date"
+      status: "Status"
+      total_input_rows: "Total Rows"
+      error_rows: "Error Rows"
+      deceased_input: "Deceased in Input"
+      contacts_input: "Contacts in Input"
+      new_vs_existing: "New / Existing"
+      progress: "Progress"
+      actions: "Actions"
+      view: "View"
+      unnamed: "Unnamed"
+      no_imports: "No imports yet"
+      create_first: "Create First Import"
+    new:
+      title: "Import CSV File"
+      import_type: "Import Type"
+      file_upload: "File Upload"
+      drag_drop_text: "Drag and drop CSV file here or click to browse"
+      file_requirements: "CSV files only, up to 10MB"
+      upload_and_process: "Upload and Process"
+      instructions_title: "Instructions"
+      instruction_1: "Make sure your file is in CSV format with headers in the first row"
+      run_name_label: "Run Name"
+      run_name_placeholder: "e.g., February 2022 Import"
+      run_name_help: "If unchanged, a timestamp will be assigned"
+      reset_name: "Reset"
+      instruction_2: "Select the appropriate import type for your file content"
+      instruction_3: "Processing will happen in the background and you can track progress"
+    show:
+      title: "CSV Import Details"
+      status: "Status"
+      import_type: "Import Type"
+      run_name: "Run Name"
+      logs_title: "Import Log"
+      uploaded_by: "Uploaded By"
+      uploaded_at: "Uploaded At"
+      progress: "Progress"
+      successful: "Successful"
+      failed: "Failed"
+      success_rate: "Success Rate"
+      errors_title: "Errors"
+      row_number: "Row Number"
+      error_message: "Error Message"
+      back_to_list: "Back to List"
+      retry: "Retry"
+      existing_records_note: "Existing records in the system will not be updated - only new records will be created"
+      total_deceased_input: "Deceased in Input"
+      total_contacts_input: "Contacts in Input"
+      new_deceased: "New Deceased"
+      existing_deceased: "Existing Deceased"
+    import_types:
+      deceased_people: "Deceased Only"
+      contact_people: "Contacts Only"
+      combined: "Deceased and Contacts"
+    statuses:
+      pending: "Pending"
+      processing: "Processing"
+      completed: "Completed"
+      failed: "Failed"
+    upload_success: "File uploaded successfully and processing started"
+
+  logs:
+    levels:
+      info: "Info"
+      warn: "Warning"
+      error: "Error"
+
+  community_admin:
+    navbar:
+      deceased_people: "Deceased People"
+      contact_people: "Contact People"
+      import_csv: "CSV Import"
+      message_management: "Message Management"
+      logs: "Logs"
+
   account_invitations_mailer:
     invite:
       subject: "%{inviter} invited you to %{account}"

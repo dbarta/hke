@@ -103,7 +103,13 @@ module Hke
           )
 
           # Broadcast update via Turbo for real-time UI updates
-          csv_import.broadcast_replace_to(csv_import)
+          # Reload to ensure fresh data for broadcast
+          csv_import.reload
+          csv_import.broadcast_replace_to(
+            csv_import,
+            partial: "hke/csv_imports/csv_import",
+            locals: { csv_import: csv_import }
+          )
         end
 
         # Final update
@@ -119,7 +125,13 @@ module Hke
         )
 
         # Final broadcast
-        csv_import.broadcast_replace_to(csv_import)
+        # Reload to ensure fresh data for broadcast
+        csv_import.reload
+        csv_import.broadcast_replace_to(
+          csv_import,
+          partial: "hke/csv_imports/csv_import",
+          locals: { csv_import: csv_import }
+        )
 
         Hke::Logger.log(event_type: 'csv_import_completed', details: {
           csv_import_id: csv_import.id,
