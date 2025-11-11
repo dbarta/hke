@@ -19,7 +19,7 @@ class Hke::Api::V1::ContactPeopleController < Hke::Api::BaseController
     @contact_person = Hke::ContactPerson.new(contact_person_params)
     authorize @contact_person
     if @contact_person.save
-      render json: @contact_person, include: include_all?, status: :created, location: @contact_person
+      render json: @contact_person, methods: [:dedup_status], include: include_all?, status: :created, location: @contact_person
     else
       render json: @contact_person.errors, status: :unprocessable_entity
     end

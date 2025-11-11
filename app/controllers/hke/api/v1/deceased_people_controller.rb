@@ -19,7 +19,7 @@ class Hke::Api::V1::DeceasedPeopleController < Hke::Api::BaseController
     @hke_deceased_person = Hke::DeceasedPerson.new(deceased_person_params)
     authorize @hke_deceased_person
     if @hke_deceased_person.save
-      render json: @hke_deceased_person, include: {relations: {include: {contact_person: {include: :address}}}}, status: :created
+      render json: @hke_deceased_person, methods: [:dedup_status], include: {relations: {include: {contact_person: {include: :address}}}}, status: :created
     else
       render json: @hke_deceased_person.errors, status: :unprocessable_entity
     end

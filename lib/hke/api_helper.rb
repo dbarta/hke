@@ -32,7 +32,8 @@ module Hke
           Hke::Relation,         # References DeceasedPerson/ContactPerson
           Hke::DeceasedPerson,   # References Cemetery/Community
           Hke::ContactPerson,    # References Community
-          Hke::Cemetery,         # References Community
+          Hke::Cemetery,
+          Hke::CsvImportLog,
           Hke::CsvImport,         # References Community
           Hke::System,           # No dependencies
           Hke::Log,              # No dependencies

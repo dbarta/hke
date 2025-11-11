@@ -22,7 +22,7 @@ class Hke::Api::V1::RelationsController < Api::BaseController
     @relation = Hke::Relation.new(relation_params)
 
     if @relation.save
-      render json: @relation
+      render json: @relation, methods: [:dedup_status]
     else
       render json: @relation.errors, status: :unprocessable_entity
     end

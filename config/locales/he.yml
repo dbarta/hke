@@ -804,6 +804,7 @@ he:
     messages:
       #presence: "%{attribute} חובה למלא את השדה"
       gender_invalid: "מין לא תקין. צריך להיות זכר או נקבה."
+      record_invalid: "הרשומה אינה תקינה"
 
 
   activerecord:
