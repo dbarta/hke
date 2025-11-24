@@ -28,7 +28,11 @@ Hke::Engine.routes.draw do
     end
   end
 
-  resources :csv_imports, only: [:new, :create, :show, :index]
+  resources :csv_imports, only: [:new, :create, :show, :index, :destroy] do
+    collection do
+      delete :destroy_all
+    end
+  end
   resources :message_management, only: [:index, :show]
   resources :landing_pages
   resources :contact_people do

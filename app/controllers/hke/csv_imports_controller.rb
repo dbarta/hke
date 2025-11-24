@@ -34,6 +34,27 @@ module Hke
       authorize CsvImport
     end
 
+    def destroy
+      @csv_import = CsvImport.find(params[:id])
+      authorize @csv_import
+      @csv_import.destroy
+      redirect_to hke.csv_imports_path, notice: t('csv_imports.index.deleted', default: 'הלוג נמחק בהצלחה')
+    end
+
+    def destroy_all
+      authorize CsvImport, :destroy_all?
+
+      imports = policy_scope(CsvImport)
+      destroyed_count = 0
+
+      imports.find_each do |import|
+        destroyed_count += 1 if import.destroy
+      end
+
+      redirect_to hke.csv_imports_path,
+                  notice: t('csv_imports.index.cleared', count: destroyed_count, default: 'כל הלוגים נמחקו')
+    end
+
     private
 
     def csv_import_params

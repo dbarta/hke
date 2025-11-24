@@ -32,6 +32,11 @@
 # https://mikerogers.io/2016/01/10/i18n-rails-internationalisation-i18n-cheatsheet.html
 
 he:
+  support:
+    array:
+      words_connector: ", "
+      two_words_connector: " ו-"
+      last_word_connector: " ו-"
   first_name: "שם פרטי"
   name: "שם"
   last_name: "שם משפחה"
@@ -375,6 +380,12 @@ he:
       progress: "התקדמות"
       actions: "פעולות"
       view: "צפה"
+      delete: "מחק"
+      confirm_delete: "למחוק את הלוג הזה?"
+      clear_all: "מחק את כל הלוגים"
+      clear_all_confirm: "למחוק את כל הלוגים מהקהילה הזו?"
+      deleted: "הלוג נמחק בהצלחה"
+      cleared: "נמחקו %{count} לוגים"
       unnamed: "ללא שם"
       no_imports: "אין יבואים עדיין"
       create_first: "צור יבוא ראשון"

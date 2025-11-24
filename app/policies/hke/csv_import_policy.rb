@@ -21,7 +21,11 @@ module Hke
     end
 
     def destroy?
-      false # CSV imports are not deletable
+      user.community_admin? || user.system_admin?
+    end
+
+    def destroy_all?
+      user.community_admin? || user.system_admin?
     end
 
     class Scope < Scope
