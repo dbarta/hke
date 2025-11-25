@@ -1,4 +1,5 @@
 require 'httparty'
+require 'nokogiri'
 require_relative 'loggable.rb'
 
 module Hke
@@ -81,8 +82,13 @@ module Hke
       return response
     end
 
-    def post(url, body, raise: true)
-      response = HTTParty.post(url, body: body.to_json, headers: @headers, format: :json)
+    def post(url, body, headers: nil, raise: true)
+      response = HTTParty.post(url, body: body.to_json, headers: headers || @headers, format: :json)
+      check_response(body, response, raise: raise)
+    end
+
+    def patch(url, body, headers: nil, raise: true)
+      response = HTTParty.patch(url, body: body.to_json, headers: headers || @headers, format: :json)
       check_response(body, response, raise: raise)
     end
 
@@ -94,6 +100,7 @@ module Hke
     def login_as_admin
       response = post("#{@hakhel_url}/auth", {email: "david@odeca.net", password: "odeca111"})
       @headers["Authorization"] = "Bearer #{response["token"]}"
+      @csrf_headers = fetch_csrf_headers
     end
 
     def init_urls
@@ -101,11 +108,34 @@ module Hke
       @hakhel_url = "#{@API_URL}/api/v1"
       @hke_url = "#{@API_URL}/hke/api/v1"
       @headers = {"Content-Type" => "application/json", "Accept" => "application/json"}
+      @csrf_headers = nil
     end
 
     def init_api
       init_urls
       login_as_admin
+    end
+
+    def csrf_headers
+      @csrf_headers ||= fetch_csrf_headers
+    end
+
+    def fetch_csrf_headers
+      response = HTTParty.get(@API_URL)
+      cookie = response.headers['set-cookie']
+      token = extract_csrf_token(response.body)
+      {
+        "Content-Type" => "application/json",
+        "Accept" => "application/json",
+        "X-CSRF-Token" => token,
+        "Cookie" => cookie
+      }
+    end
+
+    def extract_csrf_token(body)
+      doc = Nokogiri::HTML(body)
+      meta = doc.at('meta[name="csrf-token"]')
+      meta&.attr('content') || raise("CSRF token not found on #{@API_URL}")
     end
 
     def create_admin_account_community_system

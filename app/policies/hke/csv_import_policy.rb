@@ -17,7 +17,7 @@ module Hke
     end
 
     def update?
-      false # CSV imports are not editable
+      user.community_admin? || user.system_admin?
     end
 
     def destroy?

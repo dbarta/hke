@@ -4,8 +4,15 @@ module Hke
       include Hke::Authorization  # Use Hke's authorization instead of main app's
 
       # Enable Pundit authorization for all Hke API controllers
-      after_action :verify_authorized, except: [:index]
-      after_action :verify_policy_scoped, only: [:index]
+      after_action :verify_authorized, unless: :skip_verify_authorized?
+      after_action :verify_policy_scoped, if: :verify_policy_scoped_action?
+      def skip_verify_authorized?
+        action_name == "index"
+      end
+
+      def verify_policy_scoped_action?
+        action_name == "index"
+      end
       rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
       private
