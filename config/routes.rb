@@ -63,8 +63,6 @@ Hke::Engine.routes.draw do
       resources :deceased_people
       resources :contact_people
       resources :relations
-      resources :csv_imports, only: [:index, :show, :create, :update]
-      resources :csv_import_logs, only: [:create]
     end
   end
 

@@ -3,8 +3,31 @@
     <%= message.send_date.strftime("%b %d, %Y") %>
   </td>
   <td class="px-6 py-4 text-sm text-gray-900 text-right">
-    <div class="max-w-xs">
-      <%= message.message_preview(length: 150) %>
+    <div class="max-w-xs space-y-2">
+      <% preview_limit = 150 %>
+      <% reference_date = Time.zone.today %>
+      <% preview_text = message.message_preview(length: preview_limit, reference_date: reference_date) %>
+      <% full_text = message.rendered_full_message(reference_date: reference_date).to_s.strip %>
+      <% show_toggle = full_text.present? && full_text.length > preview_text.length %>
+
+      <div id="message_preview_<%= message.id %>" data-message-preview="<%= message.id %>">
+        <%= preview_text %>
+      </div>
+
+      <% if show_toggle %>
+        <div id="message_full_<%= message.id %>" data-message-full="<%= message.id %>" class="text-gray-800 space-y-2" hidden>
+          <%= simple_format(full_text, {}, wrapper_tag: nil) %>
+        </div>
+        <button type="button"
+                class="text-sm text-blue-600 hover:text-blue-800 focus:outline-none"
+                data-message-toggle="true"
+                data-message-id="<%= message.id %>"
+                data-show-more-text="<%= t('community_admin.dashboard.message_approval.toggle.show_all') %>"
+                data-show-less-text="<%= t('community_admin.dashboard.message_approval.toggle.show_less') %>"
+                aria-expanded="false">
+          <%= t('community_admin.dashboard.message_approval.toggle.show_all') %>
+        </button>
+      <% end %>
     </div>
   </td>
   <td class="px-6 py-4 whitespace-nowrap text-center">
