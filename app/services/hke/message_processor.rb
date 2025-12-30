@@ -17,6 +17,8 @@ module Hke
       log_event "Process Message", details:
         {text: "Start send process for message: #{@future_message.id} delivery_methods: #{delivery_methods}" }
 
+      @future_message.full_message = @future_message.rendered_full_message(reference_date: Time.zone.today)
+
       message_sids = send_message(
         methods: delivery_methods,
         future_message: @future_message

@@ -114,18 +114,34 @@ module Hke
     end
 
     # Get message preview for approval interface
-    def message_preview(length: 100)
-      return "" if full_message.blank?
+    def message_preview(length: 100, reference_date: Time.zone.today)
+      full_text = rendered_full_message(reference_date: reference_date)
+      return "" if full_text.blank?
 
       # Extract the first part that identifies deceased, contact, and Hebrew date
-      lines = full_message.split("\n")
-      preview_text = lines.first(2).join(" ")
+      lines = full_text.split("\n")
+      preview_text = lines.first(10).join(" ")
 
       if preview_text.length > length
         preview_text.truncate(length)
       else
         preview_text
       end
+    end
+
+    def rendered_full_message(reference_date: Time.zone.today)
+      return full_message.to_s if messageable.blank? || !messageable.respond_to?(:generate_hebrew_snippets)
+
+      snippets = messageable.generate_hebrew_snippets(
+        messageable,
+        [:sms],
+        reference_date: reference_date
+      )
+
+      (snippets[:sms] || full_message).to_s
+    rescue => e
+      Rails.logger.error("Failed to render dynamic future message ##{id}: #{e.message}")
+      full_message.to_s
     end
 
     private

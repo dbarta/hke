@@ -45,7 +45,7 @@ module Hke
       dp = deceased_person
       cp = contact_person
       send_date = calculate_reminder_date(dp.name, dp.hebrew_month_of_death, dp.hebrew_day_of_death)
-      snippets = generate_hebrew_snippets(self, [:sms], send_date: send_date)
+      snippets = generate_hebrew_snippets(self, [:sms], reference_date: send_date)
       fm = FutureMessage.create!(
         messageable: self, # Changed relation to messageable since it is polymorphic
         send_date: send_date, # Changed send_at to send_date, assuming it matches the column name

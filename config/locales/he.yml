@@ -356,6 +356,9 @@ he:
           disapprove_all: "בטל אישור הכל"
           submit: "שלח לעדכון"
         no_messages: "אין הודעות לאישור בתקופה זו"
+        toggle:
+          show_all: "הראה הכל..."
+          show_less: "הראה פחות"
     navbar:
       deceased_people: "נפטרים"
       contact_people: "אנשי קשר"
